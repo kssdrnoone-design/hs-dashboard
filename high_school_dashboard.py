@@ -937,11 +937,12 @@ def main():
     html = generate_dashboard_html(schools, unique_events, new_events, scrape_results)
     index_path = REPORTS_DIR / "index.html"
     archive_path = REPORTS_DIR / f"dashboard_{TODAY}.html"
-    with open(index_path, "w", encoding="utf-8") as f:
-        f.write(html)
-    with open(archive_path, "w", encoding="utf-8") as f:
-        f.write(html)
+    root_index_path = BASE_DIR / "index.html"  # GitHub Pages配信用（リポジトリルート）
+    for p in (index_path, archive_path, root_index_path):
+        with open(p, "w", encoding="utf-8") as f:
+            f.write(html)
     print(f"\nHTML生成: {index_path}")
+    print(f"GitHub Pages用: {root_index_path}")
 
     # 新着メール送信
     if config.get("diff", {}).get("enable_email_on_new_event", True):
