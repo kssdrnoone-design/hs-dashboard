@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>高校受験ダッシュボード - 2026/04/12</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Segoe UI', 'Yu Gothic UI', 'Meiryo', sans-serif;
+    background: #f8f9fa;
+    color: #333;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 12px;
+}
+.container { max-width: 1100px; margin: 0 auto; }
+h1 { text-align: center; color: #2c3e50; font-size: 1.6em; margin-bottom: 4px; }
+.subtitle { text-align: center; color: #7f8c8d; margin-bottom: 16px; font-size: 0.9em; }
+
+/* タブ */
+.tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    border-bottom: 2px solid #e0e6ed;
+    padding-bottom: 0;
+}
+.tab-btn {
+    background: #fff;
+    border: 1px solid #e0e6ed;
+    border-bottom: none;
+    padding: 10px 16px;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    font-size: 0.95em;
+    color: #555;
+    font-weight: 500;
+    transition: all 0.15s;
+}
+.tab-btn:hover { background: #f0f4f8; }
+.tab-btn.active {
+    background: #3498db;
+    color: #fff;
+    border-color: #3498db;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* カード類 */
+.section {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.section h2 {
+    color: #2c3e50;
+    border-bottom: 3px solid #3498db;
+    padding-bottom: 6px;
+    margin-bottom: 16px;
+    font-size: 1.15em;
+}
+
+/* 説明会アイテム */
+.event-item {
+    border: 1px solid #ecf0f1;
+    border-left: 4px solid #3498db;
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    background: #fbfcfd;
+}
+.event-item.is-new { border-left-color: #e74c3c; background: #fff5f4; }
+.event-item .ev-date {
+    font-weight: bold;
+    color: #e74c3c;
+    font-size: 1.02em;
+    margin-right: 10px;
+}
+.event-item .ev-school {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-right: 6px;
+}
+.event-item .ev-kw {
+    display: inline-block;
+    background: #3498db;
+    color: #fff;
+    font-size: 0.75em;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 6px;
+}
+.event-item .ev-context {
+    color: #7f8c8d;
+    font-size: 0.85em;
+    margin-top: 6px;
+}
+.event-item .ev-link { font-size: 0.85em; }
+.new-badge {
+    display: inline-block;
+    background: #e74c3c;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7em;
+    font-weight: bold;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+/* 学校カード */
+.school-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+}
+.school-card {
+    background: #fff;
+    border: 1px solid #e0e6ed;
+    border-radius: 10px;
+    padding: 14px 16px;
+    transition: box-shadow 0.15s;
+}
+.school-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+.school-card h3 { font-size: 1.05em; color: #2c3e50; margin-bottom: 6px; }
+.school-card .dev {
+    display: inline-block;
+    background: #e74c3c;
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: bold;
+    margin-right: 6px;
+}
+.school-card .meta { color: #7f8c8d; font-size: 0.82em; margin: 6px 0; }
+.school-card .next-event {
+    background: #fef9e7;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.85em;
+    margin-top: 8px;
+    color: #e67e22;
+}
+.school-card a {
+    color: #3498db;
+    text-decoration: none;
+    font-size: 0.85em;
+}
+
+/* 比較表 */
+table.compare {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+}
+table.compare th, table.compare td {
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid #ecf0f1;
+}
+table.compare th {
+    background: #f0f4f8;
+    color: #2c3e50;
+    cursor: pointer;
+    user-select: none;
+    position: sticky;
+    top: 0;
+}
+table.compare th:hover { background: #e1e8ef; }
+table.compare tr:hover { background: #fbfcfd; }
+
+/* 新着・エラー */
+.empty { color: #95a5a6; text-align: center; padding: 20px; font-size: 0.9em; }
+.error-list { font-size: 0.85em; color: #e67e22; }
+.error-list li { padding: 4px 0; }
+
+/* モバイル対応 */
+@media (max-width: 600px) {
+    body { padding: 8px; font-size: 14px; }
+    .section { padding: 14px; }
+    .tab-btn { padding: 8px 10px; font-size: 0.85em; }
+    .school-grid { grid-template-columns: 1fr; }
+    table.compare { font-size: 0.82em; }
+    table.compare th, table.compare td { padding: 6px 4px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🎓 高校受験ダッシュボード</h1>
+  <div class="subtitle">
+    更新: 2026/04/12 | 対象校 25 | 取得成功 25 | イベント検出 81 | 新着 0
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('tab-new', this)">🆕 新着</button>
+    <button class="tab-btn" onclick="showTab('tab-calendar', this)">📅 説明会カレンダー</button>
+    <button class="tab-btn" onclick="showTab('tab-schools', this)">🏫 学校カード</button>
+    <button class="tab-btn" onclick="showTab('tab-compare', this)">📊 比較表</button>
+    <button class="tab-btn" onclick="showTab('tab-admissions', this)">📋 入試日程</button>
+  </div>
+
+  <div id="tab-new" class="tab-panel active">
+    <div class="section">
+      <h2>🆕 新着イベント</h2>
+      <div class="empty">新着イベントはありません。</div>
+    </div>
+  </div>
+
+  <div id="tab-calendar" class="tab-panel">
+    <div class="section">
+      <h2>📅 説明会・イベントカレンダー</h2>
+      <p style="color:#7f8c8d; font-size:0.85em; margin-bottom:12px;">直近81件の説明会・イベント</p>
+<div class="event-item"><span class="ev-date">2026/04/25 (Sat)</span><span class="ev-school">都立戸山高校</span><span class="ev-kw">授業公開</span><div class="ev-context">第1回 授業公開のご案内（中学３年生対象） 以下のように、授業公開を実施いたします。 日 時： 4 月 25 日（土） ３時間目・4 時間目 ① 3 時間目授業参観 10：30～11：20 （</div><div class="ev-link"><a href="https://www.metro.ed.jp/toyama-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/04/26 (Sun)</span><span class="ev-school">都立立川高校</span><span class="ev-kw">授業公開</span><div class="ev-context">授業公開 対象：中学生及びその保護者 本校関係者（保護者・卒業生）教育関係者（中学・塾など） ４月２６日（土） ４月２８日（月） ４月３０日（水） ５月１日（木） ５月２日（金）詳細は</div><div class="ev-link"><a href="https://www.metro.ed.jp/tachikawa-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/05/09 (Sat)</span><span class="ev-school">巣鴨高等学校</span><span class="ev-kw">学校説明会</span><div class="ev-context">。 バーチャル学校ツアーを確認する 2026(令和8)年開催学校説明会 中学校説明会 第1回 5月 9日(土) 第2回 6月20日(土) 第3回 10月 3日(土) 第4回 10月3</div><div class="ev-link"><a href="https://www.sugamo.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/05/16 (Sat)</span><span class="ev-school">本郷高等学校</span><span class="ev-kw">説明会</span><div class="ev-context">に初めて参加する方におすすめです。（昨年５月の説明会に参加した方、内容は重複します。） 【日時】 ５月１６日（土） ①10:30～11:40＋授業見学 ②14:00〜15:10＋フリーの校</div><div class="ev-link"><a href="https://www.hongo.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/05/19 (Tue)</span><span class="ev-school">本郷高等学校</span><span class="ev-kw">文化祭</span><div class="ev-context">校のこと、部活のこと、勉強のこと、入試に関すること、何でもお聞きください。 体育祭 令和８年度は５月１９日（火）※詳細は後日 本郷祭（文化祭） 令和８年度は９月２６日（土）、２７日（</div><div class="ev-link"><a href="https://www.hongo.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/05/21 (Thu)</span><span class="ev-school">都立立川高校</span><span class="ev-kw">学校説明会</span><div class="ev-context">対象：中学生およびその保護者 ８月１０日（日） 塾対象入試報告会 対象：塾、予備校関係者 ５月２１日（水）午前１０時３０分～ 塾対象学校説明会 対象：塾、予備校関係者 １０</div><div class="ev-link"><a href="https://www.metro.ed.jp/tachikawa-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/06/03 (Wed)</span><span class="ev-school">豊島岡女子学園高等学校</span><span class="ev-kw">学校説明会</span><div class="ev-context">明会は、お好きな時間にオンラインで動画を視聴していただく形式の学校説明会です。 2026年版には、6月3日(水)に更新予定です。 アクセスが集中して動作が不安定な場合は、少し時間をあけ</div><div class="ev-link"><a href="https://www.toshimagaoka.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/06/06 (Sat)</span><span class="ev-school">都立小山台高校</span><span class="ev-kw">見学会</span><div class="ev-context">。 ※日程変更など連絡事項が生じましたらホームページ上でお知らせします。 第１回授業公開 ６月６日（土）午前 春の学校見学会 ６月６日（土）午後 夏の学校見学会</div><div class="ev-link"><a href="https://www.metro.ed.jp/koyamadai-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/06/13 (Sat)</span><span class="ev-school">都立駒場高校</span><span class="ev-kw">説明会</span><div class="ev-context">各種相談会・見学会・説明会の実施のご案内」から、ご確認ください。 授業公開 第１回 令和８年６月１３日(土) 200組事前申請を予定（令和８年４月２日現在） 第１回目の午</div><div class="ev-link"><a href="https://www.metro.ed.jp/komaba-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/06/13 (Sat)</span><span class="ev-school">巣鴨高等学校</span><span class="ev-kw">学校説明会</span><div class="ev-context">》ギムナシオン(体育館) 上履きをご持参ください。 申込みはこちら 高等学校説明会 第1回 6月13日(土) 第2回 10月10日(土) 第3回 11月14日(土) 《場所》西校舎</div><div class="ev-link"><a href="https://www.sugamo.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/06/20 (Sat)</span><span class="ev-school">巣鴨高等学校</span><span class="ev-kw">学校説明会</span><div class="ev-context">確認する 2026(令和8)年開催学校説明会 中学校説明会 第1回 5月 9日(土) 第2回 6月20日(土) 第3回 10月 3日(土) 第4回 10月31日(土) 第5回 12月</div><div class="ev-link"><a href="https://www.sugamo.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/09 (Thu)</span><span class="ev-school">都立新宿高校</span><span class="ev-kw">見学会</span><div class="ev-context">19日（火） 15時～ 小学生 およびその保護者 対象の学校見学会を実施します。 7月9日から申込を受け付けます。 詳細・申込は以下リンク先をご覧ください。</div><div class="ev-link"><a href="https://www.metro.ed.jp/shinjuku-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/12 (Sun)</span><span class="ev-school">都立立川高校</span><span class="ev-kw">説明会</span><div class="ev-context">５日（土）詳細はこちら 参加申し込み不要 入試問題説明会 対象：本校を受検予定の中学３年生 ７月１２日（土）１４時～ 詳細はこちら １１月２９日（土）１４時～ 詳細はこちら 参加申し</div><div class="ev-link"><a href="https://www.metro.ed.jp/tachikawa-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/12 (Sun)</span><span class="ev-school">都立八王子東高校</span><span class="ev-kw">見学会</span><div class="ev-context">申し込みは実施日3週間前を目安に本校ホームページにて受付を開始します。 入試問題解説会 7月12日（土）14:00～16:00 学校見学会 8月22日（金） 体</div><div class="ev-link"><a href="https://www.metro.ed.jp/hachiojihigashi-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/19 (Sun)</span><span class="ev-school">豊島岡女子学園高等学校</span><span class="ev-kw">説明会</span><div class="ev-context">ミニ説明会 豊島岡生による体験会 校内を自由に回り、クラブ活動などを体験できる機会です。 実施日：2026年7月19日（日） 豊島岡生によるミニ説明会 在校生による学校紹介を、下記日程で実施します</div><div class="ev-link"><a href="https://www.toshimagaoka.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/20 (Mon)</span><span class="ev-school">開成高等学校</span><span class="ev-kw">説明会</span><div class="ev-context">学生向け説明会（要予約） （この下は終了したイベントです。） 【日時】 2025（令和 7）年 7 月 20 日（日） 10：00〜（約 120 分） 【対象】 海外在住（１年以内に帰国した場</div><div class="ev-link"><a href="https://kaiseigakuen.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/22 (Wed)</span><span class="ev-school">都立国分寺高校</span><span class="ev-kw">見学会</span><div class="ev-context">学校紹介 １４：００～１５：００ □オープンスクール（中３生対象の体験授業） 日時：7月22日（火）、7月23日（水） １０：００～１１：３０ □学校見学会 日時：7月3</div><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/23 (Thu)</span><span class="ev-school">都立国分寺高校</span><span class="ev-kw">見学会</span><div class="ev-context">１４：００～１５：００ □オープンスクール（中３生対象の体験授業） 日時：7月22日（火）、7月23日（水） １０：００～１１：３０ □学校見学会 日時：7月31日（木）、8月1</div><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/24 (Fri)</span><span class="ev-school">都立八王子東高校</span><span class="ev-kw">見学会</span><div class="ev-context">月12日（土）14:00～16:00 学校見学会 8月22日（金） 体験授業 7月24日（木） しらかし祭 文化祭 9月6日（土）・7日（日） 体育祭</div><div class="ev-link"><a href="https://www.metro.ed.jp/hachiojihigashi-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/25 (Sat)</span><span class="ev-school">海城高等学校</span><span class="ev-kw">学校説明会</span><div class="ev-context">0 事前予約は不要です。 募集広報室の教室に直接お越しください。 帰国生対象 学校説明会（7月25日） ● 内容 帰国生を迎えるにあたっての本校の考え方や帰国生入試についてご説明</div><div class="ev-link"><a href="https://www.kaijo.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/27 (Mon)</span><span class="ev-school">都立八王子東高校</span><span class="ev-kw">説明会</span><div class="ev-context">動は実施日により異なります。詳細は受付Formにてご確認ください。 〇校外で行う説明会等 7月27日(日) 都立高等EXPO 第１部（新宿ＮＳビル） 8月10日(日) 都立高等E</div><div class="ev-link"><a href="https://www.metro.ed.jp/hachiojihigashi-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/31 (Fri)</span><span class="ev-school">都立小山台高校</span><span class="ev-kw">見学会</span><div class="ev-context">月６日（土）午前 春の学校見学会 ６月６日（土）午後 夏の学校見学会 詳細は後日 ７月31日（金）午前・午後 ８月１日（土）午前・午後 ８月21日（金）午前・午後 ８</div><div class="ev-link"><a href="https://www.metro.ed.jp/koyamadai-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/31 (Fri)</span><span class="ev-school">都立新宿高校</span><span class="ev-kw">見学会</span><div class="ev-context">1日・8月18日・19日に、中学3年生、およびその保護者対象、学校見学会を 実施いたします。 7月31日・8月18日は1日4回、8月19日は3回実施いたします。 申込は7月9日からで</div><div class="ev-link"><a href="https://www.metro.ed.jp/shinjuku-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/31 (Fri)</span><span class="ev-school">都立国分寺高校</span><span class="ev-kw">見学会</span><div class="ev-context">授業） 日時：7月22日（火）、7月23日（水） １０：００～１１：３０ □学校見学会 日時：7月31日（木）、8月1日（金）、8月2日（土） ①１０：００～ ②１１：００～</div><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/01 (Sat)</span><span class="ev-school">都立小山台高校</span><span class="ev-kw">見学会</span><div class="ev-context">見学会 ６月６日（土）午後 夏の学校見学会 詳細は後日 ７月31日（金）午前・午後 ８月１日（土）午前・午後 ８月21日（金）午前・午後 ８月22日（土）午前・午後</div><div class="ev-link"><a href="https://www.metro.ed.jp/koyamadai-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/01 (Sat)</span><span class="ev-school">都立国分寺高校</span><span class="ev-kw">見学会</span><div class="ev-context">月22日（火）、7月23日（水） １０：００～１１：３０ □学校見学会 日時：7月31日（木）、8月1日（金）、8月2日（土） ①１０：００～ ②１１：００～ ③１４：００～</div><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/02 (Sun)</span><span class="ev-school">都立国分寺高校</span><span class="ev-kw">見学会</span><div class="ev-context">7月23日（水） １０：００～１１：３０ □学校見学会 日時：7月31日（木）、8月1日（金）、8月2日（土） ①１０：００～ ②１１：００～ ③１４：００～ ④１５：００～</div><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/09 (Sun)</span><span class="ev-school">慶應義塾女子高等学校</span><span class="ev-kw">学校見学</span><div class="ev-context">学は可能です。 曜日を問わず、９時から１７時の間に直接事務室へおいでください。 なお、一斉休暇期間（8月9日～8月18日、12月27日～1月5日）と入試当日の学校見学はご遠慮ください。</div><div class="ev-link"><a href="https://www.gshs.keio.ac.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/10 (Mon)</span><span class="ev-school">都立八王子東高校</span><span class="ev-kw">説明会</span><div class="ev-context">い。 〇校外で行う説明会等 7月27日(日) 都立高等EXPO 第１部（新宿ＮＳビル） 8月10日(日) 都立高等EXPO 第２部（ベルサール高田馬場） ニュース アクセ</div><div class="ev-link"><a href="https://www.metro.ed.jp/hachiojihigashi-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/13 (Thu)</span><span class="ev-school">都立立川高校</span><span class="ev-kw">見学会</span><div class="ev-context">詳細はこちら 参加申し込み要 学校見学会 対象：本校を受検予定の中学３年生及びその保護者 ８月１３日（水）・１４日（木）・１５日（金） 全日程とも午前２回、午後２回実施予定 参加申</div><div class="ev-link"><a href="https://www.metro.ed.jp/tachikawa-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/18 (Tue)</span><span class="ev-school">都立新宿高校</span><span class="ev-kw">見学会</span><div class="ev-context">8日・19日に、中学3年生、およびその保護者対象、学校見学会を 実施いたします。 7月31日・8月18日は1日4回、8月19日は3回実施いたします。 申込は7月9日からです。詳細、申</div><div class="ev-link"><a href="https://www.metro.ed.jp/shinjuku-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/18 (Tue)</span><span class="ev-school">慶應義塾女子高等学校</span><span class="ev-kw">学校見学</span><div class="ev-context">す。 曜日を問わず、９時から１７時の間に直接事務室へおいでください。 なお、一斉休暇期間（8月9日～8月18日、12月27日～1月5日）と入試当日の学校見学はご遠慮ください。</div><div class="ev-link"><a href="https://www.gshs.keio.ac.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/19 (Wed)</span><span class="ev-school">都立新宿高校</span><span class="ev-kw">見学会</span><div class="ev-context">年生、およびその保護者対象、学校見学会を 実施いたします。 7月31日・8月18日は1日4回、8月19日は3回実施いたします。 申込は7月9日からです。詳細、申し込みは以下リンク先か</div><div class="ev-link"><a href="https://www.metro.ed.jp/shinjuku-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/21 (Fri)</span><span class="ev-school">都立小山台高校</span><span class="ev-kw">見学会</span><div class="ev-context">夏の学校見学会 詳細は後日 ７月31日（金）午前・午後 ８月１日（土）午前・午後 ８月21日（金）午前・午後 ８月22日（土）午前・午後 第２回授業公開 １０月３</div><div class="ev-link"><a href="https://www.metro.ed.jp/koyamadai-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/22 (Sat)</span><span class="ev-school">都立八王子東高校</span><span class="ev-kw">見学会</span><div class="ev-context">始します。 入試問題解説会 7月12日（土）14:00～16:00 学校見学会 8月22日（金） 体験授業 7月24日（木） しらかし祭 文化祭</div><div class="ev-link"><a href="https://www.metro.ed.jp/hachiojihigashi-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/22 (Sat)</span><span class="ev-school">都立小山台高校</span><span class="ev-kw">授業公開</span><div class="ev-context">細は後日 ７月31日（金）午前・午後 ８月１日（土）午前・午後 ８月21日（金）午前・午後 ８月22日（土）午前・午後 第２回授業公開 １０月３日（土）午前 第１回 学校説</div><div class="ev-link"><a href="https://www.metro.ed.jp/koyamadai-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/22 (Sat)</span><span class="ev-school">海城高等学校</span><span class="ev-kw">オープンキャンパス</span><div class="ev-context">Centerなどの施設や土曜日の放課後の様子を見学します。 夏のオープンキャンパス2026（8月22日･23日） ● 内容 海城の特色ある教育の紹介、各教科による展示・プレゼンテー</div><div class="ev-link"><a href="https://www.kaijo.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/09/06 (Sun)</span><span class="ev-school">都立立川高校</span><span class="ev-kw">学校説明会</span><div class="ev-context">） 全日程とも午前２回、午後２回実施予定 参加申し込み要 詳細はこちら 文化祭 対象：一般 ９月６日（土）・７日（日） 学校説明会 対象：本校を受検予定の中学生及びその保護</div><div class="ev-link"><a href="https://www.metro.ed.jp/tachikawa-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/09/06 (Sun)</span><span class="ev-school">都立八王子東高校</span><span class="ev-kw">見学会</span><div class="ev-context">見学会 8月22日（金） 体験授業 7月24日（木） しらかし祭 文化祭 9月6日（土）・7日（日） 体育祭 9月12日（金） ※体育祭に関しては非公開です</div><div class="ev-link"><a href="https://www.metro.ed.jp/hachiojihigashi-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/09/12 (Sat)</span><span class="ev-school">都立八王子東高校</span><span class="ev-kw">学校説明会</span><div class="ev-context">授業 7月24日（木） しらかし祭 文化祭 9月6日（土）・7日（日） 体育祭 9月12日（金） ※体育祭に関しては非公開です。 学校説明会 第1回 10月</div><div class="ev-link"><a href="https://www.metro.ed.jp/hachiojihigashi-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/09/19 (Sat)</span><span class="ev-school">巣鴨高等学校</span><span class="ev-kw">文化祭</span><div class="ev-context">祭・体育祭) ※詳しくはホームページのお知らせをご覧ください。 文化祭 ※来場予約は不要です 9月19日(土)・9月20日(日) 時間：１日目 9：00～16：00 ２日目 9：</div><div class="ev-link"><a href="https://www.sugamo.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/09/20 (Sun)</span><span class="ev-school">巣鴨高等学校</span><span class="ev-kw">文化祭</span><div class="ev-context">詳しくはホームページのお知らせをご覧ください。 文化祭 ※来場予約は不要です 9月19日(土)・9月20日(日) 時間：１日目 9：00～16：00 ２日目 9：00～15：00</div><div class="ev-link"><a href="https://www.sugamo.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/09/20 (Sun)</span><span class="ev-school">早稲田大学高等学院</span><span class="ev-kw">学校説明会</span><div class="ev-context">校説明会・学校見学  学校説明会 公開行事 学校見学 学校説明会 日程 開催方法 第1回 2026年 9月20日（日） 14:00～15:30 開催方法について8月下旬頃に公開する ニュース</div><div class="ev-link"><a href="https://www.waseda.jp/school/shs/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/09/24 (Thu)</span><span class="ev-school">開成高等学校</span><span class="ev-kw">説明会</span><div class="ev-context">保護者、各１名ずつ 各回とも受付・開場は 30 分前から開始いたします。 【予約申込開始日時】 9 月 24 日（水） 12:00～ 【学園説明会に関するお問合せ先】 広報委員会 電話番号</div><div class="ev-link"><a href="https://kaiseigakuen.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/09/25 (Fri)</span><span class="ev-school">都立新宿高校</span><span class="ev-kw">学校説明会</span><div class="ev-context">（土）に、中学３年生、およびその保護者を対象に第１回学校説明会を実施いたします。 申込み受付開始は９月２５日（木）１２時からとなります。 詳細、申込みにつきましては以下リンク先からご確認</div><div class="ev-link"><a href="https://www.metro.ed.jp/shinjuku-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/09/26 (Sat)</span><span class="ev-school">本郷高等学校</span><span class="ev-kw">文化祭</span><div class="ev-context">ください。 体育祭 令和８年度は５月１９日（火）※詳細は後日 本郷祭（文化祭） 令和８年度は９月２６日（土）、２７日（日）に開催します。詳細は後日 入試案内 中学入試情報 過去問</div><div class="ev-link"><a href="https://www.hongo.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/03 (Sat)</span><span class="ev-school">都立小山台高校</span><span class="ev-kw">学校説明会</span><div class="ev-context">土）午前・午後 ８月21日（金）午前・午後 ８月22日（土）午前・午後 第２回授業公開 １０月３日（土）午前 第１回 学校説明会 １０月３日（土）午後 第３回授業公開</div><div class="ev-link"><a href="https://www.metro.ed.jp/koyamadai-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/03 (Sat)</span><span class="ev-school">巣鴨高等学校</span><span class="ev-kw">学校説明会</span><div class="ev-context">8)年開催学校説明会 中学校説明会 第1回 5月 9日(土) 第2回 6月20日(土) 第3回 10月 3日(土) 第4回 10月31日(土) 第5回 12月 5日(土) 《場所》ギムナ</div><div class="ev-link"><a href="https://www.sugamo.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/04 (Sun)</span><span class="ev-school">都立八王子東高校</span><span class="ev-kw">学校説明会</span><div class="ev-context">） 体育祭 9月12日（金） ※体育祭に関しては非公開です。 学校説明会 第1回 10月 4日（土）14:00～16:00 第2回 12月13日（土）14:00～16:0</div><div class="ev-link"><a href="https://www.metro.ed.jp/hachiojihigashi-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/04 (Sun)</span><span class="ev-school">都立国分寺高校</span><span class="ev-kw">学校説明会</span><div class="ev-context">１０：００～ ②１１：００～ ③１４：００～ ④１５：００～ □第１回 学校公開・説明会 日時：10月4日（土） 学校公開 １０：３５～１２：３０ 学校説明会</div><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/10 (Sat)</span><span class="ev-school">海城高等学校</span><span class="ev-kw">オープンキャンパス</span><div class="ev-context">2時〜 ※開催形式・定員・予約方法などは変更する場合があります ミニ・オープンキャンパス（10月10日） ● 内容 教室・アリーナ・グラウンド・Science Centerなど、順</div><div class="ev-link"><a href="https://www.kaijo.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/10 (Sat)</span><span class="ev-school">巣鴨高等学校</span><span class="ev-kw">学校説明会</span><div class="ev-context">上履きをご持参ください。 申込みはこちら 高等学校説明会 第1回 6月13日(土) 第2回 10月10日(土) 第3回 11月14日(土) 《場所》西校舎講堂 申込みはこちら 《</div><div class="ev-link"><a href="https://www.sugamo.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/10 (Sat)</span><span class="ev-school">早稲田大学高等学院</span><span class="ev-kw">学校見学</span><div class="ev-context">15:30 開催方法について9月下旬頃に公開する ニュース をご確認ください。 公開行事 学院祭 2026年10月10日（土）11日（日） 学芸発表会 2026年11月14日（土） 学校見学</div><div class="ev-link"><a href="https://www.waseda.jp/school/shs/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/18 (Sun)</span><span class="ev-school">都立立川高校</span><span class="ev-kw">学校説明会</span><div class="ev-context">９月６日（土）・７日（日） 学校説明会 対象：本校を受検予定の中学生及びその保護者 第１回 １０月１８日（土）１４時～ 詳細はこちら 第２回 １１月１５日（土）１４時～ 詳細はこちら</div><div class="ev-link"><a href="https://www.metro.ed.jp/tachikawa-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/18 (Sun)</span><span class="ev-school">開成高等学校</span><span class="ev-kw">説明会</span><div class="ev-context">能性があります。お時間に余裕を持ってお越しください。 【中学説明会】（全 6 回） 第 1 回 10 月 18 日（土） 9:30 ～ 第 2 回 10 月 18 日（土）11:10 ～ 第 3</div><div class="ev-link"><a href="https://kaiseigakuen.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/19 (Mon)</span><span class="ev-school">開成高等学校</span><span class="ev-kw">説明会</span><div class="ev-context">す。 【高校説明会】（全２回） 第 1 回 10 月 18 日（土）13:10 ～ 第 2 回 10 月 19 日（日）13:10 ～ 対象：中学生とその保護者、各１名ずつ 各回とも受付・開場</div><div class="ev-link"><a href="https://kaiseigakuen.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/22 (Thu)</span><span class="ev-school">都立立川高校</span><span class="ev-kw">学校説明会</span><div class="ev-context">予備校関係者 ５月２１日（水）午前１０時３０分～ 塾対象学校説明会 対象：塾、予備校関係者 １０月２２日（水）午前１０時３０分～ 詳細はこちらから 参加申し込み要 上級学校訪問</div><div class="ev-link"><a href="https://www.metro.ed.jp/tachikawa-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/22 (Thu)</span><span class="ev-school">都立新宿高校</span><span class="ev-kw">学校説明会</span><div class="ev-context">（土）に、中学３年生、およびその保護者を対象に第２回学校説明会を実施いたします。 申込み受付開始は１０月２２日（水）１２時からとなります。 詳細、申込みにつきましては以下リンク先からご確認</div><div class="ev-link"><a href="https://www.metro.ed.jp/shinjuku-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/24 (Sat)</span><span class="ev-school">都立駒場高校</span><span class="ev-kw">説明会</span><div class="ev-context">目の授業を３・４時間目にしています）組み合わせで公開します。 保健体育科説明会 令和８年度は 10月24日(土)、11月７日(土)に実施します。 詳細は決まり次第、以下のリンクからご確</div><div class="ev-link"><a href="https://www.metro.ed.jp/komaba-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/31 (Sat)</span><span class="ev-school">都立小山台高校</span><span class="ev-kw">学校説明会</span><div class="ev-context">説明会 １０月３日（土）午後 第３回授業公開 １０月３１（土）午前 第２回 学校説明会 １０月３１日（土）午後 第３回 学校説明会 １２月１２日（土）午後 ニ</div><div class="ev-link"><a href="https://www.metro.ed.jp/koyamadai-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/31 (Sat)</span><span class="ev-school">豊島岡女子学園高等学校</span><span class="ev-kw">文化祭</span><div class="ev-context">Day 桃李祭（文化祭） 2026年度の桃李祭（文化祭）は、次の日程で実施いたします。 実施日 2026年10月31日（土）11月1日（日） 予約開始日 2026年10月1日（木）19:00 Aca</div><div class="ev-link"><a href="https://www.toshimagaoka.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/31 (Sat)</span><span class="ev-school">巣鴨高等学校</span><span class="ev-kw">説明会</span><div class="ev-context">説明会 第1回 5月 9日(土) 第2回 6月20日(土) 第3回 10月 3日(土) 第4回 10月31日(土) 第5回 12月 5日(土) 《場所》ギムナシオン(体育館) 上履きをご</div><div class="ev-link"><a href="https://www.sugamo.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/01 (Sun)</span><span class="ev-school">都立八王子東高校</span><span class="ev-kw">説明会</span><div class="ev-context">00 第2回 12月13日（土）14:00～16:00 自校作成問題説明会 第1回 11月 1日（土）14:00～15:30 第2回 11月29日（土）14:00～15:3</div><div class="ev-link"><a href="https://www.metro.ed.jp/hachiojihigashi-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/01 (Sun)</span><span class="ev-school">都立竹早高校</span><span class="ev-kw">授業公開</span><div class="ev-context">込みについて 事前予約の必要はありません。（予定） → 前回大勢の方に御来校いただいたことから、11月１日の授業公開はゆとりある参観をお約束するために「予約制」に変更させていただきます。</div><div class="ev-link"><a href="https://www.metro.ed.jp/takehaya-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/01 (Sun)</span><span class="ev-school">豊島岡女子学園高等学校</span><span class="ev-kw">文化祭</span><div class="ev-context">2026年度の桃李祭（文化祭）は、次の日程で実施いたします。 実施日 2026年10月31日（土）11月1日（日） 予約開始日 2026年10月1日（木）19:00 AcademicDay</div><div class="ev-link"><a href="https://www.toshimagaoka.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/07 (Sat)</span><span class="ev-school">都立駒場高校</span><span class="ev-kw">説明会</span><div class="ev-context">目にしています）組み合わせで公開します。 保健体育科説明会 令和８年度は 10月24日(土)、11月７日(土)に実施します。 詳細は決まり次第、以下のリンクからご確認いただけます。</div><div class="ev-link"><a href="https://www.metro.ed.jp/komaba-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/07 (Sat)</span><span class="ev-school">海城高等学校</span><span class="ev-kw">オープンキャンパス</span><div class="ev-context">12時 ※開催形式・定員・予約方法などは変更する場合があります ミニ・オープンキャンパス（11月7日） ● 内容 教室・アリーナ・グラウンド・Science Centerなど、順</div><div class="ev-link"><a href="https://www.kaijo.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/08 (Sun)</span><span class="ev-school">都立国分寺高校</span><span class="ev-kw">学校説明会</span><div class="ev-context">１２：３０ 学校説明会 １４：００ □第２回 学校公開・説明会 日時：11月8日（土） 学校公開 １０：３５～１２：３０ 学校説明</div><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/14 (Sat)</span><span class="ev-school">本郷高等学校</span><span class="ev-kw">学校見学</span><div class="ev-context">00～ 10月17日（土） 8:30～ 11月7日(土) ①10:30～②14:00～ 11月14日(土) ①10:30～②14:00～ 予約ページこちら 令和８年度 学校見学</div><div class="ev-link"><a href="https://www.hongo.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/14 (Sat)</span><span class="ev-school">巣鴨高等学校</span><span class="ev-kw">学校説明会</span><div class="ev-context">申込みはこちら 高等学校説明会 第1回 6月13日(土) 第2回 10月10日(土) 第3回 11月14日(土) 《場所》西校舎講堂 申込みはこちら 《時間》 いずれも午前10時よ</div><div class="ev-link"><a href="https://www.sugamo.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/14 (Sat)</span><span class="ev-school">早稲田大学高等学院</span><span class="ev-kw">学校見学</span><div class="ev-context">をご確認ください。 公開行事 学院祭 2026年10月10日（土）11日（日） 学芸発表会 2026年11月14日（土） 学校見学 ◆見学時間 9:00～16:30（下記の見学可能日のみ）</div><div class="ev-link"><a href="https://www.waseda.jp/school/shs/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/15 (Sun)</span><span class="ev-school">都立立川高校</span><span class="ev-kw">説明会</span><div class="ev-context">８月２８日（木） ８月２９日（金） ８月３０日（土） 詳細はこちら １０月１８日（土）詳細はこちら １１月１５日（土）詳細はこちら 参加申し込み不要 入試問題説明会 対象：本校を受検予</div><div class="ev-link"><a href="https://www.metro.ed.jp/tachikawa-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/24 (Tue)</span><span class="ev-school">本郷高等学校</span><span class="ev-kw">説明会</span><div class="ev-context">開始 夏 7月12日（日） 6月13日（土）8:30 冬 12月20日（日） 11月24日（土）8:30 予約ページこちら 令和８年度 外部合同説明会 他校様と合同</div><div class="ev-link"><a href="https://www.hongo.ed.jp/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/29 (Sun)</span><span class="ev-school">都立立川高校</span><span class="ev-kw">説明会</span><div class="ev-context">入試問題説明会 対象：本校を受検予定の中学３年生 ７月１２日（土）１４時～ 詳細はこちら １１月２９日（土）１４時～ 詳細はこちら 参加申し込み要 学校見学会 対象：本校を受</div><div class="ev-link"><a href="https://www.metro.ed.jp/tachikawa-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/29 (Sun)</span><span class="ev-school">都立八王子東高校</span><span class="ev-kw">説明会</span><div class="ev-context">0 自校作成問題説明会 第1回 11月 1日（土）14:00～15:30 第2回 11月29日（土）14:00～15:30 授業公開 下記の土曜日の3・4時間</div><div class="ev-link"><a href="https://www.metro.ed.jp/hachiojihigashi-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/12/06 (Sun)</span><span class="ev-school">都立国分寺高校</span><span class="ev-kw">学校説明会</span><div class="ev-context">３０ 学校説明会 １４：００ □第３回 学校説明会・入試説明会 日時：12月6日（土） 学校説明会・入試説明会 １４：００ 各回の当日前に、トップページ</div><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/12/12 (Sat)</span><span class="ev-school">都立小山台高校</span><span class="ev-kw">学校説明会</span><div class="ev-context">１０月３１（土）午前 第２回 学校説明会 １０月３１日（土）午後 第３回 学校説明会 １２月１２日（土）午後 ニュース アクセス 学校説明会 特色 入試案内 学校案</div><div class="ev-link"><a href="https://www.metro.ed.jp/koyamadai-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/12/13 (Sun)</span><span class="ev-school">都立八王子東高校</span><span class="ev-kw">学校説明会</span><div class="ev-context">公開です。 学校説明会 第1回 10月 4日（土）14:00～16:00 第2回 12月13日（土）14:00～16:00 自校作成問題説明会 第1回 11月</div><div class="ev-link"><a href="https://www.metro.ed.jp/hachiojihigashi-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/12/14 (Mon)</span><span class="ev-school">都立新宿高校</span><span class="ev-kw">学校説明会</span><div class="ev-context">令和８年１月実施 学校説明会(253KB) 令和7年度 自校作成問題説明会② 令和7年 12月14日（日） 【午前の部】８：５０開始／【午後の部】１３：００開始 ※中学3年生を対</div><div class="ev-link"><a href="https://www.metro.ed.jp/shinjuku-h/" target="_blank">公式ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/12/27 (Sun)</span><span class="ev-school">慶應義塾女子高等学校</span><span class="ev-kw">学校見学</span><div class="ev-context">問わず、９時から１７時の間に直接事務室へおいでください。 なお、一斉休暇期間（8月9日～8月18日、12月27日～1月5日）と入試当日の学校見学はご遠慮ください。 サイ</div><div class="ev-link"><a href="https://www.gshs.keio.ac.jp/" target="_blank">公式ページへ →</a></div></div>
+    </div>
+  </div>
+
+  <div id="tab-schools" class="tab-panel">
+    <div class="section">
+      <h2>🏫 学校一覧（偏差値順）</h2>
+      <div class="school-grid">
+<div class="school-card"><h3>開成高等学校</h3><span class="dev">偏差値 78</span><div class="meta">私立 / 荒川区</div><div class="next-event">📅 次回: 2026/07/20 (Mon) 説明会</div><div style="margin-top:8px;"><a href="https://kaiseigakuen.jp/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>慶應義塾女子高等学校</h3><span class="dev">偏差値 76</span><div class="meta">私立 / 港区</div><div class="next-event">📅 次回: 2026/08/09 (Sun) 学校見学</div><div style="margin-top:8px;"><a href="https://www.gshs.keio.ac.jp/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>豊島岡女子学園高等学校</h3><span class="dev">偏差値 76</span><div class="meta">私立 / 豊島区</div><div class="next-event">📅 次回: 2026/06/03 (Wed) 学校説明会</div><div style="margin-top:8px;"><a href="https://www.toshimagaoka.ed.jp/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>早稲田実業学校高等部</h3><span class="dev">偏差値 76</span><div class="meta">私立 / 国分寺市</div><div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div><div style="margin-top:8px;"><a href="https://www.wasedajg.ed.jp/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>早稲田大学高等学院</h3><span class="dev">偏差値 76</span><div class="meta">私立 / 練馬区</div><div class="next-event">📅 次回: 2026/09/20 (Sun) 学校説明会</div><div style="margin-top:8px;"><a href="https://www.waseda.jp/school/shs/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>海城高等学校</h3><span class="dev">偏差値 75</span><div class="meta">私立 / 新宿区</div><div class="next-event">📅 次回: 2026/07/25 (Sat) 学校説明会</div><div style="margin-top:8px;"><a href="https://www.kaijo.ed.jp/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>都立日比谷高校</h3><span class="dev">偏差値 73</span><div class="meta">都立-進学指導重点校 / 千代田区</div><div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/hibiya-h/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>本郷高等学校</h3><span class="dev">偏差値 73</span><div class="meta">私立 / 豊島区</div><div class="next-event">📅 次回: 2026/05/16 (Sat) 説明会</div><div style="margin-top:8px;"><a href="https://www.hongo.ed.jp/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>都立西高校</h3><span class="dev">偏差値 72</span><div class="meta">都立-進学指導重点校 / 杉並区</div><div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/nishi-h/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>都立国立高校</h3><span class="dev">偏差値 72</span><div class="meta">都立-進学指導重点校 / 国立市</div><div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/kunitachi-h/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>巣鴨高等学校</h3><span class="dev">偏差値 72</span><div class="meta">私立 / 豊島区</div><div class="next-event">📅 次回: 2026/05/09 (Sat) 学校説明会</div><div style="margin-top:8px;"><a href="https://www.sugamo.ed.jp/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>都立戸山高校</h3><span class="dev">偏差値 71</span><div class="meta">都立-進学指導重点校 / 新宿区</div><div class="next-event">📅 次回: 2026/04/25 (Sat) 授業公開</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/toyama-h/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>都立青山高校</h3><span class="dev">偏差値 70</span><div class="meta">都立-進学指導重点校 / 渋谷区</div><div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/aoyama-h/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>都立立川高校</h3><span class="dev">偏差値 70</span><div class="meta">都立-進学指導重点校 / 立川市</div><div class="next-event">📅 次回: 2026/04/26 (Sun) 授業公開</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/tachikawa-h/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>城北高等学校</h3><span class="dev">偏差値 70</span><div class="meta">私立 / 板橋区</div><div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div><div style="margin-top:8px;"><a href="https://www.johoku.ac.jp/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>都立八王子東高校</h3><span class="dev">偏差値 69</span><div class="meta">都立-進学指導重点校 / 八王子市</div><div class="next-event">📅 次回: 2026/07/12 (Sun) 見学会</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/hachiojihigashi-h/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>都立国際高校</h3><span class="dev">偏差値 69</span><div class="meta">都立-特別推進校 / 渋谷区</div><div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/kokusai-h/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>都立新宿高校</h3><span class="dev">偏差値 68</span><div class="meta">都立-特別推進校 / 新宿区</div><div class="next-event">📅 次回: 2026/07/09 (Thu) 見学会</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/shinjuku-h/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>都立小山台高校</h3><span class="dev">偏差値 67</span><div class="meta">都立-特別推進校 / 品川区</div><div class="next-event">📅 次回: 2026/06/06 (Sat) 見学会</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/koyamadai-h/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>都立駒場高校</h3><span class="dev">偏差値 67</span><div class="meta">都立-特別推進校 / 目黒区</div><div class="next-event">📅 次回: 2026/06/13 (Sat) 説明会</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/komaba-h/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>都立国分寺高校</h3><span class="dev">偏差値 67</span><div class="meta">都立-特別推進校 / 国分寺市</div><div class="next-event">📅 次回: 2026/07/22 (Wed) 見学会</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/kokubunji-h/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>都立三田高校</h3><span class="dev">偏差値 65</span><div class="meta">都立-推進校 / 港区</div><div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/mita-h/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>都立竹早高校</h3><span class="dev">偏差値 65</span><div class="meta">都立-推進校 / 文京区</div><div class="next-event">📅 次回: 2026/11/01 (Sun) 授業公開</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/takehaya-h/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>都立豊多摩高校</h3><span class="dev">偏差値 64</span><div class="meta">都立-推進校 / 杉並区</div><div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/toyotama-h/" target="_blank">公式サイト →</a></div></div>
+<div class="school-card"><h3>都立北園高校</h3><span class="dev">偏差値 63</span><div class="meta">都立-推進校 / 板橋区</div><div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/kitazono-h/" target="_blank">公式サイト →</a></div></div>
+</div>
+    </div>
+  </div>
+
+  <div id="tab-compare" class="tab-panel">
+    <div class="section">
+      <h2>📊 比較表（カラムクリックでソート）</h2>
+      <table class="compare" id="compareTable">
+<thead><tr>
+<th onclick="sortTable('compareTable',0,'str')">学校名</th>
+<th onclick="sortTable('compareTable',1,'num')">偏差値</th>
+<th onclick="sortTable('compareTable',2,'str')">区分</th>
+<th onclick="sortTable('compareTable',3,'str')">所在地</th>
+<th onclick="sortTable('compareTable',4,'str')">次回イベント</th>
+<th onclick="sortTable('compareTable',5,'num')">検出数</th>
+</tr></thead><tbody>
+<tr><td><a href="https://kaiseigakuen.jp/" target="_blank">開成高等学校</a></td><td>78</td><td>私立</td><td>荒川区</td><td>2026/07/20 (Mon) 説明会</td><td>4</td></tr>
+<tr><td><a href="https://www.gshs.keio.ac.jp/" target="_blank">慶應義塾女子高等学校</a></td><td>76</td><td>私立</td><td>港区</td><td>2026/08/09 (Sun) 学校見学</td><td>4</td></tr>
+<tr><td><a href="https://www.toshimagaoka.ed.jp/" target="_blank">豊島岡女子学園高等学校</a></td><td>76</td><td>私立</td><td>豊島区</td><td>2026/06/03 (Wed) 学校説明会</td><td>4</td></tr>
+<tr><td><a href="https://www.wasedajg.ed.jp/" target="_blank">早稲田実業学校高等部</a></td><td>76</td><td>私立</td><td>国分寺市</td><td>-</td><td>0</td></tr>
+<tr><td><a href="https://www.waseda.jp/school/shs/" target="_blank">早稲田大学高等学院</a></td><td>76</td><td>私立</td><td>練馬区</td><td>2026/09/20 (Sun) 学校説明会</td><td>3</td></tr>
+<tr><td><a href="https://www.kaijo.ed.jp/" target="_blank">海城高等学校</a></td><td>75</td><td>私立</td><td>新宿区</td><td>2026/07/25 (Sat) 学校説明会</td><td>4</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/hibiya-h/" target="_blank">都立日比谷高校</a></td><td>73</td><td>都立-進学指導重点校</td><td>千代田区</td><td>-</td><td>0</td></tr>
+<tr><td><a href="https://www.hongo.ed.jp/" target="_blank">本郷高等学校</a></td><td>73</td><td>私立</td><td>豊島区</td><td>2026/05/16 (Sat) 説明会</td><td>5</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/nishi-h/" target="_blank">都立西高校</a></td><td>72</td><td>都立-進学指導重点校</td><td>杉並区</td><td>-</td><td>0</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/kunitachi-h/" target="_blank">都立国立高校</a></td><td>72</td><td>都立-進学指導重点校</td><td>国立市</td><td>-</td><td>0</td></tr>
+<tr><td><a href="https://www.sugamo.ed.jp/" target="_blank">巣鴨高等学校</a></td><td>72</td><td>私立</td><td>豊島区</td><td>2026/05/09 (Sat) 学校説明会</td><td>9</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/toyama-h/" target="_blank">都立戸山高校</a></td><td>71</td><td>都立-進学指導重点校</td><td>新宿区</td><td>2026/04/25 (Sat) 授業公開</td><td>1</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/aoyama-h/" target="_blank">都立青山高校</a></td><td>70</td><td>都立-進学指導重点校</td><td>渋谷区</td><td>-</td><td>0</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/tachikawa-h/" target="_blank">都立立川高校</a></td><td>70</td><td>都立-進学指導重点校</td><td>立川市</td><td>2026/04/26 (Sun) 授業公開</td><td>9</td></tr>
+<tr><td><a href="https://www.johoku.ac.jp/" target="_blank">城北高等学校</a></td><td>70</td><td>私立</td><td>板橋区</td><td>-</td><td>0</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/hachiojihigashi-h/" target="_blank">都立八王子東高校</a></td><td>69</td><td>都立-進学指導重点校</td><td>八王子市</td><td>2026/07/12 (Sun) 見学会</td><td>11</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/kokusai-h/" target="_blank">都立国際高校</a></td><td>69</td><td>都立-特別推進校</td><td>渋谷区</td><td>-</td><td>0</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/shinjuku-h/" target="_blank">都立新宿高校</a></td><td>68</td><td>都立-特別推進校</td><td>新宿区</td><td>2026/07/09 (Thu) 見学会</td><td>7</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/koyamadai-h/" target="_blank">都立小山台高校</a></td><td>67</td><td>都立-特別推進校</td><td>品川区</td><td>2026/06/06 (Sat) 見学会</td><td>8</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/komaba-h/" target="_blank">都立駒場高校</a></td><td>67</td><td>都立-特別推進校</td><td>目黒区</td><td>2026/06/13 (Sat) 説明会</td><td>3</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/kokubunji-h/" target="_blank">都立国分寺高校</a></td><td>67</td><td>都立-特別推進校</td><td>国分寺市</td><td>2026/07/22 (Wed) 見学会</td><td>8</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/mita-h/" target="_blank">都立三田高校</a></td><td>65</td><td>都立-推進校</td><td>港区</td><td>-</td><td>0</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/takehaya-h/" target="_blank">都立竹早高校</a></td><td>65</td><td>都立-推進校</td><td>文京区</td><td>2026/11/01 (Sun) 授業公開</td><td>1</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/toyotama-h/" target="_blank">都立豊多摩高校</a></td><td>64</td><td>都立-推進校</td><td>杉並区</td><td>-</td><td>0</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/kitazono-h/" target="_blank">都立北園高校</a></td><td>63</td><td>都立-推進校</td><td>板橋区</td><td>-</td><td>0</td></tr>
+</tbody></table>
+    </div>
+  </div>
+
+  <div id="tab-admissions" class="tab-panel">
+    <div class="section">
+      <h2>📋 入試日程</h2>
+      
+    <div style="padding:14px;">
+      <h3 style="margin-bottom:12px;">都立高校 入試スケジュール（令和7年度 参考）</h3>
+      <p style="color:#7f8c8d; font-size:0.88em; margin-bottom:12px;">
+        ※ 正確な最新日程は東京都教育委員会の公式発表をご確認ください。<br>
+        このタブはPhase2で都教委サイトから自動取得予定。
+      </p>
+      <table class="compare">
+        <thead><tr><th>区分</th><th>主な日程（参考）</th></tr></thead>
+        <tbody>
+          <tr><td>推薦入試 出願</td><td>1月中旬</td></tr>
+          <tr><td>推薦入試 試験</td><td>1月下旬</td></tr>
+          <tr><td>推薦入試 合格発表</td><td>2月上旬</td></tr>
+          <tr><td>一次・前期 出願</td><td>2月上旬</td></tr>
+          <tr><td>一次・前期 試験</td><td>2月下旬</td></tr>
+          <tr><td>一次・前期 合格発表</td><td>3月上旬</td></tr>
+          <tr><td>二次・後期 出願</td><td>3月上旬</td></tr>
+          <tr><td>二次・後期 試験</td><td>3月中旬</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:14px;">
+        <a href="https://www.kyoiku.metro.tokyo.lg.jp/admission/high_school/" target="_blank">東京都教育委員会 都立高校入試情報 →</a>
+      </p>
+    </div>
+    
+    </div>
+  </div>
+
+  
+
+  <p style="text-align:center; color:#95a5a6; font-size:0.8em; margin-top:20px;">
+    高校受験ダッシュボード | 各校公式HPから自動収集 | 偏差値は手動メンテデータ
+  </p>
+</div>
+<script>
+function showTab(id, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+}
+function sortTable(tableId, colIdx, type) {
+    const table = document.getElementById(tableId);
+    const tbody = table.tBodies[0];
+    const rows = Array.from(tbody.rows);
+    const th = table.tHead.rows[0].cells[colIdx];
+    const asc = !th.dataset.asc || th.dataset.asc === 'false';
+    rows.sort((a, b) => {
+        let x = a.cells[colIdx].innerText.trim();
+        let y = b.cells[colIdx].innerText.trim();
+        if (type === 'num') { x = parseFloat(x) || 0; y = parseFloat(y) || 0; }
+        return asc ? (x > y ? 1 : -1) : (x < y ? 1 : -1);
+    });
+    rows.forEach(r => tbody.appendChild(r));
+    table.tHead.rows[0].querySelectorAll('th').forEach(h => h.dataset.asc = '');
+    th.dataset.asc = asc;
+}
+</script>
+</body>
+</html>

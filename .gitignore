@@ -1,0 +1,31 @@
+# ===== 絶対push禁止（認証情報） =====
+04_.env
+*.env
+*.env.*
+credentials.json
+secrets.*
+
+# ===== 生データ・スナップショット =====
+data/
+!data/.gitkeep
+
+# ===== 日次アーカイブHTML（index.htmlだけ残す） =====
+reports/dashboard_*.html
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# ===== OS・エディタ =====
+Thumbs.db
+.DS_Store
+desktop.ini
+*.bak
+*.tmp
+*.swp
+.vscode/
+.idea/

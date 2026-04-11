@@ -1,0 +1,241 @@
+{
+  "_comment": "高校受験ダッシュボード設定。偏差値は手動メンテ（年1回更新）。URLは要確認。",
+  "smtp": {
+    "email_to": [
+      "kssdr.noone@gmail.com"
+    ],
+    "subject_prefix": "[高校受験]"
+  },
+  "deploy": {
+    "mode": "local",
+    "_note": "Phase2でpagesに変更。今はローカルHTMLのみ"
+  },
+  "diff": {
+    "enable_email_on_new_event": true
+  },
+  "scrape": {
+    "timeout_ms": 20000,
+    "wait_between_ms": 2000,
+    "max_chars_per_page": 30000
+  },
+  "schools": [
+    {
+      "id": "hibiya",
+      "name": "都立日比谷高校",
+      "category": "都立-進学指導重点校",
+      "ward": "千代田区",
+      "deviation": 73,
+      "url_top": "https://www.metro.ed.jp/hibiya-h/",
+      "url_event": "https://www.metro.ed.jp/hibiya-h/guide/meeting.html"
+    },
+    {
+      "id": "nishi",
+      "name": "都立西高校",
+      "category": "都立-進学指導重点校",
+      "ward": "杉並区",
+      "deviation": 72,
+      "url_top": "https://www.metro.ed.jp/nishi-h/",
+      "url_event": "https://www.metro.ed.jp/nishi-h/guide/meeting.html"
+    },
+    {
+      "id": "kunitachi",
+      "name": "都立国立高校",
+      "category": "都立-進学指導重点校",
+      "ward": "国立市",
+      "deviation": 72,
+      "url_top": "https://www.metro.ed.jp/kunitachi-h/",
+      "url_event": "https://www.metro.ed.jp/kunitachi-h/guide/meeting.html"
+    },
+    {
+      "id": "toyama",
+      "name": "都立戸山高校",
+      "category": "都立-進学指導重点校",
+      "ward": "新宿区",
+      "deviation": 71,
+      "url_top": "https://www.metro.ed.jp/toyama-h/",
+      "url_event": "https://www.metro.ed.jp/toyama-h/guide/meeting.html"
+    },
+    {
+      "id": "aoyama",
+      "name": "都立青山高校",
+      "category": "都立-進学指導重点校",
+      "ward": "渋谷区",
+      "deviation": 70,
+      "url_top": "https://www.metro.ed.jp/aoyama-h/",
+      "url_event": "https://www.metro.ed.jp/aoyama-h/guide/meeting.html"
+    },
+    {
+      "id": "tachikawa",
+      "name": "都立立川高校",
+      "category": "都立-進学指導重点校",
+      "ward": "立川市",
+      "deviation": 70,
+      "url_top": "https://www.metro.ed.jp/tachikawa-h/",
+      "url_event": "https://www.metro.ed.jp/tachikawa-h/guide/meeting.html"
+    },
+    {
+      "id": "hachiojihigashi",
+      "name": "都立八王子東高校",
+      "category": "都立-進学指導重点校",
+      "ward": "八王子市",
+      "deviation": 69,
+      "url_top": "https://www.metro.ed.jp/hachiojihigashi-h/",
+      "url_event": "https://www.metro.ed.jp/hachiojihigashi-h/guide/meeting.html"
+    },
+    {
+      "id": "koyamadai",
+      "name": "都立小山台高校",
+      "category": "都立-特別推進校",
+      "ward": "品川区",
+      "deviation": 67,
+      "url_top": "https://www.metro.ed.jp/koyamadai-h/",
+      "url_event": "https://www.metro.ed.jp/koyamadai-h/guide/meeting.html"
+    },
+    {
+      "id": "komaba",
+      "name": "都立駒場高校",
+      "category": "都立-特別推進校",
+      "ward": "目黒区",
+      "deviation": 67,
+      "url_top": "https://www.metro.ed.jp/komaba-h/",
+      "url_event": "https://www.metro.ed.jp/komaba-h/guide/meeting.html"
+    },
+    {
+      "id": "shinjuku",
+      "name": "都立新宿高校",
+      "category": "都立-特別推進校",
+      "ward": "新宿区",
+      "deviation": 68,
+      "url_top": "https://www.metro.ed.jp/shinjuku-h/",
+      "url_event": "https://www.metro.ed.jp/shinjuku-h/guide/meeting.html"
+    },
+    {
+      "id": "kokubunji",
+      "name": "都立国分寺高校",
+      "category": "都立-特別推進校",
+      "ward": "国分寺市",
+      "deviation": 67,
+      "url_top": "https://www.metro.ed.jp/kokubunji-h/",
+      "url_event": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html"
+    },
+    {
+      "id": "kokusai",
+      "name": "都立国際高校",
+      "category": "都立-特別推進校",
+      "ward": "渋谷区",
+      "deviation": 69,
+      "url_top": "https://www.metro.ed.jp/kokusai-h/",
+      "url_event": "https://www.metro.ed.jp/kokusai-h/guide/meeting.html"
+    },
+    {
+      "id": "mita",
+      "name": "都立三田高校",
+      "category": "都立-推進校",
+      "ward": "港区",
+      "deviation": 65,
+      "url_top": "https://www.metro.ed.jp/mita-h/",
+      "url_event": "https://www.metro.ed.jp/mita-h/guide/meeting.html"
+    },
+    {
+      "id": "toyotama",
+      "name": "都立豊多摩高校",
+      "category": "都立-推進校",
+      "ward": "杉並区",
+      "deviation": 64,
+      "url_top": "https://www.metro.ed.jp/toyotama-h/",
+      "url_event": "https://www.metro.ed.jp/toyotama-h/guide/meeting.html"
+    },
+    {
+      "id": "takehaya",
+      "name": "都立竹早高校",
+      "category": "都立-推進校",
+      "ward": "文京区",
+      "deviation": 65,
+      "url_top": "https://www.metro.ed.jp/takehaya-h/",
+      "url_event": "https://www.metro.ed.jp/takehaya-h/guide/meeting.html"
+    },
+    {
+      "id": "kitazono",
+      "name": "都立北園高校",
+      "category": "都立-推進校",
+      "ward": "板橋区",
+      "deviation": 63,
+      "url_top": "https://www.metro.ed.jp/kitazono-h/",
+      "url_event": "https://www.metro.ed.jp/kitazono-h/guide/meeting.html"
+    },
+    {
+      "id": "kaisei",
+      "name": "開成高等学校",
+      "category": "私立",
+      "ward": "荒川区",
+      "deviation": 78,
+      "url_top": "https://kaiseigakuen.jp/",
+      "url_event": "https://kaiseigakuen.jp/admission/briefing/"
+    },
+    {
+      "id": "keiojoshi",
+      "name": "慶應義塾女子高等学校",
+      "category": "私立",
+      "ward": "港区",
+      "deviation": 76,
+      "url_top": "https://www.gshs.keio.ac.jp/"
+    },
+    {
+      "id": "toshimagaoka",
+      "name": "豊島岡女子学園高等学校",
+      "category": "私立",
+      "ward": "豊島区",
+      "deviation": 76,
+      "url_top": "https://www.toshimagaoka.ed.jp/"
+    },
+    {
+      "id": "kaijo",
+      "name": "海城高等学校",
+      "category": "私立",
+      "ward": "新宿区",
+      "deviation": 75,
+      "url_top": "https://www.kaijo.ed.jp/",
+      "url_event": "https://www.kaijo.ed.jp/admission/orientation/"
+    },
+    {
+      "id": "hongo",
+      "name": "本郷高等学校",
+      "category": "私立",
+      "ward": "豊島区",
+      "deviation": 73,
+      "url_top": "https://www.hongo.ed.jp/"
+    },
+    {
+      "id": "sugamo",
+      "name": "巣鴨高等学校",
+      "category": "私立",
+      "ward": "豊島区",
+      "deviation": 72,
+      "url_top": "https://www.sugamo.ed.jp/"
+    },
+    {
+      "id": "johoku",
+      "name": "城北高等学校",
+      "category": "私立",
+      "ward": "板橋区",
+      "deviation": 70,
+      "url_top": "https://www.johoku.ac.jp/"
+    },
+    {
+      "id": "waseda_jitsugyo",
+      "name": "早稲田実業学校高等部",
+      "category": "私立",
+      "ward": "国分寺市",
+      "deviation": 76,
+      "url_top": "https://www.wasedajg.ed.jp/"
+    },
+    {
+      "id": "waseda_gakuin",
+      "name": "早稲田大学高等学院",
+      "category": "私立",
+      "ward": "練馬区",
+      "deviation": 76,
+      "url_top": "https://www.waseda.jp/school/shs/"
+    }
+  ]
+}
