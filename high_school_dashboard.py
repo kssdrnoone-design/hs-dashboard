@@ -153,6 +153,13 @@ def extract_events_from_text(text, school, source_url=None):
             if any(ex in context for ex in EXCLUDE_KEYWORDS):
                 continue
 
+            # 申込・締切系の日付を除外（開催日ではなく手続き期限）
+            pre_start = max(0, m.start() - 20)
+            pre_text = text[pre_start:m.start()]
+            pre_text = re.sub(r"\s+", "", pre_text)
+            if re.search(r"(申込|締切|期限|受付|〜|～|→|まで)", pre_text):
+                continue
+
             # イベントキーワードを含むか判定
             matched_kw = [kw for kw in EVENT_KEYWORDS if kw in context]
             if not matched_kw:
