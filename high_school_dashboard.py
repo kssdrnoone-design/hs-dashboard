@@ -596,7 +596,7 @@ def render_calendar_tab(all_events, new_ids):
         html_parts.append(
             f'<div class="{css_class}">'
             f'<span class="ev-date">{escape_html(e["date_human"])}</span>'
-            f'<span class="ev-school">{escape_html(e["school_name"])}</span>'
+            f'<span class="ev-school">{escape_html(e["school_name"])}({e.get("deviation","")})</span>'
             f'<span class="ev-kw">{escape_html(e["keyword"])}</span>{new_badge}'
             f'<div class="ev-context">{escape_html(e["context"])}</div>'
             f'<div class="ev-link"><a href="{escape_html(e["source_url"])}" target="_blank">詳細ページへ →</a></div>'
@@ -721,7 +721,7 @@ def render_new_tab(new_events):
         html_parts.append(
             f'<div class="event-item is-new">'
             f'<span class="ev-date">{escape_html(e["date_human"])}</span>'
-            f'<span class="ev-school">{escape_html(e["school_name"])}</span>'
+            f'<span class="ev-school">{escape_html(e["school_name"])}({e.get("deviation","")})</span>'
             f'<span class="ev-kw">{escape_html(e["keyword"])}</span>'
             f'<div class="ev-context">{escape_html(e["context"])}</div>'
             f'<div class="ev-link"><a href="{escape_html(e["source_url"])}" target="_blank">詳細ページへ →</a></div>'
