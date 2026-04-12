@@ -1,5 +1,5 @@
 {
-  "_comment": "恋ヶ窪(国分寺市)起点・偏差値50-60圏。偏差値は手動メンテ（年1回）。URLは要確認。",
+  "_comment": "恋ヶ窪起点・偏差値47-68。偏差値はみんなの高校情報(minkou.jp)ソース。",
   "scrape": {
     "timeout_ms": 20000,
     "wait_between_ms": 2000,
@@ -11,7 +11,7 @@
       "name": "都立多摩科学技術高校",
       "category": "都立-科学技術科",
       "ward": "小金井市",
-      "deviation": 55,
+      "deviation": 61,
       "url_top": "https://www.metro.ed.jp/tamakagakugijutsu-h/",
       "url_event": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html",
       "_note": "★指定校"
@@ -21,7 +21,7 @@
       "name": "都立小平南高校",
       "category": "都立-普通科",
       "ward": "小平市",
-      "deviation": 48,
+      "deviation": 58,
       "url_top": "https://www.metro.ed.jp/kodairaminami-h/",
       "url_event": "https://www.metro.ed.jp/kodairaminami-h/guide/meeting.html",
       "_note": "★指定校"
@@ -31,7 +31,7 @@
       "name": "都立小平高校",
       "category": "都立-普通科/外国語",
       "ward": "小平市",
-      "deviation": 57,
+      "deviation": 59,
       "url_top": "https://www.metro.ed.jp/kodaira-h/",
       "url_event": "https://www.metro.ed.jp/kodaira-h/guide/meeting.html",
       "_note": "外国語コースあり。恋ヶ窪から近い"
@@ -41,7 +41,7 @@
       "name": "都立小金井北高校",
       "category": "都立-推進校",
       "ward": "小金井市",
-      "deviation": 60,
+      "deviation": 64,
       "url_top": "https://www.metro.ed.jp/koganeikita-h/",
       "url_event": "https://www.metro.ed.jp/koganeikita-h/guide/meeting.html",
       "_note": "挑戦校。恋ヶ窪から自転車圏"
@@ -51,7 +51,7 @@
       "name": "都立武蔵野北高校",
       "category": "都立-推進校",
       "ward": "武蔵野市",
-      "deviation": 60,
+      "deviation": 65,
       "url_top": "https://www.metro.ed.jp/musashinokita-h/",
       "url_event": "https://www.metro.ed.jp/musashinokita-h/guide/meeting.html",
       "_note": "挑戦校"
@@ -61,7 +61,7 @@
       "name": "都立日野台高校",
       "category": "都立-普通科",
       "ward": "日野市",
-      "deviation": 55,
+      "deviation": 64,
       "url_top": "https://www.metro.ed.jp/hinodai-h/",
       "url_event": "https://www.metro.ed.jp/hinodai-h/guide/meeting.html"
     },
@@ -70,7 +70,7 @@
       "name": "都立昭和高校",
       "category": "都立-普通科",
       "ward": "昭島市",
-      "deviation": 55,
+      "deviation": 66,
       "url_top": "https://www.metro.ed.jp/showa-h/",
       "url_event": "https://www.metro.ed.jp/showa-h/guide/meeting.html"
     },
@@ -79,7 +79,7 @@
       "name": "都立東大和南高校",
       "category": "都立-普通科",
       "ward": "東大和市",
-      "deviation": 53,
+      "deviation": 57,
       "url_top": "https://www.metro.ed.jp/higashiyamatominami-h/",
       "url_event": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html"
     },
@@ -88,7 +88,7 @@
       "name": "都立府中高校",
       "category": "都立-普通科",
       "ward": "府中市",
-      "deviation": 50,
+      "deviation": 54,
       "url_top": "https://www.metro.ed.jp/fuchu-h/",
       "url_event": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html"
     },
@@ -97,7 +97,7 @@
       "name": "都立調布北高校",
       "category": "都立-推進校",
       "ward": "調布市",
-      "deviation": 58,
+      "deviation": 63,
       "url_top": "https://www.metro.ed.jp/chofukita-h/",
       "url_event": "https://www.metro.ed.jp/chofukita-h/guide/meeting.html",
       "_note": "挑戦寄り"
@@ -107,7 +107,7 @@
       "name": "都立田無高校",
       "category": "都立-普通科",
       "ward": "西東京市",
-      "deviation": 48,
+      "deviation": 50,
       "url_top": "https://www.metro.ed.jp/tanashi-h/",
       "url_event": "https://www.metro.ed.jp/tanashi-h/guide/meeting.html"
     },
@@ -116,7 +116,7 @@
       "name": "都立清瀬高校",
       "category": "都立-普通科",
       "ward": "清瀬市",
-      "deviation": 50,
+      "deviation": 58,
       "url_top": "https://www.metro.ed.jp/kiyose-h/",
       "url_event": "https://www.metro.ed.jp/kiyose-h/guide/meeting.html"
     },
@@ -125,7 +125,7 @@
       "name": "都立小平西高校",
       "category": "都立-普通科",
       "ward": "小平市",
-      "deviation": 45,
+      "deviation": 47,
       "url_top": "https://www.metro.ed.jp/kodairanishi-h/",
       "url_event": "https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html",
       "_note": "安全校"
@@ -135,7 +135,7 @@
       "name": "都立国分寺高校",
       "category": "都立-特別推進校",
       "ward": "国分寺市",
-      "deviation": 67,
+      "deviation": 68,
       "url_top": "https://www.metro.ed.jp/kokubunji-h/",
       "url_event": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html",
       "_note": "大挑戦校。地元最寄り"
@@ -145,7 +145,7 @@
       "name": "錦城高等学校",
       "category": "私立-共学",
       "ward": "小平市",
-      "deviation": 62,
+      "deviation": 65,
       "url_top": "https://www.kinjo-highschool.ed.jp/",
       "_note": "花小金井。恋ヶ窪から最寄り私立の1つ。3コース制"
     },
@@ -154,7 +154,7 @@
       "name": "白梅学園高等学校",
       "category": "私立-共学",
       "ward": "小平市",
-      "deviation": 50,
+      "deviation": 57,
       "url_top": "https://www.shiraume.ac.jp/",
       "_note": "小平駅。恋ヶ窪から近い"
     },
@@ -163,7 +163,7 @@
       "name": "明法高等学校",
       "category": "私立-男子校",
       "ward": "東村山市",
-      "deviation": 53,
+      "deviation": 59,
       "url_top": "https://www.meiho.ed.jp/",
       "_note": "久米川。理数系に強い"
     },
@@ -172,7 +172,7 @@
       "name": "東京電機大学高等学校",
       "category": "私立-共学",
       "ward": "小金井市",
-      "deviation": 57,
+      "deviation": 62,
       "url_top": "https://www.dendai.ed.jp/",
       "_note": "東小金井。理系志向なら好相性"
     },
@@ -181,7 +181,7 @@
       "name": "明治学院東村山高等学校",
       "category": "私立-共学",
       "ward": "東村山市",
-      "deviation": 55,
+      "deviation": 65,
       "url_top": "https://www.meijigakuin-higashi.ed.jp/",
       "_note": "明治学院大学推薦枠あり"
     },
@@ -190,7 +190,7 @@
       "name": "拓殖大学第一高等学校",
       "category": "私立-共学",
       "ward": "武蔵村山市",
-      "deviation": 58,
+      "deviation": 61,
       "url_top": "https://www.takuichi.ed.jp/",
       "_note": "やや遠いが大学推薦枠充実"
     },
@@ -199,7 +199,7 @@
       "name": "聖徳学園高等学校",
       "category": "私立-共学",
       "ward": "武蔵野市",
-      "deviation": 55,
+      "deviation": 59,
       "url_top": "https://www.shotoku.ed.jp/",
       "_note": "武蔵境。ICT教育に定評"
     },
@@ -208,7 +208,7 @@
       "name": "大成高等学校",
       "category": "私立-共学",
       "ward": "三鷹市",
-      "deviation": 48,
+      "deviation": 50,
       "url_top": "https://www.taisei.ed.jp/",
       "_note": "安全校。3コース制"
     }
