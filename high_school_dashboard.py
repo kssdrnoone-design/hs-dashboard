@@ -126,7 +126,7 @@ def parse_date_candidate(match, context):
         return None
 
 
-def extract_events_from_text(text, school):
+def extract_events_from_text(text, school, source_url=None):
     """ページテキストから日付＋周辺テキストを抽出"""
     events = []
     seen_keys = set()
@@ -188,7 +188,7 @@ def extract_events_from_text(text, school):
                 "title": title,
                 "keyword": kw,
                 "context": context,
-                "source_url": school.get("url_top", ""),
+                "source_url": source_url or school.get("url_event") or school.get("url_top", ""),
             })
 
     # 日付昇順
@@ -275,7 +275,7 @@ def scrape_school(page, school, timeout_ms=20000):
         if ev_text.startswith("__ERROR__:"):
             errors.append(f"event: {ev_text[10:]}")
         elif ev_text:
-            all_events.extend(extract_events_from_text(ev_text, school))
+            all_events.extend(extract_events_from_text(ev_text, school, source_url=url_event))
 
     # トップページ
     top_text = fetch_page_text(page, url, timeout_ms)
@@ -286,7 +286,7 @@ def scrape_school(page, school, timeout_ms=20000):
     else:
         pages_scraped += 1
         if top_text:
-            all_events.extend(extract_events_from_text(top_text, school))
+            all_events.extend(extract_events_from_text(top_text, school, source_url=url))
 
         # サブページリンク抽出（トップ取得成功時のみ）
         sub_links = find_subpage_links(page, url, max_links=5)
@@ -297,7 +297,7 @@ def scrape_school(page, school, timeout_ms=20000):
             sub_text = fetch_page_text(page, sub_url, timeout_ms)
             pages_scraped += 1
             if sub_text and not sub_text.startswith("__ERROR__:"):
-                all_events.extend(extract_events_from_text(sub_text, school))
+                all_events.extend(extract_events_from_text(sub_text, school, source_url=sub_url))
 
     # 学校内重複除外（date+keywordで重複）
     seen = set()
@@ -576,7 +576,7 @@ def render_calendar_tab(all_events, new_ids):
             f'<span class="ev-school">{escape_html(e["school_name"])}</span>'
             f'<span class="ev-kw">{escape_html(e["keyword"])}</span>{new_badge}'
             f'<div class="ev-context">{escape_html(e["context"])}</div>'
-            f'<div class="ev-link"><a href="{escape_html(e["source_url"])}" target="_blank">公式ページへ →</a></div>'
+            f'<div class="ev-link"><a href="{escape_html(e["source_url"])}" target="_blank">詳細ページへ →</a></div>'
             f'</div>'
         )
     return "\n".join(html_parts)
@@ -699,7 +699,7 @@ def render_new_tab(new_events):
             f'<span class="ev-school">{escape_html(e["school_name"])}</span>'
             f'<span class="ev-kw">{escape_html(e["keyword"])}</span>'
             f'<div class="ev-context">{escape_html(e["context"])}</div>'
-            f'<div class="ev-link"><a href="{escape_html(e["source_url"])}" target="_blank">公式ページへ →</a></div>'
+            f'<div class="ev-link"><a href="{escape_html(e["source_url"])}" target="_blank">詳細ページへ →</a></div>'
             f'</div>'
         )
     return "\n".join(html_parts)
