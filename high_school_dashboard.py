@@ -9,12 +9,9 @@ import json
 import os
 import sys
 import time
-import smtplib
 import hashlib
 import re
 import random
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta, date
 from pathlib import Path
 
@@ -792,76 +789,6 @@ def generate_dashboard_html(schools, all_events, new_events, scrape_results):
     return html
 
 
-def generate_email_html(new_events):
-    """新着メール用（JS無し・シンプル）"""
-    if not new_events:
-        return "<p>新着イベントはありません。</p>"
-    rows = "".join(
-        f'<tr style="border-bottom:1px solid #eee;">'
-        f'<td style="padding:8px; white-space:nowrap;"><b>{escape_html(e["date_human"])}</b></td>'
-        f'<td style="padding:8px;">{escape_html(e["school_name"])}</td>'
-        f'<td style="padding:8px;"><span style="background:#3498db;color:#fff;padding:2px 8px;border-radius:10px;font-size:0.85em;">{escape_html(e["keyword"])}</span></td>'
-        f'<td style="padding:8px;"><a href="{escape_html(e["source_url"])}">公式ページ</a></td>'
-        f'</tr>'
-        for e in new_events
-    )
-    return f"""
-    <html><body style="font-family:sans-serif;color:#333;">
-    <h2 style="color:#e74c3c;">🆕 高校受験 新着イベント {len(new_events)}件</h2>
-    <p>{TODAY_HUMAN} 収集分</p>
-    <table style="width:100%;border-collapse:collapse;font-size:14px;">{rows}</table>
-    </body></html>
-    """
-
-
-def send_email(new_events, config):
-    if not new_events:
-        print("[SKIP] 新着なしのためメール送信スキップ")
-        return
-    smtp_conf = config.get("smtp", {})
-    recipients = smtp_conf.get("email_to", [])
-    if not recipients:
-        print("[SKIP] email_to 未設定")
-        return
-    env_path = BASE_DIR / "04_.env"
-    if not env_path.exists():
-        print("[SKIP] .env なし")
-        return
-    env = {}
-    with open(env_path, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if "=" in line and not line.startswith("#"):
-                k, v = line.split("=", 1)
-                env[k.strip()] = v.strip()
-    gmail_addr = env.get("GMAIL_ADDRESS", "")
-    gmail_pw = env.get("GMAIL_APP_PASSWORD", "")
-    if not gmail_addr or not gmail_pw:
-        print("[SKIP] Gmail認証情報不足")
-        return
-
-    prefix = smtp_conf.get("subject_prefix", "[高校受験]")
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"{prefix} 新着{len(new_events)}件 - {TODAY_HUMAN}"
-    msg["From"] = gmail_addr
-    msg["To"] = ", ".join(recipients)
-
-    text_body = "\n".join(
-        f"{e['date_human']} {e['school_name']} - {e['keyword']}\n  {e['source_url']}"
-        for e in new_events
-    )
-    msg.attach(MIMEText(f"高校受験 新着イベント {TODAY_HUMAN}\n\n{text_body}", "plain", "utf-8"))
-    msg.attach(MIMEText(generate_email_html(new_events), "html", "utf-8"))
-
-    try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(gmail_addr, gmail_pw)
-            server.sendmail(gmail_addr, recipients, msg.as_string())
-        print(f"メール送信完了 → {', '.join(recipients)}")
-    except Exception as e:
-        print(f"[ERROR] メール送信失敗: {e}")
-
-
 # =====================================================================
 # メイン
 # =====================================================================
@@ -925,7 +852,7 @@ def main():
     first_run = not LATEST_JSON.exists()
     _, new_events = diff_detect(unique_events, LATEST_JSON)
     if first_run:
-        print("[初回実行] すべて既存扱いでスナップショット保存のみ（メール通知なし）")
+        print("[初回実行] すべて既存扱いでスナップショット保存のみ")
         new_events = []
     else:
         print(f"新着イベント: {len(new_events)}件")
@@ -943,10 +870,6 @@ def main():
             f.write(html)
     print(f"\nHTML生成: {index_path}")
     print(f"GitHub Pages用: {root_index_path}")
-
-    # 新着メール送信
-    if config.get("diff", {}).get("enable_email_on_new_event", True):
-        send_email(new_events, config)
 
     print(f"\n{'=' * 60}")
     print(f"  完了")

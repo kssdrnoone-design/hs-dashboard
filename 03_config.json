@@ -1,18 +1,5 @@
 {
   "_comment": "高校受験ダッシュボード設定。偏差値は手動メンテ（年1回更新）。URLは要確認。",
-  "smtp": {
-    "email_to": [
-      "kssdr.noone@gmail.com"
-    ],
-    "subject_prefix": "[高校受験]"
-  },
-  "deploy": {
-    "mode": "local",
-    "_note": "Phase2でpagesに変更。今はローカルHTMLのみ"
-  },
-  "diff": {
-    "enable_email_on_new_event": true
-  },
   "scrape": {
     "timeout_ms": 20000,
     "wait_between_ms": 2000,

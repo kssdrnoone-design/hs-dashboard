@@ -9,6 +9,9 @@ secrets.*
 data/
 !data/.gitkeep
 
+# ===== APKバイナリ（個別配布するためリポジトリに入れない） =====
+*.apk
+
 # ===== 日次アーカイブHTML（index.htmlだけ残す） =====
 reports/dashboard_*.html
 
