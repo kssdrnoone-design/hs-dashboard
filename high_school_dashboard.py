@@ -364,14 +364,27 @@ body {
     padding: 12px;
 }
 .container { max-width: 1100px; margin: 0 auto; }
-h1 { text-align: center; color: #2c3e50; font-size: 1.6em; margin-bottom: 4px; }
-.subtitle { text-align: center; color: #7f8c8d; margin-bottom: 16px; font-size: 0.9em; }
+
+/* 固定ヘッダー */
+.header-fixed {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #f8f9fa;
+    padding: 8px 0 0 0;
+    margin: 0 -12px;
+    padding-left: 12px;
+    padding-right: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+h1 { text-align: center; color: #2c3e50; font-size: 1.4em; margin-bottom: 2px; }
+.subtitle { text-align: center; color: #7f8c8d; margin-bottom: 8px; font-size: 0.8em; }
 
 /* タブ */
 .tabs {
     display: flex;
-    gap: 6px;
-    margin-bottom: 16px;
+    gap: 4px;
+    margin-bottom: 0;
     flex-wrap: wrap;
     border-bottom: 2px solid #e0e6ed;
     padding-bottom: 0;
@@ -530,9 +543,12 @@ table.compare tr:hover { background: #fbfcfd; }
 
 /* モバイル対応 */
 @media (max-width: 600px) {
-    body { padding: 8px; font-size: 14px; }
-    .section { padding: 14px; }
-    .tab-btn { padding: 8px 10px; font-size: 0.85em; }
+    body { padding: 6px; font-size: 14px; }
+    .header-fixed { margin: 0 -6px; padding: 6px 6px 0 6px; }
+    h1 { font-size: 1.2em; }
+    .subtitle { font-size: 0.72em; margin-bottom: 6px; }
+    .section { padding: 12px; }
+    .tab-btn { padding: 6px 8px; font-size: 0.8em; }
     .school-grid { grid-template-columns: 1fr; }
     table.compare { font-size: 0.82em; }
     table.compare th, table.compare td { padding: 6px 4px; }
@@ -737,17 +753,18 @@ def generate_dashboard_html(schools, all_events, new_events, scrape_results):
 </head>
 <body>
 <div class="container">
-  <h1>🎓 高校受験ダッシュボード</h1>
-  <div class="subtitle">
-    更新: {TODAY_HUMAN} | 対象校 {len(schools)} | 取得成功 {ok_count} | イベント検出 {len(all_events)} | 新着 {len(new_events)}
-  </div>
-
-  <div class="tabs">
-    <button class="tab-btn active" onclick="showTab('tab-new', this)">🆕 新着{' ('+str(len(new_events))+')' if new_events else ''}</button>
-    <button class="tab-btn" onclick="showTab('tab-calendar', this)">📅 説明会カレンダー</button>
-    <button class="tab-btn" onclick="showTab('tab-schools', this)">🏫 学校カード</button>
-    <button class="tab-btn" onclick="showTab('tab-compare', this)">📊 比較表</button>
-    <button class="tab-btn" onclick="showTab('tab-admissions', this)">📋 入試日程</button>
+  <div class="header-fixed">
+    <h1>🎓 高校受験ダッシュボード</h1>
+    <div class="subtitle">
+      更新: {TODAY_HUMAN} | 対象校 {len(schools)} | 取得成功 {ok_count} | イベント検出 {len(all_events)} | 新着 {len(new_events)}
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('tab-new', this)">🆕 新着{' ('+str(len(new_events))+')' if new_events else ''}</button>
+      <button class="tab-btn" onclick="showTab('tab-calendar', this)">📅 カレンダー</button>
+      <button class="tab-btn" onclick="showTab('tab-schools', this)">🏫 学校</button>
+      <button class="tab-btn" onclick="showTab('tab-compare', this)">📊 比較</button>
+      <button class="tab-btn" onclick="showTab('tab-admissions', this)">📋 入試</button>
+    </div>
   </div>
 
   <div id="tab-new" class="tab-panel active">
