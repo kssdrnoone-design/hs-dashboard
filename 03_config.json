@@ -152,7 +152,7 @@
     {
       "id": "shiraume",
       "name": "白梅学園高等学校",
-      "category": "私立-共学",
+      "category": "私立-女子校",
       "ward": "小平市",
       "deviation": 57,
       "url_top": "https://www.shiraume.ac.jp/",
@@ -161,11 +161,11 @@
     {
       "id": "meiho",
       "name": "明法高等学校",
-      "category": "私立-男子校",
+      "category": "私立-共学",
       "ward": "東村山市",
       "deviation": 59,
       "url_top": "https://www.meiho.ed.jp/",
-      "_note": "久米川。理数系に強い"
+      "_note": "久米川。2019年共学化。理数系に強い"
     },
     {
       "id": "dendai",

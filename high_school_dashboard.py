@@ -611,13 +611,14 @@ def render_schools_tab(schools, all_events):
             f'<div class="next-event">📅 次回: {escape_html(next_e["date_human"])} {escape_html(next_e["keyword"])}</div>'
             if next_e else '<div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div>'
         )
+        event_link = s.get("url_event") or s.get("url_top", "")
         html_parts.append(
             f'<div class="school-card">'
             f'<h3>{escape_html(s["name"])}</h3>'
             f'<span class="dev">偏差値 {s.get("deviation", "-")}</span>'
             f'<div class="meta">{escape_html(s.get("category", ""))} / {escape_html(s.get("ward", ""))}</div>'
             f'{next_html}'
-            f'<div style="margin-top:8px;"><a href="{escape_html(s.get("url_top",""))}" target="_blank">公式サイト →</a></div>'
+            f'<div style="margin-top:8px;"><a href="{escape_html(event_link)}" target="_blank">説明会ページへ →</a></div>'
             f'</div>'
         )
     html_parts.append('</div>')
@@ -652,9 +653,10 @@ def render_compare_tab(schools, all_events):
     for s in sorted(schools, key=lambda x: x.get("deviation") or 0, reverse=True):
         next_e = next_event_by_school.get(s["id"])
         next_txt = f'{next_e["date_human"]} {next_e["keyword"]}' if next_e else "-"
+        event_link = s.get("url_event") or s.get("url_top", "")
         html_parts.append(
             f'<tr>'
-            f'<td><a href="{escape_html(s.get("url_top",""))}" target="_blank">{escape_html(s["name"])}</a></td>'
+            f'<td><a href="{escape_html(event_link)}" target="_blank">{escape_html(s["name"])}</a></td>'
             f'<td>{escape_html(s.get("deviation","-"))}</td>'
             f'<td>{escape_html(s.get("category",""))}</td>'
             f'<td>{escape_html(s.get("ward",""))}</td>'
