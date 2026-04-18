@@ -1,5 +1,10 @@
 {
-  "_comment": "恋ヶ窪起点・偏差値47-68。偏差値はみんなの高校情報(minkou.jp)ソース。",
+  "_comment": "上水本町3丁目起点・偏差値47-68・共学/男子校のみ。偏差値はみんなの高校情報(minkou.jp)ソース。",
+  "home": {
+    "name": "自宅（上水本町3丁目）",
+    "lat": 35.717,
+    "lng": 139.4698
+  },
   "scrape": {
     "timeout_ms": 20000,
     "wait_between_ms": 2000,
@@ -12,9 +17,13 @@
       "category": "都立-科学技術科",
       "ward": "小金井市",
       "deviation": 61,
+      "lat": 35.6997,
+      "lng": 139.4996,
       "url_top": "https://www.metro.ed.jp/tamakagakugijutsu-h/",
       "url_event": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html",
-      "_note": "★指定校"
+      "_note": "★指定校",
+      "admission_fee": 5650,
+      "annual_tuition": 118800
     },
     {
       "id": "kodairaminami",
@@ -22,9 +31,13 @@
       "category": "都立-普通科",
       "ward": "小平市",
       "deviation": 58,
+      "lat": 35.7117,
+      "lng": 139.4752,
       "url_top": "https://www.metro.ed.jp/kodairaminami-h/",
       "url_event": "https://www.metro.ed.jp/kodairaminami-h/guide/meeting.html",
-      "_note": "★指定校"
+      "_note": "★指定校",
+      "admission_fee": 5650,
+      "annual_tuition": 118800
     },
     {
       "id": "kodaira",
@@ -32,9 +45,13 @@
       "category": "都立-普通科/外国語",
       "ward": "小平市",
       "deviation": 59,
+      "lat": 35.733,
+      "lng": 139.4833,
       "url_top": "https://www.metro.ed.jp/kodaira-h/",
       "url_event": "https://www.metro.ed.jp/kodaira-h/guide/meeting.html",
-      "_note": "外国語コースあり。恋ヶ窪から近い"
+      "_note": "外国語コースあり。恋ヶ窪から近い",
+      "admission_fee": 5650,
+      "annual_tuition": 118800
     },
     {
       "id": "koganeikita",
@@ -42,9 +59,13 @@
       "category": "都立-推進校",
       "ward": "小金井市",
       "deviation": 64,
+      "lat": 35.7055,
+      "lng": 139.5168,
       "url_top": "https://www.metro.ed.jp/koganeikita-h/",
       "url_event": "https://www.metro.ed.jp/koganeikita-h/guide/meeting.html",
-      "_note": "挑戦校。恋ヶ窪から自転車圏"
+      "_note": "挑戦校。恋ヶ窪から自転車圏",
+      "admission_fee": 5650,
+      "annual_tuition": 118800
     },
     {
       "id": "musashinokita",
@@ -52,9 +73,13 @@
       "category": "都立-推進校",
       "ward": "武蔵野市",
       "deviation": 65,
+      "lat": 35.7201,
+      "lng": 139.5576,
       "url_top": "https://www.metro.ed.jp/musashinokita-h/",
       "url_event": "https://www.metro.ed.jp/musashinokita-h/guide/meeting.html",
-      "_note": "挑戦校"
+      "_note": "挑戦校",
+      "admission_fee": 5650,
+      "annual_tuition": 118800
     },
     {
       "id": "hinodai",
@@ -62,8 +87,12 @@
       "category": "都立-普通科",
       "ward": "日野市",
       "deviation": 64,
+      "lat": 35.6725,
+      "lng": 139.3862,
       "url_top": "https://www.metro.ed.jp/hinodai-h/",
-      "url_event": "https://www.metro.ed.jp/hinodai-h/guide/meeting.html"
+      "url_event": "https://www.metro.ed.jp/hinodai-h/guide/meeting.html",
+      "admission_fee": 5650,
+      "annual_tuition": 118800
     },
     {
       "id": "showa",
@@ -71,8 +100,12 @@
       "category": "都立-普通科",
       "ward": "昭島市",
       "deviation": 66,
+      "lat": 35.7032,
+      "lng": 139.3875,
       "url_top": "https://www.metro.ed.jp/showa-h/",
-      "url_event": "https://www.metro.ed.jp/showa-h/guide/meeting.html"
+      "url_event": "https://www.metro.ed.jp/showa-h/guide/meeting.html",
+      "admission_fee": 5650,
+      "annual_tuition": 118800
     },
     {
       "id": "higashiyamatominami",
@@ -80,8 +113,12 @@
       "category": "都立-普通科",
       "ward": "東大和市",
       "deviation": 57,
+      "lat": 35.7319,
+      "lng": 139.4238,
       "url_top": "https://www.metro.ed.jp/higashiyamatominami-h/",
-      "url_event": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html"
+      "url_event": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html",
+      "admission_fee": 5650,
+      "annual_tuition": 118800
     },
     {
       "id": "fuchu",
@@ -89,8 +126,12 @@
       "category": "都立-普通科",
       "ward": "府中市",
       "deviation": 54,
+      "lat": 35.6877,
+      "lng": 139.4748,
       "url_top": "https://www.metro.ed.jp/fuchu-h/",
-      "url_event": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html"
+      "url_event": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html",
+      "admission_fee": 5650,
+      "annual_tuition": 118800
     },
     {
       "id": "chofukita",
@@ -98,9 +139,13 @@
       "category": "都立-推進校",
       "ward": "調布市",
       "deviation": 63,
+      "lat": 35.6802,
+      "lng": 139.5487,
       "url_top": "https://www.metro.ed.jp/chofukita-h/",
       "url_event": "https://www.metro.ed.jp/chofukita-h/guide/meeting.html",
-      "_note": "挑戦寄り"
+      "_note": "挑戦寄り",
+      "admission_fee": 5650,
+      "annual_tuition": 118800
     },
     {
       "id": "tanashi",
@@ -108,8 +153,12 @@
       "category": "都立-普通科",
       "ward": "西東京市",
       "deviation": 50,
+      "lat": 35.7203,
+      "lng": 139.529,
       "url_top": "https://www.metro.ed.jp/tanashi-h/",
-      "url_event": "https://www.metro.ed.jp/tanashi-h/guide/meeting.html"
+      "url_event": "https://www.metro.ed.jp/tanashi-h/guide/meeting.html",
+      "admission_fee": 5650,
+      "annual_tuition": 118800
     },
     {
       "id": "kiyose",
@@ -117,8 +166,12 @@
       "category": "都立-普通科",
       "ward": "清瀬市",
       "deviation": 58,
+      "lat": 35.77,
+      "lng": 139.5151,
       "url_top": "https://www.metro.ed.jp/kiyose-h/",
-      "url_event": "https://www.metro.ed.jp/kiyose-h/guide/meeting.html"
+      "url_event": "https://www.metro.ed.jp/kiyose-h/guide/meeting.html",
+      "admission_fee": 5650,
+      "annual_tuition": 118800
     },
     {
       "id": "kodairanishi",
@@ -126,9 +179,13 @@
       "category": "都立-普通科",
       "ward": "小平市",
       "deviation": 47,
+      "lat": 35.7255,
+      "lng": 139.4422,
       "url_top": "https://www.metro.ed.jp/kodairanishi-h/",
       "url_event": "https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html",
-      "_note": "安全校"
+      "_note": "安全校",
+      "admission_fee": 5650,
+      "annual_tuition": 118800
     },
     {
       "id": "kokubunji",
@@ -136,9 +193,13 @@
       "category": "都立-特別推進校",
       "ward": "国分寺市",
       "deviation": 68,
+      "lat": 35.7125,
+      "lng": 139.4477,
       "url_top": "https://www.metro.ed.jp/kokubunji-h/",
       "url_event": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html",
-      "_note": "大挑戦校。地元最寄り"
+      "_note": "大挑戦校。地元最寄り",
+      "admission_fee": 5650,
+      "annual_tuition": 118800
     },
     {
       "id": "kinjo",
@@ -146,17 +207,13 @@
       "category": "私立-共学",
       "ward": "小平市",
       "deviation": 65,
+      "lat": 35.7385,
+      "lng": 139.5017,
       "url_top": "https://www.kinjo-highschool.ed.jp/",
-      "_note": "花小金井。恋ヶ窪から最寄り私立の1つ。3コース制"
-    },
-    {
-      "id": "shiraume",
-      "name": "白梅学園高等学校",
-      "category": "私立-女子校",
-      "ward": "小平市",
-      "deviation": 57,
-      "url_top": "https://www.shiraume.ac.jp/",
-      "_note": "小平駅。恋ヶ窪から近い"
+      "_note": "花小金井。恋ヶ窪から最寄り私立の1つ。3コース制",
+      "admission_fee": 230000,
+      "annual_tuition": 480000,
+      "other_fees": 130000
     },
     {
       "id": "meiho",
@@ -164,8 +221,13 @@
       "category": "私立-共学",
       "ward": "東村山市",
       "deviation": 59,
+      "lat": 35.7439,
+      "lng": 139.4539,
       "url_top": "https://www.meiho.ed.jp/",
-      "_note": "久米川。2019年共学化。理数系に強い"
+      "_note": "久米川。2019年共学化。理数系に強い",
+      "admission_fee": 250000,
+      "annual_tuition": 468000,
+      "other_fees": 144000
     },
     {
       "id": "dendai",
@@ -173,8 +235,13 @@
       "category": "私立-共学",
       "ward": "小金井市",
       "deviation": 62,
+      "lat": 35.707,
+      "lng": 139.5261,
       "url_top": "https://www.dendai.ed.jp/",
-      "_note": "東小金井。理系志向なら好相性"
+      "_note": "東小金井。理系志向なら好相性",
+      "admission_fee": 250000,
+      "annual_tuition": 516000,
+      "other_fees": 204000
     },
     {
       "id": "meigakuin_higashi",
@@ -182,8 +249,13 @@
       "category": "私立-共学",
       "ward": "東村山市",
       "deviation": 65,
+      "lat": 35.7401,
+      "lng": 139.4576,
       "url_top": "https://www.meijigakuin-higashi.ed.jp/",
-      "_note": "明治学院大学推薦枠あり"
+      "_note": "明治学院大学推薦枠あり",
+      "admission_fee": 280000,
+      "annual_tuition": 480000,
+      "other_fees": 252000
     },
     {
       "id": "takuichi",
@@ -191,8 +263,13 @@
       "category": "私立-共学",
       "ward": "武蔵村山市",
       "deviation": 61,
+      "lat": 35.7332,
+      "lng": 139.4139,
       "url_top": "https://www.takuichi.ed.jp/",
-      "_note": "やや遠いが大学推薦枠充実"
+      "_note": "やや遠いが大学推薦枠充実",
+      "admission_fee": 250000,
+      "annual_tuition": 444000,
+      "other_fees": 234000
     },
     {
       "id": "shotoku",
@@ -200,8 +277,13 @@
       "category": "私立-共学",
       "ward": "武蔵野市",
       "deviation": 59,
-      "url_top": "https://www.shotoku.ed.jp/",
-      "_note": "武蔵境。ICT教育に定評"
+      "lat": 35.6988,
+      "lng": 139.5464,
+      "url_top": "https://jsh.shotoku.ed.jp/",
+      "_note": "武蔵境。ICT教育に定評",
+      "admission_fee": 180000,
+      "annual_tuition": 513600,
+      "other_fees": 324000
     },
     {
       "id": "taisei",
@@ -209,8 +291,41 @@
       "category": "私立-共学",
       "ward": "三鷹市",
       "deviation": 50,
+      "lat": 35.6886,
+      "lng": 139.5588,
       "url_top": "https://www.taisei.ed.jp/",
-      "_note": "安全校。3コース制"
+      "_note": "安全校。3コース制",
+      "admission_fee": 250000,
+      "annual_tuition": 486600,
+      "other_fees": 110000
+    },
+    {
+      "id": "minamidaira",
+      "name": "都立南平高校",
+      "category": "都立-普通科",
+      "ward": "日野市",
+      "deviation": 62,
+      "lat": 35.6519,
+      "lng": 139.3958,
+      "url_top": "https://www.metro.ed.jp/minamidaira-h/",
+      "url_event": "https://www.metro.ed.jp/minamidaira-h/guide/meeting.html",
+      "_note": "乗換2回。偏差値帯が多摩科技に近い",
+      "admission_fee": 5650,
+      "annual_tuition": 118800
+    },
+    {
+      "id": "higashiyamato",
+      "name": "都立東大和高校",
+      "category": "都立-普通科",
+      "ward": "東大和市",
+      "deviation": 54,
+      "lat": 35.7452,
+      "lng": 139.4246,
+      "url_top": "https://www.metro.ed.jp/higashiyamato-h/",
+      "url_event": "https://www.metro.ed.jp/higashiyamato-h/guide/meeting.html",
+      "_note": "近隣エリアの安全校候補",
+      "admission_fee": 5650,
+      "annual_tuition": 118800
     }
   ]
 }
