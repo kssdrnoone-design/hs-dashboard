@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>高校受験ダッシュボード - 2026/04/18</title>
+<title>高校受験ダッシュボード - 2026/04/22</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -125,6 +125,203 @@ h1 { text-align: center; color: #2c3e50; font-size: 1.4em; margin-bottom: 2px; }
     vertical-align: middle;
 }
 
+/* カレンダーグリッド（月別ビュー） */
+.cal-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+.cal-nav button {
+    padding: 6px 14px;
+    border: 1px solid #d1d8e0;
+    background: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95em;
+}
+.cal-nav button:hover { background: #f0f4f8; }
+.cal-nav #cal-title {
+    font-size: 1.15em;
+    font-weight: 600;
+    color: #2c3e50;
+    min-width: 130px;
+    text-align: center;
+}
+.cal-nav .cal-today {
+    margin-left: auto;
+    background: #3498db;
+    color: #fff;
+    border-color: #3498db;
+}
+.cal-legend {
+    font-size: 0.78em;
+    color: #7f8c8d;
+    margin-bottom: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.cal-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 3px;
+}
+.cal-dot.d-top { background: #e74c3c; }
+.cal-dot.d-hi  { background: #e67e22; }
+.cal-dot.d-mid { background: #3498db; }
+.cal-dot.d-low { background: #27ae60; }
+
+.cal-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    margin-bottom: 2px;
+}
+.cal-wd {
+    text-align: center;
+    padding: 6px 0;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: #2c3e50;
+    background: #f0f4f8;
+    border-radius: 4px;
+}
+.cal-wd.sun { color: #e74c3c; }
+.cal-wd.sat { color: #3498db; }
+
+.cal-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+.cal-cell {
+    min-height: 84px;
+    background: #fff;
+    border: 1px solid #ecf0f1;
+    border-radius: 4px;
+    padding: 4px;
+    font-size: 0.78em;
+    position: relative;
+    overflow: hidden;
+}
+.cal-cell.empty { background: #fafbfc; border-color: transparent; }
+.cal-cell.has-events { cursor: pointer; }
+.cal-cell.has-events:hover { background: #f8fafc; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+/* 日曜・祝日: 薄いピンク背景＋赤文字 */
+.cal-cell.sun, .cal-cell.holiday { background: #fff5f5; }
+.cal-cell.sun.has-events:hover, .cal-cell.holiday.has-events:hover { background: #ffe8e8; }
+/* 土曜: 薄い水色背景＋青文字 */
+.cal-cell.sat { background: #f4f9ff; }
+.cal-cell.sat.has-events:hover { background: #e6f1fc; }
+/* today / selected は土日祝より優先 */
+.cal-cell.today { background: #fef9e7; border-color: #f1c40f; border-width: 2px; }
+.cal-cell.selected { background: #e8f4fc; border-color: #3498db; border-width: 2px; }
+.cal-cell .cal-day {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.95em;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+.cal-cell.sun .cal-day, .cal-cell.holiday .cal-day { color: #e74c3c; }
+.cal-cell.sat .cal-day { color: #3498db; }
+.cal-holiday-name {
+    font-size: 0.7em;
+    font-weight: 500;
+    color: #c0392b;
+    background: rgba(231, 76, 60, 0.1);
+    padding: 1px 4px;
+    border-radius: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+.cal-items { display: flex; flex-direction: column; gap: 2px; }
+.cal-item {
+    padding: 2px 4px;
+    border-radius: 3px;
+    color: #fff;
+    font-size: 0.72em;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.cal-item.d-top { background: #e74c3c; }
+.cal-item.d-hi  { background: #e67e22; }
+.cal-item.d-mid { background: #3498db; }
+.cal-item.d-low { background: #27ae60; }
+.cal-item.is-new { box-shadow: 0 0 0 2px #ff3b30 inset; font-weight: 700; }
+.cal-more {
+    font-size: 0.7em;
+    color: #7f8c8d;
+    text-align: right;
+    padding-right: 2px;
+}
+
+.cal-detail {
+    margin-top: 16px;
+    padding: 0;
+    border-radius: 8px;
+}
+.cal-detail:not(:empty) {
+    background: #f8fafc;
+    padding: 14px 16px;
+    border: 1px solid #e0e6ed;
+}
+.cal-detail h3 {
+    font-size: 1em;
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+.cal-detail-item {
+    background: #fff;
+    border-left: 4px solid #bdc3c7;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+.cal-detail-item.d-top { border-left-color: #e74c3c; }
+.cal-detail-item.d-hi  { border-left-color: #e67e22; }
+.cal-detail-item.d-mid { border-left-color: #3498db; }
+.cal-detail-item.d-low { border-left-color: #27ae60; }
+.cal-detail-item .cdi-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    font-size: 0.9em;
+}
+.cal-detail-item .ev-kw {
+    background: #ecf0f1;
+    color: #2c3e50;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.85em;
+}
+.cal-detail-item .cdi-link { font-size: 0.85em; }
+.cal-detail-item .cdi-link a { color: #3498db; text-decoration: none; }
+
+.cal-list-wrap summary {
+    cursor: pointer;
+    padding: 8px 10px;
+    background: #ecf0f1;
+    border-radius: 6px;
+    font-size: 0.9em;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+.cal-list-wrap[open] summary { background: #d1d8e0; }
+
 /* 学校カード */
 .school-grid {
     display: grid;
@@ -203,6 +400,15 @@ table.compare tr:hover { background: #fbfcfd; }
     .school-grid { grid-template-columns: 1fr; }
     table.compare { font-size: 0.82em; }
     table.compare th, table.compare td { padding: 6px 4px; }
+    /* カレンダー: モバイルではセル最小高さ削減・文字縮小 */
+    .cal-cell { min-height: 58px; padding: 2px; font-size: 0.72em; }
+    .cal-cell .cal-day { font-size: 0.85em; margin-bottom: 1px; }
+    .cal-wd { font-size: 0.75em; padding: 4px 0; }
+    .cal-item { font-size: 0.62em; padding: 1px 3px; }
+    .cal-nav #cal-title { font-size: 1em; min-width: 110px; }
+    .cal-nav button { padding: 4px 10px; font-size: 0.85em; }
+    /* 祝日名はスマホでは表示領域が狭いので小さくする（タップでツールチップ代わり） */
+    .cal-holiday-name { font-size: 0.6em; padding: 0 2px; }
 }
 </style>
 </head>
@@ -211,10 +417,10 @@ table.compare tr:hover { background: #fbfcfd; }
   <div class="header-fixed">
     <h1>🎓 高校受験ダッシュボード</h1>
     <div class="subtitle">
-      更新: 2026/04/18 | 対象校 23 | 取得成功 23 | イベント検出 104 | 新着 0
+      更新: 2026/04/22 | 対象校 23 | 取得成功 23 | イベント検出 96 | 新着 7
     </div>
     <div class="tabs">
-      <button class="tab-btn active" onclick="showTab('tab-new', this)">🆕 新着</button>
+      <button class="tab-btn active" onclick="showTab('tab-new', this)">🆕 新着 (7)</button>
       <button class="tab-btn" onclick="showTab('tab-calendar', this)">📅 カレンダー</button>
       <button class="tab-btn" onclick="showTab('tab-schools', this)">🏫 学校</button>
       <button class="tab-btn" onclick="showTab('tab-compare', this)">📊 比較</button>
@@ -226,94 +432,145 @@ table.compare tr:hover { background: #fbfcfd; }
   <div id="tab-new" class="tab-panel active">
     <div class="section">
       <h2>🆕 新着イベント</h2>
-      <div class="empty">新着イベントはありません。</div>
+      <p style="color:#7f8c8d; font-size:0.85em; margin-bottom:12px;">前回収集からの新着 7件</p>
+<div class="event-item is-new"><span class="ev-date">2026/04/22 (Wed)</span><span class="ev-school">錦城高等学校(65)</span><span class="ev-kw">オープンキャンパス</span><div class="ev-context">JO HIGH SCHOOL 学校案内 BROCHURE PICKUP NEWS ニュース 2026.04.22 GWオンラインオープンキャンパスを5月2日に開催します！ 錦城の日常 20</div><div class="ev-link"><a href="https://www.kinjo-highschool.ed.jp/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item is-new"><span class="ev-date">2026/04/22 (Wed)</span><span class="ev-school">東京電機大学高等学校(62)</span><span class="ev-kw">説明会</span><div class="ev-context">ース ー NEWS &amp; TOPICS ー すべて お知らせ 入試情報 入試イベント 2026.04.22 入試イベント 中学校 第１回ミニ説明会（5/30開催）【保護者対象】※4/2</div><div class="ev-link"><a href="https://www.dendai.ed.jp/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item is-new"><span class="ev-date">2026/04/22 (Wed)</span><span class="ev-school">都立東大和高校(54)</span><span class="ev-kw">説明会</span><div class="ev-context">応・各種届出 ニュース お知らせ 在校生・保護者 入試案内 説明会・学校公開 経営企画室 学年から 2026/04/22 お知らせ ＜今週の東大和＞ 4月22日「探究発表会が行われました」 2026</div><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamato-h/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item is-new"><span class="ev-date">2026/05/02 (Sat)</span><span class="ev-school">錦城高等学校(65)</span><span class="ev-kw">オープンキャンパス</span><div class="ev-context">E PICKUP NEWS ニュース 2026.04.22 GWオンラインオープンキャンパスを5月2日に開催します！ 錦城の日常 2026.03.28 錦城高校の1年間ダイジェス</div><div class="ev-link"><a href="https://www.kinjo-highschool.ed.jp/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item is-new"><span class="ev-date">2026/05/09 (Sat)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">学校説明会</span><div class="ev-context">等 学校説明会・授業公開等 令和８年度の学校見学会・説明会・相談会の日程は 以下の通りです。 ■５月９日（土） 春季学校見学会（本校） 受付期間：４月９日（木）１２時～５月８日</div><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item is-new"><span class="ev-date">2026/05/09 (Sat)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">見学会</span><div class="ev-context">新入生歓迎会 盛り上がりました 2026/04/09 受検生の方へ 令和8年度 春季学校見学会（5月9日（土）実施）受付 2026/04/08 南の風景 ４月８日（水） 対面式とクラ</div><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item is-new"><span class="ev-date">2027/01/16 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-context">12月20日（日） 9:00 適性検査入試体験会（小6生限定）,入試傾向説明会 予約必要 予約必要 1月16日（土） 10:00 学校説明会,授業・施設見学会 予約必要 予約必要 ※日程・</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
     </div>
   </div>
 
   <div id="tab-calendar" class="tab-panel">
     <div class="section">
       <h2>📅 説明会・イベントカレンダー</h2>
-      <p style="color:#7f8c8d; font-size:0.85em; margin-bottom:12px;">直近101件の説明会・イベント</p>
-<div class="event-item"><span class="ev-date">2026/04/25 (Sat)</span><span class="ev-school">都立小金井北高校(64)</span><span class="ev-kw">授業公開</span><div class="ev-context">小北の様子 2026/04/10 お知らせ 第１回 授業公開のお知らせ 令和８年度の授業公開は４月２５日(土)・６月１３日(土)・１１月７日(土)となっています。 ４月２５日(土)の</div><div class="ev-link"><a href="https://www.metro.ed.jp/koganeikita-h/news/2026/04/newsentry_160.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/04/25 (Sat)</span><span class="ev-school">都立府中高校(54)</span><span class="ev-kw">授業公開</span><div class="ev-context">210.1KB) ◇ 授業公開 ◇ 令和8年度の授業公開は以下の通りです。 令和8年 4月25日（土） 令和8年 6月 6日（土） 令和8年10月３日（土） ◇学</div><div class="ev-link"><a href="https://www.metro.ed.jp/fuchu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/04/25 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-context">会 体験会・学校説明会 塾対象説明会 体験会・学校説明会 日付 開始 内容（予定） 説明会 体験会 4月25日（土） 10:00 学校説明会,授業・施設見学会 予約必要 予約必要 5月23日</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/04/30 (Thu)</span><span class="ev-school">都立多摩科学技術高校(61)</span><span class="ev-kw">説明会</span><div class="ev-context">金の必要な方は、日本政策金融公庫の「国の教育ローン」等をお考えください。 5 説明会 日時：４月30日（木）16:00受付・16:30開始 会場：本校サイエンスホール 7 参</div><div class="ev-link"><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/news/2026/04/jasso.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/05/09 (Sat)</span><span class="ev-school">都立多摩科学技術高校(61)</span><span class="ev-kw">見学会</span><div class="ev-context">ら からお願いいたします。 ※秋にも実施予定です。 （２）学校見学会（要予約） 第１回 ５月９日(土) 14:00～16:00 申込期間：４月９日（９時）～５月８日（１６時まで</div><div class="ev-link"><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/05/09 (Sat)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">見学会</span><div class="ev-context">通りです。 ＊例年参加している「さんだるセミナー」については、予定が確定次第お知らせします。 ■５月９日（土） 春季学校見学会（本校） 受付期間：４月９日（木）１２時～５月８日</div><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/05/10 (Sun)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">個別相談会</span><div class="ev-context">学会（本校） 受付期間：４月９日（木）１２時～５月８日（金）１２時 予約はこちらから ■５月１０日（日） 第19回都立高校個別相談会（ホテルエミシア東京立川）【要予約】 ■</div><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/05/23 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-context">） 説明会 体験会 4月25日（土） 10:00 学校説明会,授業・施設見学会 予約必要 予約必要 5月23日（土） 10:00 学校説明会,授業・施設見学会 予約必要 予約必要 6月6日（</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/05/30 (Sat)</span><span class="ev-school">都立多摩科学技術高校(61)</span><span class="ev-kw">体験入学</span><div class="ev-context">6:00 （４）体験入学（要予約） 各回の予約は、もうしばらくお待ちください。 第１回 ５月30日(土) 14:00～16:00 第２回 ８月21日(金) 10:00～12:0</div><div class="ev-link"><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/06/06 (Sat)</span><span class="ev-school">都立府中高校(54)</span><span class="ev-kw">見学会</span><div class="ev-context">業公開 ◇ 令和8年度の授業公開は以下の通りです。 令和8年 4月25日（土） 令和8年 6月 6日（土） 令和8年10月３日（土） ◇学校見学会◇ 以下の日程で中学三</div><div class="ev-link"><a href="https://www.metro.ed.jp/fuchu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/06/06 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-context">予約必要 予約必要 5月23日（土） 10:00 学校説明会,授業・施設見学会 予約必要 予約必要 6月6日（土） 14:30 SGE体験会,学校説明会（体験会は小5・6対象） 予約必要</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/06/13 (Sat)</span><span class="ev-school">都立多摩科学技術高校(61)</span><span class="ev-kw">授業公開</span><div class="ev-context">15:30 ※各部活動によって終了時間は異なります。 （６）授業公開（予約不要） 第１回 ６月13日(土) 10:45～12:35 第２回 10月３日(土) 10:45～12:3</div><div class="ev-link"><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/06/13 (Sat)</span><span class="ev-school">都立多摩科学技術高校(61)</span><span class="ev-kw">説明会</span><div class="ev-context">（８）塾および中学校教員 対象説明会（要予約） 予約は、もうしばらくお待ちください。 第1回 ６月13日（土）10:45～12:35 第2回 10月３日（土）10:45～12:35</div><div class="ev-link"><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/06/13 (Sat)</span><span class="ev-school">都立小金井北高校(64)</span><span class="ev-kw">授業公開</span><div class="ev-context">26/04/10 お知らせ 第１回 授業公開のお知らせ 令和８年度の授業公開は４月２５日(土)・６月１３日(土)・１１月７日(土)となっています。 ４月２５日(土)のお知らせはこちら→</div><div class="ev-link"><a href="https://www.metro.ed.jp/koganeikita-h/news/2026/04/newsentry_160.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/06/13 (Sat)</span><span class="ev-school">明治学院東村山高等学校(65)</span><span class="ev-kw">オープンキャンパス</span><div class="ev-context">体験 など オープンキャンパス・クラブ体験会 開催日 時間 内容 オープンキャンパス ６月１３日（土） ＜要予約＞ 未定 未定 クラブ体験会 １１月２１日(土) ＜要予約＞ 1</div><div class="ev-link"><a href="https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/06/20 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-context">6月6日（土） 14:30 SGE体験会,学校説明会（体験会は小5・6対象） 予約必要 予約必要 6月20日（土） 14:30 GSPf体験会・学校説明会（体験会は小5・6対象） 予約必要</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/06/30 (Tue)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">説明会</span><div class="ev-context">12月19日（土） 14:00 12月26日（土） 14:00 塾対象説明会 日付 開場時間 内容 6月30日（火） 10:00 2026入試概況・2027入試 10月13日（火） 10:0</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/hs/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/07/11 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-context">月20日（土） 14:30 GSPf体験会・学校説明会（体験会は小5・6対象） 予約必要 予約必要 7月11日（土） 10:00 家庭科・美術体験会,学校説明会（体験会は小5・6対象） 予約</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/07/11 (Sat)</span><span class="ev-school">拓殖大学第一高等学校(61)</span><span class="ev-kw">学校説明会</span><div class="ev-context">見学、部活動の見学(一部体験可)、体験授業の実施、個別相談ができます。 開催日程 開催時間 備考 7月11日(土) 14:30～ 予約は開催日１カ月前頃より開始予定です。 学校説明会</div><div class="ev-link"><a href="https://www.takuichi.ed.jp/admission/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/07/19 (Sun)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">個別相談会</span><div class="ev-context">ら ■５月１０日（日） 第19回都立高校個別相談会（ホテルエミシア東京立川）【要予約】 ■７月１９日（日） 進学相談会 in はいじま2026（啓明学園）【要予約】 ■7月2</div><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/07/20 (Mon)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-context">高校説明会 学校説明会 個別受験相談会 塾対象説明会 学校説明会 日付 開始 内容 説明会 体験会 7月20日（月） 13:00 オープンスクール（学校説明会,授業体験・部活体験） 予約必要</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/hs/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/07/21 (Tue)</span><span class="ev-school">錦城高等学校(65)</span><span class="ev-kw">学校説明会</span><div class="ev-context">MISSION 学校説明会日程 TOP 入学案内 学校説明会日程 夏休み学校説明会 要予約 2026年7月21日から8月22日の火・木・土曜日に実施します。（9:00～） クラブ体験会も実施予</div><div class="ev-link"><a href="https://www.kinjo-highschool.ed.jp/admission/briefing-session.php" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/07/22 (Wed)</span><span class="ev-school">都立府中高校(54)</span><span class="ev-kw">見学会</span><div class="ev-context">学校見学会◇ 以下の日程で中学三年生とその保護者の方を対象とした学校見学会を行います。 令和８年７月22日（水） 令和８年７月23日（木） 令和８年７月24日（金） 詳細は後日この</div><div class="ev-link"><a href="https://www.metro.ed.jp/fuchu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/07/22 (Wed)</span><span class="ev-school">都立小平西高校(47)</span><span class="ev-kw">見学会</span><div class="ev-context">・当日、上履き、筆記用具、靴を入れる袋をご持参ください。 第１回 学校見学会 ７月２２日（火） １４：００～１５：３０ （受付開始 １３：３０） 第２回 学校見学会</div><div class="ev-link"><a href="https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/07/22 (Wed)</span><span class="ev-school">都立国分寺高校(68)</span><span class="ev-kw">見学会</span><div class="ev-context">学校紹介 １４：００～１５：００ □オープンスクール（中３生対象の体験授業） 日時：7月22日（火）、7月23日（水） １０：００～１１：３０ □学校見学会 日時：7月3</div><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/07/22 (Wed)</span><span class="ev-school">拓殖大学第一高等学校(61)</span><span class="ev-kw">見学会</span><div class="ev-context">ミニ学校見学会 ※夏期実施(要予約) 校内の施設見学ができます。 開催日程 開催時間 備考 7月22日(水) 10:30～ 予約は開催日１カ月前頃より開始予定です。 7月23</div><div class="ev-link"><a href="https://www.takuichi.ed.jp/admission/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/07/23 (Thu)</span><span class="ev-school">都立府中高校(54)</span><span class="ev-kw">見学会</span><div class="ev-context">中学三年生とその保護者の方を対象とした学校見学会を行います。 令和８年７月22日（水） 令和８年７月23日（木） 令和８年７月24日（金） 詳細は後日このページでお知らせします。</div><div class="ev-link"><a href="https://www.metro.ed.jp/fuchu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/07/23 (Thu)</span><span class="ev-school">都立小平西高校(47)</span><span class="ev-kw">見学会</span><div class="ev-context">会 ７月２２日（火） １４：００～１５：３０ （受付開始 １３：３０） 第２回 学校見学会 ７月２３日（水） １４：００～１５：３０ （受付開始 １３：３０） 第３回 学校見学会</div><div class="ev-link"><a href="https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/07/23 (Thu)</span><span class="ev-school">都立国分寺高校(68)</span><span class="ev-kw">見学会</span><div class="ev-context">１４：００～１５：００ □オープンスクール（中３生対象の体験授業） 日時：7月22日（火）、7月23日（水） １０：００～１１：３０ □学校見学会 日時：7月31日（木）、8月1</div><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/07/24 (Fri)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">見学会</span><div class="ev-context">【要予約】 ■７月１９日（日） 進学相談会 in はいじま2026（啓明学園）【要予約】 ■7月24日（金） 夏季学校見学会（本校）【要予約】 ■７月３０日（木） 夏季学校</div><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/07/24 (Fri)</span><span class="ev-school">都立府中高校(54)</span><span class="ev-kw">学校説明会</span><div class="ev-context">対象とした学校見学会を行います。 令和８年７月22日（水） 令和８年７月23日（木） 令和８年７月24日（金） 詳細は後日このページでお知らせします。 ◇学校説明会◇ 中学3年生</div><div class="ev-link"><a href="https://www.metro.ed.jp/fuchu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/07/24 (Fri)</span><span class="ev-school">都立小平西高校(47)</span><span class="ev-kw">見学会</span><div class="ev-context">学会 ７月２３日（水） １４：００～１５：３０ （受付開始 １３：３０） 第３回 学校見学会 ７月２４日（木） １４：００～１５：３０ （受付開始 １３：３０） 第４回 学校見学会</div><div class="ev-link"><a href="https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/07/25 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-context">1日（土） 10:00 家庭科・美術体験会,学校説明会（体験会は小5・6対象） 予約必要 予約必要 7月25日（土） 14:30 理科体験会,学校説明会（体験会は小5・6対象） 予約必要 予</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/07/27 (Mon)</span><span class="ev-school">都立南平高校(62)</span><span class="ev-kw">学校説明会</span><div class="ev-context">校説明会・授業公開等 学校説明会・授業公開等 令和８年度 学校見学会（※校舎案内のみ） 日時：①７月27日～31日（月～金） ②８月下旬予定 受付開始9:30 最</div><div class="ev-link"><a href="https://www.metro.ed.jp/minamidaira-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/07/30 (Thu)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">見学会</span><div class="ev-context">じま2026（啓明学園）【要予約】 ■7月24日（金） 夏季学校見学会（本校）【要予約】 ■７月３０日（木） 夏季学校見学会（本校）【要予約】 ■８月４日（火） 夏季学校見</div><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/07/31 (Fri)</span><span class="ev-school">都立多摩科学技術高校(61)</span><span class="ev-kw">体験入学</span><div class="ev-context">:00～16:00 第２回 ８月21日(金) 10:00～12:00 女子生徒のための体験入学 ７月31日(金) 9:30～11:50 （５）体験入部（要予約） 予約は、もうし</div><div class="ev-link"><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/08/01 (Sat)</span><span class="ev-school">都立国分寺高校(68)</span><span class="ev-kw">見学会</span><div class="ev-context">月22日（火）、7月23日（水） １０：００～１１：３０ □学校見学会 日時：7月31日（木）、8月1日（金）、8月2日（土） ①１０：００～ ②１１：００～ ③１４：００～</div><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/08/01 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-context">月20日（月） 13:00 オープンスクール（学校説明会,授業体験・部活体験） 予約必要 予約必要 8月1日（土） 10:00 夏の学校説明会① 予約必要 8月8日（土） 10:00</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/hs/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/08/02 (Sun)</span><span class="ev-school">都立国分寺高校(68)</span><span class="ev-kw">見学会</span><div class="ev-context">7月23日（水） １０：００～１１：３０ □学校見学会 日時：7月31日（木）、8月1日（金）、8月2日（土） ①１０：００～ ②１１：００～ ③１４：００～ ④１５：００～</div><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/08/04 (Tue)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">見学会</span><div class="ev-context">夏季学校見学会（本校）【要予約】 ■７月３０日（木） 夏季学校見学会（本校）【要予約】 ■８月４日（火） 夏季学校見学会（本校）【要予約】 ■８月１９日（水） 夏季学校</div><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/08/06 (Thu)</span><span class="ev-school">都立昭和高校(66)</span><span class="ev-kw">学校説明会</span><div class="ev-context">す。 開催予定 第１日 ８月 ３日（月） 第２日 ８月 ４日（火） 第３日 ８月 ６日（木） 第４日 ８月 ７日（金） ３．学校説明会 中学生およ</div><div class="ev-link"><a href="https://www.metro.ed.jp/showa-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/08/07 (Fri)</span><span class="ev-school">都立昭和高校(66)</span><span class="ev-kw">学校説明会</span><div class="ev-context">月 ３日（月） 第２日 ８月 ４日（火） 第３日 ８月 ６日（木） 第４日 ８月 ７日（金） ３．学校説明会 中学生およびその保護者を対象に学校説明会を実</div><div class="ev-link"><a href="https://www.metro.ed.jp/showa-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/08/07 (Fri)</span><span class="ev-school">大成高等学校(50)</span><span class="ev-kw">個別相談会</span><div class="ev-context">面接」が行われますが、受験票（B票）・筆記用具・実施要項... 2021-07-01 個別相談会（8月7日、14日） 個別相談会 以下の通り、個別相談会を実施します。 日時 第</div><div class="ev-link"><a href="https://www.taisei.ed.jp/exam/blog/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/08/08 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-context">業体験・部活体験） 予約必要 予約必要 8月1日（土） 10:00 夏の学校説明会① 予約必要 8月8日（土） 10:00 夏の学校説明会② 予約必要 8月22日（土） 14:00</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/hs/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/08/19 (Wed)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">見学会</span><div class="ev-context">夏季学校見学会（本校）【要予約】 ■８月４日（火） 夏季学校見学会（本校）【要予約】 ■８月１９日（水） 夏季学校見学会（本校）【要予約】 ■８月２１日（金） 夏季学校</div><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/08/21 (Fri)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">見学会</span><div class="ev-context">夏季学校見学会（本校）【要予約】 ■８月１９日（水） 夏季学校見学会（本校）【要予約】 ■８月２１日（金） 夏季学校見学会（本校）【要予約】 ■９月５日（土）・６日（日）</div><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/08/22 (Sat)</span><span class="ev-school">錦城高等学校(65)</span><span class="ev-kw">学校説明会</span><div class="ev-context">会日程 TOP 入学案内 学校説明会日程 夏休み学校説明会 要予約 2026年7月21日から8月22日の火・木・土曜日に実施します。（9:00～） クラブ体験会も実施予定です。 ご予</div><div class="ev-link"><a href="https://www.kinjo-highschool.ed.jp/admission/briefing-session.php" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/08/22 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-context">:00 夏の学校説明会① 予約必要 8月8日（土） 10:00 夏の学校説明会② 予約必要 8月22日（土） 14:00 夏の学校説明会③ 予約必要 10月3日（土） 終日 明法</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/hs/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/08/28 (Fri)</span><span class="ev-school">拓殖大学第一高等学校(61)</span><span class="ev-kw">文化祭</span><div class="ev-context">始予定です。 8月27日(木) 10:30～ 予約は開催日１カ月前頃より開始予定です。 8月28日(金) 10:30～ 予約は開催日１カ月前頃より開始予定です。 文化祭※一</div><div class="ev-link"><a href="https://www.takuichi.ed.jp/admission/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/08/29 (Sat)</span><span class="ev-school">都立小平西高校(47)</span><span class="ev-kw">見学会</span><div class="ev-context">学会 ７月２４日（木） １４：００～１５：３０ （受付開始 １３：３０） 第４回 学校見学会 ８月２９日（金） １４：００～１５：３０ （受付開始 １３：３０） 第５回 学校見学会</div><div class="ev-link"><a href="https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/08/30 (Sun)</span><span class="ev-school">都立小平西高校(47)</span><span class="ev-kw">見学会</span><div class="ev-context">学会 ８月２９日（金） １４：００～１５：３０ （受付開始 １３：３０） 第５回 学校見学会 ８月３０日（土） １０：００～１１：３０ （受付開始 ９：３０） 第６回 学校見学会</div><div class="ev-link"><a href="https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/09/05 (Sat)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">見学会</span><div class="ev-context">夏季学校見学会（本校）【要予約】 ■８月２１日（金） 夏季学校見学会（本校）【要予約】 ■９月５日（土）・６日（日） 楠翔祭（小さな個別相談会実施予定）：本校【予約不要】</div><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/09/05 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-context">7月25日（土） 14:30 理科体験会,学校説明会（体験会は小5・6対象） 予約必要 予約必要 9月5日（土） 14:30 音楽体験会,学校説明会（体験会は小5・6対象） 予約必要 予</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/09/12 (Sat)</span><span class="ev-school">都立多摩科学技術高校(61)</span><span class="ev-kw">説明会</span><div class="ev-context">す。 ※校舎生徒昇降口受付までお越しください （７）個別相談会（文化祭期間中 予約不要） ９月12日(土) ・９月13日(日) （８）塾および中学校教員 対象説明会（要予約</div><div class="ev-link"><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/09/12 (Sat)</span><span class="ev-school">拓殖大学第一高等学校(61)</span><span class="ev-kw">文化祭</span><div class="ev-context">始予定です。 文化祭※一般公開予定 何でも相談コーナーもあります。 開催日程 開催時間 備考 9月12日(土) 10:00～15:00 予約は不要ですが、詳細は今後のHPで確認して</div><div class="ev-link"><a href="https://www.takuichi.ed.jp/admission/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/09/13 (Sun)</span><span class="ev-school">都立多摩科学技術高校(61)</span><span class="ev-kw">説明会</span><div class="ev-context">口受付までお越しください （７）個別相談会（文化祭期間中 予約不要） ９月12日(土) ・９月13日(日) （８）塾および中学校教員 対象説明会（要予約） 予約は、もうし</div><div class="ev-link"><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/09/26 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-context">要 9月5日（土） 14:30 音楽体験会,学校説明会（体験会は小5・6対象） 予約必要 予約必要 9月26日（土） 14:30 ミニ入試体験会（小6生限定）,入試傾向説明会 予約必要 予約</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/10/03 (Sat)</span><span class="ev-school">都立多摩科学技術高校(61)</span><span class="ev-kw">学校説明会</span><div class="ev-context">:00 （３）学校説明会（要予約） 各回の予約は、もうしばらくお待ちください。 第１回 10月３日(土) 14:00～16:00 第２回 11月７日(土) 10:00～12:0</div><div class="ev-link"><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/10/03 (Sat)</span><span class="ev-school">都立府中高校(54)</span><span class="ev-kw">見学会</span><div class="ev-context">業公開は以下の通りです。 令和8年 4月25日（土） 令和8年 6月 6日（土） 令和8年10月３日（土） ◇学校見学会◇ 以下の日程で中学三年生とその保護者の方を対象と</div><div class="ev-link"><a href="https://www.metro.ed.jp/fuchu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/10/03 (Sat)</span><span class="ev-school">錦城高等学校(65)</span><span class="ev-kw">説明会</span><div class="ev-context">で個別相談を承っております。 秋の入試説明会（オンライン）・個別相談会 要予約 開催日 時間 詳細 10月3日(土) 14：00～ 入試説明会（オンラインで実施） 10月11日(日) 9：0</div><div class="ev-link"><a href="https://www.kinjo-highschool.ed.jp/admission/briefing-session.php" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/10/03 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-context">00 夏の学校説明会② 予約必要 8月22日（土） 14:00 夏の学校説明会③ 予約必要 10月3日（土） 終日 明法祭（見学自由） ＊学校紹介コーナー・個別相談 10月4</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/hs/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/10/03 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">説明会</span><div class="ev-context">要 9月26日（土） 14:30 ミニ入試体験会（小6生限定）,入試傾向説明会 予約必要 予約必要 10月3日（土） 終日 明法祭（見学自由） ＊学校紹介コーナー・個別相談 10月4</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/10/03 (Sat)</span><span class="ev-school">明治学院東村山高等学校(65)</span><span class="ev-kw">文化祭</span><div class="ev-context">4:00～ 小学生を対象としたクラブ体験イベント。詳細は後日発表いたします。 公開学校行事 体育祭 １０月３日（土） ヘボン祭（文化祭） １１月３日（火・祝） クリスマスの集い １</div><div class="ev-link"><a href="https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/10/03 (Sat)</span><span class="ev-school">都立南平高校(62)</span><span class="ev-kw">学校説明会</span><div class="ev-context">予約は不要です。 令和８年度 学校説明会（※中学３年生とその保護者が対象） 第１回：10月３日（土） 10：00～11：00（9：30 受付） 第２回：11月14日（土） 1</div><div class="ev-link"><a href="https://www.metro.ed.jp/minamidaira-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/10/04 (Sun)</span><span class="ev-school">都立国分寺高校(68)</span><span class="ev-kw">学校説明会</span><div class="ev-context">１０：００～ ②１１：００～ ③１４：００～ ④１５：００～ □第１回 学校公開・説明会 日時：10月4日（土） 学校公開 １０：３５～１２：３０ 学校説明会</div><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/10/10 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-context">個別相談 10月4日（日） 終日 明法祭（見学自由） ＊学校紹介コーナー・個別相談 10月10日（土） 14:30 部活体験会,学校説明会（体験会は小4～6生） 予約必要 予約</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/10/11 (Sun)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">個別相談会</span><div class="ev-context">約】 ■９月５日（土）・６日（日） 楠翔祭（小さな個別相談会実施予定）：本校【予約不要】 ■１０月１１日（日） 興学社進学フェア（LINK FOREST）【要予約】 ■１０月２４</div><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/10/13 (Tue)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">説明会</span><div class="ev-context">塾対象説明会 日付 開場時間 内容 6月30日（火） 10:00 2026入試概況・2027入試 10月13日（火） 10:00 2026入試概況・2027入試 ご予約はこちらから 高校入試</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/hs/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/10/18 (Sun)</span><span class="ev-school">大成高等学校(50)</span><span class="ev-kw">学校説明会</span><div class="ev-context">会 10月24日 (土)・11月7日 (土)・11月29日 (日) 文理進学コース 学校説明会 10月18日 (日)・11月3日 (火・祝)・11月15日 (日) 11月23日 (月・祝)</div><div class="ev-link"><a href="https://www.taisei.ed.jp/exam/briefing-inf/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/10/24 (Sat)</span><span class="ev-school">都立昭和高校(66)</span><span class="ev-kw">説明会</span><div class="ev-context">校説明会を実施いたします。 詳細につきましては実施予定日前に公開予定です。 開催予定 第１回 １０月２４日（土） 第２回 １１月１４日（土） ４．個別相談会 中学生お</div><div class="ev-link"><a href="https://www.metro.ed.jp/showa-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/10/24 (Sat)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">学校説明会</span><div class="ev-context">【予約不要】 ■１０月１１日（日） 興学社進学フェア（LINK FOREST）【要予約】 ■１０月２４日（土） 授業公開（午前）(本校)【要予約】 第１回学校説明会（午後）（本</div><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/10/24 (Sat)</span><span class="ev-school">大成高等学校(50)</span><span class="ev-kw">学校説明会</span><div class="ev-context">コース紹介 スクールライフ ウエブパンフレット 活動報告 学校説明会 特別進学コース 学校説明会 10月24日 (土)・11月7日 (土)・11月29日 (日) 文理進学コース 学校説明</div><div class="ev-link"><a href="https://www.taisei.ed.jp/exam/briefing-inf/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/10/25 (Sun)</span><span class="ev-school">都立調布北高校(63)</span><span class="ev-kw">授業公開</span><div class="ev-context">5日（土）及び11月８日（土）に実施します。同日に授業公開も行いますので、ぜひご利用ください。 【10月25日用申し込みフォーム】 https://logoform.jp/form/tmg</div><div class="ev-link"><a href="https://www.metro.ed.jp/chofukita-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/10/25 (Sun)</span><span class="ev-school">都立調布北高校(63)</span><span class="ev-kw">学校説明会</span><div class="ev-context">※ 学校見学会では、学校の概要説明や校舎見学等がメインとなります。入試情報が学校より発信されるのは、10月25日/11月8日の学校説明会のみです。東京都による入試情報の公開時期が10月以降のた</div><div class="ev-link"><a href="https://www.metro.ed.jp/chofukita-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/10/31 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-context">個別相談 10月4日（日） 終日 明法祭（見学自由） ＊学校紹介コーナー・個別相談 10月31日（土） 14:30 秋の学校説明会① 予約必要 11月7日（土） 14:30</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/hs/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/11/03 (Tue)</span><span class="ev-school">明治学院東村山高等学校(65)</span><span class="ev-kw">文化祭</span><div class="ev-context">ント。詳細は後日発表いたします。 公開学校行事 体育祭 １０月３日（土） ヘボン祭（文化祭） １１月３日（火・祝） クリスマスの集い １２月２１日（月） ハンドベル定期演奏会</div><div class="ev-link"><a href="https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/11/03 (Tue)</span><span class="ev-school">大成高等学校(50)</span><span class="ev-kw">学校説明会</span><div class="ev-context">)・11月7日 (土)・11月29日 (日) 文理進学コース 学校説明会 10月18日 (日)・11月3日 (火・祝)・11月15日 (日) 11月23日 (月・祝)・12月5日 (土)</div><div class="ev-link"><a href="https://www.taisei.ed.jp/exam/briefing-inf/" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/11/07 (Sat)</span><span class="ev-school">都立小金井北高校(64)</span><span class="ev-kw">授業公開</span><div class="ev-context">お知らせ 第１回 授業公開のお知らせ 令和８年度の授業公開は４月２５日(土)・６月１３日(土)・１１月７日(土)となっています。 ４月２５日(土)のお知らせはこちら→授業公開のお知らせ</div><div class="ev-link"><a href="https://www.metro.ed.jp/koganeikita-h/news/2026/04/newsentry_160.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/11/07 (Sat)</span><span class="ev-school">都立府中高校(54)</span><span class="ev-kw">学校説明会</span><div class="ev-context">学校説明会◇ 中学3年生とその保護者の方を対象とした学校説明会を下記の日程で行います。 令和８年11月７日（土） 令和８年11月21日（土） 詳細は、後日このページにてお知らせします</div><div class="ev-link"><a href="https://www.metro.ed.jp/fuchu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
-<div class="event-item"><span class="ev-date">2026/11/07 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-context">学校紹介コーナー・個別相談 10月31日（土） 14:30 秋の学校説明会① 予約必要 11月7日（土） 14:30 秋の学校説明会② 予約必要 11月21日（土） 14:3</div><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/hs/" target="_blank">詳細ページへ →</a></div></div>
+      
+    <div class="cal-nav">
+      <button type="button" onclick="calPrev()">◀</button>
+      <span id="cal-title">-</span>
+      <button type="button" onclick="calNext()">▶</button>
+      <button type="button" class="cal-today" onclick="calToday()">今日</button>
+    </div>
+    <div class="cal-legend">
+      <span><span class="cal-dot d-top"></span>挑戦(65+)</span>
+      <span><span class="cal-dot d-hi"></span>実力(58-64)</span>
+      <span><span class="cal-dot d-mid"></span>安全寄り(50-57)</span>
+      <span><span class="cal-dot d-low"></span>安全(~49)</span>
+      <span style="color:#e74c3c;">■日祝</span>
+      <span style="color:#3498db;">■土</span>
+      <span>※日付タップで詳細</span>
+    </div>
+    <div id="cal-grid"></div>
+    <div id="cal-detail"></div>
+
+    <details class="cal-list-wrap" style="margin-top:24px;">
+      <summary>📋 全イベント一覧（96件・日付順リスト）</summary>
+      <div class="event-item is-new"><span class="ev-date">2026/04/22 (Wed)</span><span class="ev-school">錦城高等学校(65)</span><span class="ev-kw">オープンキャンパス</span><span class="new-badge">NEW</span><div class="ev-link"><a href="https://www.kinjo-highschool.ed.jp/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item is-new"><span class="ev-date">2026/04/22 (Wed)</span><span class="ev-school">東京電機大学高等学校(62)</span><span class="ev-kw">説明会</span><span class="new-badge">NEW</span><div class="ev-link"><a href="https://www.dendai.ed.jp/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item is-new"><span class="ev-date">2026/04/22 (Wed)</span><span class="ev-school">都立東大和高校(54)</span><span class="ev-kw">説明会</span><span class="new-badge">NEW</span><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamato-h/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/04/25 (Sat)</span><span class="ev-school">都立小金井北高校(64)</span><span class="ev-kw">授業公開</span><div class="ev-link"><a href="https://www.metro.ed.jp/koganeikita-h/news/2026/04/newsentry_160.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/04/25 (Sat)</span><span class="ev-school">都立府中高校(54)</span><span class="ev-kw">授業公開</span><div class="ev-link"><a href="https://www.metro.ed.jp/fuchu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/04/30 (Thu)</span><span class="ev-school">都立多摩科学技術高校(61)</span><span class="ev-kw">説明会</span><div class="ev-link"><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/news/2026/04/jasso.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item is-new"><span class="ev-date">2026/05/02 (Sat)</span><span class="ev-school">錦城高等学校(65)</span><span class="ev-kw">オープンキャンパス</span><span class="new-badge">NEW</span><div class="ev-link"><a href="https://www.kinjo-highschool.ed.jp/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/05/09 (Sat)</span><span class="ev-school">都立多摩科学技術高校(61)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item is-new"><span class="ev-date">2026/05/09 (Sat)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">学校説明会</span><span class="new-badge">NEW</span><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item is-new"><span class="ev-date">2026/05/09 (Sat)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">見学会</span><span class="new-badge">NEW</span><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/05/23 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/05/30 (Sat)</span><span class="ev-school">都立多摩科学技術高校(61)</span><span class="ev-kw">体験入学</span><div class="ev-link"><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/06/06 (Sat)</span><span class="ev-school">都立府中高校(54)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/fuchu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/06/06 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/06/13 (Sat)</span><span class="ev-school">都立多摩科学技術高校(61)</span><span class="ev-kw">授業公開</span><div class="ev-link"><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/06/13 (Sat)</span><span class="ev-school">都立小金井北高校(64)</span><span class="ev-kw">授業公開</span><div class="ev-link"><a href="https://www.metro.ed.jp/koganeikita-h/news/2026/04/newsentry_160.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/06/13 (Sat)</span><span class="ev-school">明治学院東村山高等学校(65)</span><span class="ev-kw">オープンキャンパス</span><div class="ev-link"><a href="https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/06/20 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/11 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/11 (Sat)</span><span class="ev-school">拓殖大学第一高等学校(61)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.takuichi.ed.jp/admission/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/21 (Tue)</span><span class="ev-school">錦城高等学校(65)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.kinjo-highschool.ed.jp/admission/briefing-session.php" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/22 (Wed)</span><span class="ev-school">都立府中高校(54)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/fuchu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/22 (Wed)</span><span class="ev-school">都立小平西高校(47)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/22 (Wed)</span><span class="ev-school">都立国分寺高校(68)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/22 (Wed)</span><span class="ev-school">拓殖大学第一高等学校(61)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.takuichi.ed.jp/admission/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/23 (Thu)</span><span class="ev-school">都立府中高校(54)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/fuchu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/23 (Thu)</span><span class="ev-school">都立小平西高校(47)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/23 (Thu)</span><span class="ev-school">都立国分寺高校(68)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/24 (Fri)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/24 (Fri)</span><span class="ev-school">都立府中高校(54)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.metro.ed.jp/fuchu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/24 (Fri)</span><span class="ev-school">都立小平西高校(47)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/25 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/27 (Mon)</span><span class="ev-school">都立南平高校(62)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.metro.ed.jp/minamidaira-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/30 (Thu)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/07/31 (Fri)</span><span class="ev-school">都立多摩科学技術高校(61)</span><span class="ev-kw">体験入学</span><div class="ev-link"><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/01 (Sat)</span><span class="ev-school">都立国分寺高校(68)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/01 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/hs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/02 (Sun)</span><span class="ev-school">都立国分寺高校(68)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/04 (Tue)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/06 (Thu)</span><span class="ev-school">都立昭和高校(66)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.metro.ed.jp/showa-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/07 (Fri)</span><span class="ev-school">都立昭和高校(66)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.metro.ed.jp/showa-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/07 (Fri)</span><span class="ev-school">大成高等学校(50)</span><span class="ev-kw">個別相談会</span><div class="ev-link"><a href="https://www.taisei.ed.jp/exam/blog/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/08 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/hs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/19 (Wed)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/21 (Fri)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/22 (Sat)</span><span class="ev-school">錦城高等学校(65)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.kinjo-highschool.ed.jp/admission/briefing-session.php" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/22 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/hs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/28 (Fri)</span><span class="ev-school">拓殖大学第一高等学校(61)</span><span class="ev-kw">文化祭</span><div class="ev-link"><a href="https://www.takuichi.ed.jp/admission/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/29 (Sat)</span><span class="ev-school">都立小平西高校(47)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/08/30 (Sun)</span><span class="ev-school">都立小平西高校(47)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/09/05 (Sat)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/09/05 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/09/12 (Sat)</span><span class="ev-school">拓殖大学第一高等学校(61)</span><span class="ev-kw">文化祭</span><div class="ev-link"><a href="https://www.takuichi.ed.jp/admission/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/09/26 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/03 (Sat)</span><span class="ev-school">都立多摩科学技術高校(61)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/03 (Sat)</span><span class="ev-school">都立府中高校(54)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/fuchu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/03 (Sat)</span><span class="ev-school">錦城高等学校(65)</span><span class="ev-kw">説明会</span><div class="ev-link"><a href="https://www.kinjo-highschool.ed.jp/admission/briefing-session.php" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/03 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/hs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/03 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/03 (Sat)</span><span class="ev-school">明治学院東村山高等学校(65)</span><span class="ev-kw">文化祭</span><div class="ev-link"><a href="https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/03 (Sat)</span><span class="ev-school">都立南平高校(62)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.metro.ed.jp/minamidaira-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/04 (Sun)</span><span class="ev-school">都立国分寺高校(68)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/10 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/11 (Sun)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">個別相談会</span><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/18 (Sun)</span><span class="ev-school">大成高等学校(50)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.taisei.ed.jp/exam/briefing-inf/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/24 (Sat)</span><span class="ev-school">都立昭和高校(66)</span><span class="ev-kw">説明会</span><div class="ev-link"><a href="https://www.metro.ed.jp/showa-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/24 (Sat)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/24 (Sat)</span><span class="ev-school">大成高等学校(50)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.taisei.ed.jp/exam/briefing-inf/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/25 (Sun)</span><span class="ev-school">都立調布北高校(63)</span><span class="ev-kw">授業公開</span><div class="ev-link"><a href="https://www.metro.ed.jp/chofukita-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/25 (Sun)</span><span class="ev-school">都立調布北高校(63)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.metro.ed.jp/chofukita-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/10/31 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/hs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/03 (Tue)</span><span class="ev-school">明治学院東村山高等学校(65)</span><span class="ev-kw">文化祭</span><div class="ev-link"><a href="https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/03 (Tue)</span><span class="ev-school">大成高等学校(50)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.taisei.ed.jp/exam/briefing-inf/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/07 (Sat)</span><span class="ev-school">都立小金井北高校(64)</span><span class="ev-kw">授業公開</span><div class="ev-link"><a href="https://www.metro.ed.jp/koganeikita-h/news/2026/04/newsentry_160.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/07 (Sat)</span><span class="ev-school">都立府中高校(54)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.metro.ed.jp/fuchu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/07 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/hs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/07 (Sat)</span><span class="ev-school">大成高等学校(50)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.taisei.ed.jp/exam/briefing-inf/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/08 (Sun)</span><span class="ev-school">都立調布北高校(63)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.metro.ed.jp/chofukita-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/08 (Sun)</span><span class="ev-school">都立国分寺高校(68)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/14 (Sat)</span><span class="ev-school">都立昭和高校(66)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/showa-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/14 (Sat)</span><span class="ev-school">都立昭和高校(66)</span><span class="ev-kw">個別相談会</span><div class="ev-link"><a href="https://www.metro.ed.jp/showa-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/14 (Sat)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/14 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/21 (Sat)</span><span class="ev-school">都立府中高校(54)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.metro.ed.jp/fuchu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/21 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/hs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/21 (Sat)</span><span class="ev-school">明治学院東村山高等学校(65)</span><span class="ev-kw">オープンキャンパス</span><div class="ev-link"><a href="https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/28 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/hs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/11/29 (Sun)</span><span class="ev-school">大成高等学校(50)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.taisei.ed.jp/exam/briefing-inf/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/12/06 (Sun)</span><span class="ev-school">都立国分寺高校(68)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.metro.ed.jp/kokubunji-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/12/12 (Sat)</span><span class="ev-school">都立昭和高校(66)</span><span class="ev-kw">個別相談会</span><div class="ev-link"><a href="https://www.metro.ed.jp/showa-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/12/12 (Sat)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/12/13 (Sun)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/12/19 (Sat)</span><span class="ev-school">都立府中高校(54)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/fuchu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/12/20 (Sun)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item"><span class="ev-date">2026/12/21 (Mon)</span><span class="ev-school">明治学院東村山高等学校(65)</span><span class="ev-kw">学校見学</span><div class="ev-link"><a href="https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item is-new"><span class="ev-date">2027/01/16 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><span class="new-badge">NEW</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
+    </details>
+
+    <script>
+      window.CAL_EVENTS = [{"id": "abb95c0c31bd261b", "date": "2026-04-22", "school_name": "錦城高等学校", "deviation": 65, "keyword": "オープンキャンパス", "source_url": "https://www.kinjo-highschool.ed.jp/", "is_new": true}, {"id": "e5db51636ea20817", "date": "2026-04-22", "school_name": "東京電機大学高等学校", "deviation": 62, "keyword": "説明会", "source_url": "https://www.dendai.ed.jp/", "is_new": true}, {"id": "ea24a6850f0c0778", "date": "2026-04-22", "school_name": "都立東大和高校", "deviation": 54, "keyword": "説明会", "source_url": "https://www.metro.ed.jp/higashiyamato-h/", "is_new": true}, {"id": "a692bebf190fd2b4", "date": "2026-04-25", "school_name": "都立小金井北高校", "deviation": 64, "keyword": "授業公開", "source_url": "https://www.metro.ed.jp/koganeikita-h/news/2026/04/newsentry_160.html", "is_new": false}, {"id": "132ff063b636667f", "date": "2026-04-25", "school_name": "都立府中高校", "deviation": 54, "keyword": "授業公開", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "b15c39b5519389b0", "date": "2026-04-30", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "説明会", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/news/2026/04/jasso.html", "is_new": false}, {"id": "4a91a193a7c4fa55", "date": "2026-05-02", "school_name": "錦城高等学校", "deviation": 65, "keyword": "オープンキャンパス", "source_url": "https://www.kinjo-highschool.ed.jp/", "is_new": true}, {"id": "be659b188837850d", "date": "2026-05-09", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html", "is_new": false}, {"id": "648daec6158a95ca", "date": "2026-05-09", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": true}, {"id": "269ff93ede31c313", "date": "2026-05-09", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/", "is_new": true}, {"id": "98feca74745f376d", "date": "2026-05-23", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "636a22a70daea9a4", "date": "2026-05-30", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "体験入学", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html", "is_new": false}, {"id": "47a986c3a976c7ef", "date": "2026-06-06", "school_name": "都立府中高校", "deviation": 54, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "403c5ca2b64d120b", "date": "2026-06-06", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "99c2a544a7b51eb7", "date": "2026-06-13", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "授業公開", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html", "is_new": false}, {"id": "3752d31508d1a34c", "date": "2026-06-13", "school_name": "都立小金井北高校", "deviation": 64, "keyword": "授業公開", "source_url": "https://www.metro.ed.jp/koganeikita-h/news/2026/04/newsentry_160.html", "is_new": false}, {"id": "ba494db2896ff383", "date": "2026-06-13", "school_name": "明治学院東村山高等学校", "deviation": 65, "keyword": "オープンキャンパス", "source_url": "https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/", "is_new": false}, {"id": "1d0dc50534bcc10d", "date": "2026-06-20", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "e87836c139592ab7", "date": "2026-07-11", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "778fa25ca3504f1c", "date": "2026-07-11", "school_name": "拓殖大学第一高等学校", "deviation": 61, "keyword": "学校説明会", "source_url": "https://www.takuichi.ed.jp/admission/", "is_new": false}, {"id": "5ad64ef651cfcd8b", "date": "2026-07-21", "school_name": "錦城高等学校", "deviation": 65, "keyword": "学校説明会", "source_url": "https://www.kinjo-highschool.ed.jp/admission/briefing-session.php", "is_new": false}, {"id": "ec1b011a363e8ae2", "date": "2026-07-22", "school_name": "都立府中高校", "deviation": 54, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "acc1e349f1441f4e", "date": "2026-07-22", "school_name": "都立小平西高校", "deviation": 47, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html", "is_new": false}, {"id": "fe88ea0081e8aee7", "date": "2026-07-22", "school_name": "都立国分寺高校", "deviation": 68, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "is_new": false}, {"id": "90f16233e362da20", "date": "2026-07-22", "school_name": "拓殖大学第一高等学校", "deviation": 61, "keyword": "見学会", "source_url": "https://www.takuichi.ed.jp/admission/", "is_new": false}, {"id": "2e12ffdd39d80213", "date": "2026-07-23", "school_name": "都立府中高校", "deviation": 54, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "398964bd79304b69", "date": "2026-07-23", "school_name": "都立小平西高校", "deviation": 47, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html", "is_new": false}, {"id": "6ed6c6e517603949", "date": "2026-07-23", "school_name": "都立国分寺高校", "deviation": 68, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "is_new": false}, {"id": "df216ec214a95cae", "date": "2026-07-24", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "d08f25663c4cbc0f", "date": "2026-07-24", "school_name": "都立府中高校", "deviation": 54, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "54858a6151e8a6e3", "date": "2026-07-24", "school_name": "都立小平西高校", "deviation": 47, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html", "is_new": false}, {"id": "732998987f1b5344", "date": "2026-07-25", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "3f897bf185eacd23", "date": "2026-07-27", "school_name": "都立南平高校", "deviation": 62, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/minamidaira-h/guide/meeting.html", "is_new": false}, {"id": "dd515fa0fbd55271", "date": "2026-07-30", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "55b8da1481e58aca", "date": "2026-07-31", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "体験入学", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html", "is_new": false}, {"id": "918a5942bf9b05ae", "date": "2026-08-01", "school_name": "都立国分寺高校", "deviation": 68, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "is_new": false}, {"id": "48faff5fad8597a9", "date": "2026-08-01", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "a879ea734531185c", "date": "2026-08-02", "school_name": "都立国分寺高校", "deviation": 68, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "is_new": false}, {"id": "69977f7047d824fd", "date": "2026-08-04", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "f21bd84443c49060", "date": "2026-08-06", "school_name": "都立昭和高校", "deviation": 66, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "is_new": false}, {"id": "ccd7eb2586ef4e73", "date": "2026-08-07", "school_name": "都立昭和高校", "deviation": 66, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "is_new": false}, {"id": "7ba5b91671d442d6", "date": "2026-08-07", "school_name": "大成高等学校", "deviation": 50, "keyword": "個別相談会", "source_url": "https://www.taisei.ed.jp/exam/blog/", "is_new": false}, {"id": "a947bf1f6819e7a3", "date": "2026-08-08", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "de40b49995c93479", "date": "2026-08-19", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "c5b361de05c54a89", "date": "2026-08-21", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "a4c9ea68d8930fdc", "date": "2026-08-22", "school_name": "錦城高等学校", "deviation": 65, "keyword": "学校説明会", "source_url": "https://www.kinjo-highschool.ed.jp/admission/briefing-session.php", "is_new": false}, {"id": "be3f499edd15c5f6", "date": "2026-08-22", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "a5b4bb47ee71749b", "date": "2026-08-28", "school_name": "拓殖大学第一高等学校", "deviation": 61, "keyword": "文化祭", "source_url": "https://www.takuichi.ed.jp/admission/", "is_new": false}, {"id": "4491e084f2708ec6", "date": "2026-08-29", "school_name": "都立小平西高校", "deviation": 47, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html", "is_new": false}, {"id": "34adc5d76495271b", "date": "2026-08-30", "school_name": "都立小平西高校", "deviation": 47, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html", "is_new": false}, {"id": "a0a9fd181526ea88", "date": "2026-09-05", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "6ed5c8e6a613e781", "date": "2026-09-05", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "947ebb2b578823bf", "date": "2026-09-12", "school_name": "拓殖大学第一高等学校", "deviation": 61, "keyword": "文化祭", "source_url": "https://www.takuichi.ed.jp/admission/", "is_new": false}, {"id": "6c4a4c3dfc2a937f", "date": "2026-09-26", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "a600b3cd17a9da11", "date": "2026-10-03", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html", "is_new": false}, {"id": "60505a44de3eac1d", "date": "2026-10-03", "school_name": "都立府中高校", "deviation": 54, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "21cb6e5694eec642", "date": "2026-10-03", "school_name": "錦城高等学校", "deviation": 65, "keyword": "説明会", "source_url": "https://www.kinjo-highschool.ed.jp/admission/briefing-session.php", "is_new": false}, {"id": "cd7d93a46ad199e2", "date": "2026-10-03", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "44c22bbd751ac2c7", "date": "2026-10-03", "school_name": "明法高等学校", "deviation": 59, "keyword": "説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "151b4700754be9f5", "date": "2026-10-03", "school_name": "明治学院東村山高等学校", "deviation": 65, "keyword": "文化祭", "source_url": "https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/", "is_new": false}, {"id": "2d8be77af53a8dcd", "date": "2026-10-03", "school_name": "都立南平高校", "deviation": 62, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/minamidaira-h/guide/meeting.html", "is_new": false}, {"id": "d62ef3c60bae9468", "date": "2026-10-04", "school_name": "都立国分寺高校", "deviation": 68, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "is_new": false}, {"id": "3f90e5957e94acfa", "date": "2026-10-10", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "16cc4774ed072dec", "date": "2026-10-11", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "個別相談会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "0320f0098a529ad9", "date": "2026-10-18", "school_name": "大成高等学校", "deviation": 50, "keyword": "学校説明会", "source_url": "https://www.taisei.ed.jp/exam/briefing-inf/", "is_new": false}, {"id": "bd746c7c42e3f09e", "date": "2026-10-24", "school_name": "都立昭和高校", "deviation": 66, "keyword": "説明会", "source_url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "is_new": false}, {"id": "c199a84201125ff7", "date": "2026-10-24", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "f8401c67491befcf", "date": "2026-10-24", "school_name": "大成高等学校", "deviation": 50, "keyword": "学校説明会", "source_url": "https://www.taisei.ed.jp/exam/briefing-inf/", "is_new": false}, {"id": "6638330333951f1c", "date": "2026-10-25", "school_name": "都立調布北高校", "deviation": 63, "keyword": "授業公開", "source_url": "https://www.metro.ed.jp/chofukita-h/guide/meeting.html", "is_new": false}, {"id": "b8209d258922493c", "date": "2026-10-25", "school_name": "都立調布北高校", "deviation": 63, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/chofukita-h/guide/meeting.html", "is_new": false}, {"id": "ee98258e9d319011", "date": "2026-10-31", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "f699ddd898319f5a", "date": "2026-11-03", "school_name": "明治学院東村山高等学校", "deviation": 65, "keyword": "文化祭", "source_url": "https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/", "is_new": false}, {"id": "52a328a4e95328ad", "date": "2026-11-03", "school_name": "大成高等学校", "deviation": 50, "keyword": "学校説明会", "source_url": "https://www.taisei.ed.jp/exam/briefing-inf/", "is_new": false}, {"id": "02fca57f3a789849", "date": "2026-11-07", "school_name": "都立小金井北高校", "deviation": 64, "keyword": "授業公開", "source_url": "https://www.metro.ed.jp/koganeikita-h/news/2026/04/newsentry_160.html", "is_new": false}, {"id": "fbfa69f3747426d1", "date": "2026-11-07", "school_name": "都立府中高校", "deviation": 54, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "09b18179f3914fa4", "date": "2026-11-07", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "1fb65cb414689d8f", "date": "2026-11-07", "school_name": "大成高等学校", "deviation": 50, "keyword": "学校説明会", "source_url": "https://www.taisei.ed.jp/exam/briefing-inf/", "is_new": false}, {"id": "88ea9013ed0644b2", "date": "2026-11-08", "school_name": "都立調布北高校", "deviation": 63, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/chofukita-h/guide/meeting.html", "is_new": false}, {"id": "3be1eead9467c57f", "date": "2026-11-08", "school_name": "都立国分寺高校", "deviation": 68, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "is_new": false}, {"id": "a0e2c2c032950b10", "date": "2026-11-14", "school_name": "都立昭和高校", "deviation": 66, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "is_new": false}, {"id": "faa2534673d1f1ab", "date": "2026-11-14", "school_name": "都立昭和高校", "deviation": 66, "keyword": "個別相談会", "source_url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "is_new": false}, {"id": "e04415d1f88c2d79", "date": "2026-11-14", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "06e77a2a94a53b0d", "date": "2026-11-14", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "ff11ec82da3c6bea", "date": "2026-11-21", "school_name": "都立府中高校", "deviation": 54, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "c4beac037f09ff31", "date": "2026-11-21", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "f185b312d71528a4", "date": "2026-11-21", "school_name": "明治学院東村山高等学校", "deviation": 65, "keyword": "オープンキャンパス", "source_url": "https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/", "is_new": false}, {"id": "19a96d6fe130793f", "date": "2026-11-28", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "8dff77a8b9f940e8", "date": "2026-11-29", "school_name": "大成高等学校", "deviation": 50, "keyword": "学校説明会", "source_url": "https://www.taisei.ed.jp/exam/briefing-inf/", "is_new": false}, {"id": "7e9056dc63e52a84", "date": "2026-12-06", "school_name": "都立国分寺高校", "deviation": 68, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "is_new": false}, {"id": "5d659175ad979262", "date": "2026-12-12", "school_name": "都立昭和高校", "deviation": 66, "keyword": "個別相談会", "source_url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "is_new": false}, {"id": "5b9e48ef13bec7fd", "date": "2026-12-12", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "f9a7960264a24d49", "date": "2026-12-13", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "d0b8dfadbe511840", "date": "2026-12-19", "school_name": "都立府中高校", "deviation": 54, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "fbe8e2124ec73d35", "date": "2026-12-20", "school_name": "明法高等学校", "deviation": 59, "keyword": "説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "3b46dcbba93d11e7", "date": "2026-12-21", "school_name": "明治学院東村山高等学校", "deviation": 65, "keyword": "学校見学", "source_url": "https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/", "is_new": false}, {"id": "f60eeb74af371e49", "date": "2027-01-16", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": true}];
+      window.CAL_INIT_MONTH = "2026-04";
+      if (typeof initCalendar === 'function') initCalendar();
+    </script>
+    
     </div>
   </div>
 
@@ -324,23 +581,23 @@ table.compare tr:hover { background: #fbfcfd; }
 <div class="school-card"><h3>都立国分寺高校</h3><span class="dev">偏差値 68</span><div class="meta">都立-特別推進校 / 国分寺市</div><div class="meta" style="margin-top:4px;">💰 入学金 5,650円 / 年間 118,800円</div><div class="next-event">📅 次回: 2026/07/22 (Wed) 見学会</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/kokubunji-h/guide/meeting.html" target="_blank">説明会ページへ →</a></div></div>
 <div class="school-card"><h3>都立昭和高校</h3><span class="dev">偏差値 66</span><div class="meta">都立-普通科 / 昭島市</div><div class="meta" style="margin-top:4px;">💰 入学金 5,650円 / 年間 118,800円</div><div class="next-event">📅 次回: 2026/08/06 (Thu) 学校説明会</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/showa-h/guide/meeting.html" target="_blank">説明会ページへ →</a></div></div>
 <div class="school-card"><h3>都立武蔵野北高校</h3><span class="dev">偏差値 65</span><div class="meta">都立-推進校 / 武蔵野市</div><div class="meta" style="margin-top:4px;">💰 入学金 5,650円 / 年間 118,800円</div><div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/musashinokita-h/guide/meeting.html" target="_blank">説明会ページへ →</a></div></div>
-<div class="school-card"><h3>錦城高等学校</h3><span class="dev">偏差値 65</span><div class="meta">私立-共学 / 小平市</div><div class="meta" style="margin-top:4px;">💰 入学金 230,000円 / 年間 610,000円</div><div class="next-event">📅 次回: 2026/07/21 (Tue) 学校説明会</div><div style="margin-top:8px;"><a href="https://www.kinjo-highschool.ed.jp/" target="_blank">説明会ページへ →</a></div></div>
+<div class="school-card"><h3>錦城高等学校</h3><span class="dev">偏差値 65</span><div class="meta">私立-共学 / 小平市</div><div class="meta" style="margin-top:4px;">💰 入学金 230,000円 / 年間 610,000円</div><div class="next-event">📅 次回: 2026/04/22 (Wed) オープンキャンパス</div><div style="margin-top:8px;"><a href="https://www.kinjo-highschool.ed.jp/" target="_blank">説明会ページへ →</a></div></div>
 <div class="school-card"><h3>明治学院東村山高等学校</h3><span class="dev">偏差値 65</span><div class="meta">私立-共学 / 東村山市</div><div class="meta" style="margin-top:4px;">💰 入学金 280,000円 / 年間 732,000円</div><div class="next-event">📅 次回: 2026/06/13 (Sat) オープンキャンパス</div><div style="margin-top:8px;"><a href="https://www.meijigakuin-higashi.ed.jp/" target="_blank">説明会ページへ →</a></div></div>
 <div class="school-card"><h3>都立小金井北高校</h3><span class="dev">偏差値 64</span><div class="meta">都立-推進校 / 小金井市</div><div class="meta" style="margin-top:4px;">💰 入学金 5,650円 / 年間 118,800円</div><div class="next-event">📅 次回: 2026/04/25 (Sat) 授業公開</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/koganeikita-h/guide/meeting.html" target="_blank">説明会ページへ →</a></div></div>
 <div class="school-card"><h3>都立日野台高校</h3><span class="dev">偏差値 64</span><div class="meta">都立-普通科 / 日野市</div><div class="meta" style="margin-top:4px;">💰 入学金 5,650円 / 年間 118,800円</div><div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/hinodai-h/guide/meeting.html" target="_blank">説明会ページへ →</a></div></div>
 <div class="school-card"><h3>都立調布北高校</h3><span class="dev">偏差値 63</span><div class="meta">都立-推進校 / 調布市</div><div class="meta" style="margin-top:4px;">💰 入学金 5,650円 / 年間 118,800円</div><div class="next-event">📅 次回: 2026/10/25 (Sun) 授業公開</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/chofukita-h/guide/meeting.html" target="_blank">説明会ページへ →</a></div></div>
-<div class="school-card"><h3>東京電機大学高等学校</h3><span class="dev">偏差値 62</span><div class="meta">私立-共学 / 小金井市</div><div class="meta" style="margin-top:4px;">💰 入学金 250,000円 / 年間 720,000円</div><div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div><div style="margin-top:8px;"><a href="https://www.dendai.ed.jp/" target="_blank">説明会ページへ →</a></div></div>
+<div class="school-card"><h3>東京電機大学高等学校</h3><span class="dev">偏差値 62</span><div class="meta">私立-共学 / 小金井市</div><div class="meta" style="margin-top:4px;">💰 入学金 250,000円 / 年間 720,000円</div><div class="next-event">📅 次回: 2026/04/22 (Wed) 説明会</div><div style="margin-top:8px;"><a href="https://www.dendai.ed.jp/" target="_blank">説明会ページへ →</a></div></div>
 <div class="school-card"><h3>都立南平高校</h3><span class="dev">偏差値 62</span><div class="meta">都立-普通科 / 日野市</div><div class="meta" style="margin-top:4px;">💰 入学金 5,650円 / 年間 118,800円</div><div class="next-event">📅 次回: 2026/07/27 (Mon) 学校説明会</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/minamidaira-h/guide/meeting.html" target="_blank">説明会ページへ →</a></div></div>
 <div class="school-card"><h3>都立多摩科学技術高校</h3><span class="dev">偏差値 61</span><div class="meta">都立-科学技術科 / 小金井市</div><div class="meta" style="margin-top:4px;">💰 入学金 5,650円 / 年間 118,800円</div><div class="next-event">📅 次回: 2026/04/30 (Thu) 説明会</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html" target="_blank">説明会ページへ →</a></div></div>
 <div class="school-card"><h3>拓殖大学第一高等学校</h3><span class="dev">偏差値 61</span><div class="meta">私立-共学 / 武蔵村山市</div><div class="meta" style="margin-top:4px;">💰 入学金 250,000円 / 年間 678,000円</div><div class="next-event">📅 次回: 2026/07/11 (Sat) 学校説明会</div><div style="margin-top:8px;"><a href="https://www.takuichi.ed.jp/" target="_blank">説明会ページへ →</a></div></div>
 <div class="school-card"><h3>都立小平高校</h3><span class="dev">偏差値 59</span><div class="meta">都立-普通科/外国語 / 小平市</div><div class="meta" style="margin-top:4px;">💰 入学金 5,650円 / 年間 118,800円</div><div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/kodaira-h/guide/meeting.html" target="_blank">説明会ページへ →</a></div></div>
-<div class="school-card"><h3>明法高等学校</h3><span class="dev">偏差値 59</span><div class="meta">私立-共学 / 東村山市</div><div class="meta" style="margin-top:4px;">💰 入学金 250,000円 / 年間 612,000円</div><div class="next-event">📅 次回: 2026/04/25 (Sat) 学校説明会</div><div style="margin-top:8px;"><a href="https://www.meiho.ed.jp/" target="_blank">説明会ページへ →</a></div></div>
+<div class="school-card"><h3>明法高等学校</h3><span class="dev">偏差値 59</span><div class="meta">私立-共学 / 東村山市</div><div class="meta" style="margin-top:4px;">💰 入学金 250,000円 / 年間 612,000円</div><div class="next-event">📅 次回: 2026/05/23 (Sat) 学校説明会</div><div style="margin-top:8px;"><a href="https://www.meiho.ed.jp/" target="_blank">説明会ページへ →</a></div></div>
 <div class="school-card"><h3>聖徳学園高等学校</h3><span class="dev">偏差値 59</span><div class="meta">私立-共学 / 武蔵野市</div><div class="meta" style="margin-top:4px;">💰 入学金 180,000円 / 年間 837,600円</div><div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div><div style="margin-top:8px;"><a href="https://jsh.shotoku.ed.jp/" target="_blank">説明会ページへ →</a></div></div>
 <div class="school-card"><h3>都立小平南高校</h3><span class="dev">偏差値 58</span><div class="meta">都立-普通科 / 小平市</div><div class="meta" style="margin-top:4px;">💰 入学金 5,650円 / 年間 118,800円</div><div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/kodairaminami-h/guide/meeting.html" target="_blank">説明会ページへ →</a></div></div>
 <div class="school-card"><h3>都立清瀬高校</h3><span class="dev">偏差値 58</span><div class="meta">都立-普通科 / 清瀬市</div><div class="meta" style="margin-top:4px;">💰 入学金 5,650円 / 年間 118,800円</div><div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/kiyose-h/guide/meeting.html" target="_blank">説明会ページへ →</a></div></div>
-<div class="school-card"><h3>都立東大和南高校</h3><span class="dev">偏差値 57</span><div class="meta">都立-普通科 / 東大和市</div><div class="meta" style="margin-top:4px;">💰 入学金 5,650円 / 年間 118,800円</div><div class="next-event">📅 次回: 2026/05/09 (Sat) 見学会</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">説明会ページへ →</a></div></div>
+<div class="school-card"><h3>都立東大和南高校</h3><span class="dev">偏差値 57</span><div class="meta">都立-普通科 / 東大和市</div><div class="meta" style="margin-top:4px;">💰 入学金 5,650円 / 年間 118,800円</div><div class="next-event">📅 次回: 2026/05/09 (Sat) 学校説明会</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">説明会ページへ →</a></div></div>
 <div class="school-card"><h3>都立府中高校</h3><span class="dev">偏差値 54</span><div class="meta">都立-普通科 / 府中市</div><div class="meta" style="margin-top:4px;">💰 入学金 5,650円 / 年間 118,800円</div><div class="next-event">📅 次回: 2026/04/25 (Sat) 授業公開</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/fuchu-h/guide/meeting.html" target="_blank">説明会ページへ →</a></div></div>
-<div class="school-card"><h3>都立東大和高校</h3><span class="dev">偏差値 54</span><div class="meta">都立-普通科 / 東大和市</div><div class="meta" style="margin-top:4px;">💰 入学金 5,650円 / 年間 118,800円</div><div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/higashiyamato-h/guide/meeting.html" target="_blank">説明会ページへ →</a></div></div>
+<div class="school-card"><h3>都立東大和高校</h3><span class="dev">偏差値 54</span><div class="meta">都立-普通科 / 東大和市</div><div class="meta" style="margin-top:4px;">💰 入学金 5,650円 / 年間 118,800円</div><div class="next-event">📅 次回: 2026/04/22 (Wed) 説明会</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/higashiyamato-h/guide/meeting.html" target="_blank">説明会ページへ →</a></div></div>
 <div class="school-card"><h3>都立田無高校</h3><span class="dev">偏差値 50</span><div class="meta">都立-普通科 / 西東京市</div><div class="meta" style="margin-top:4px;">💰 入学金 5,650円 / 年間 118,800円</div><div class="next-event" style="background:#f0f4f8; color:#95a5a6;">次回イベント未検出</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/tanashi-h/guide/meeting.html" target="_blank">説明会ページへ →</a></div></div>
 <div class="school-card"><h3>大成高等学校</h3><span class="dev">偏差値 50</span><div class="meta">私立-共学 / 三鷹市</div><div class="meta" style="margin-top:4px;">💰 入学金 250,000円 / 年間 596,600円</div><div class="next-event">📅 次回: 2026/08/07 (Fri) 個別相談会</div><div style="margin-top:8px;"><a href="https://www.taisei.ed.jp/" target="_blank">説明会ページへ →</a></div></div>
 <div class="school-card"><h3>都立小平西高校</h3><span class="dev">偏差値 47</span><div class="meta">都立-普通科 / 小平市</div><div class="meta" style="margin-top:4px;">💰 入学金 5,650円 / 年間 118,800円</div><div class="next-event">📅 次回: 2026/07/22 (Wed) 見学会</div><div style="margin-top:8px;"><a href="https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html" target="_blank">説明会ページへ →</a></div></div>
@@ -364,24 +621,24 @@ table.compare tr:hover { background: #fbfcfd; }
 </tr></thead><tbody>
 <tr><td><a href="https://www.metro.ed.jp/kokubunji-h/guide/meeting.html" target="_blank">都立国分寺高校</a></td><td>68</td><td>都立-特別推進校</td><td>国分寺市</td><td>5,650</td><td>118,800</td><td>2026/07/22 (Wed) 見学会</td><td>7</td></tr>
 <tr><td><a href="https://www.metro.ed.jp/showa-h/guide/meeting.html" target="_blank">都立昭和高校</a></td><td>66</td><td>都立-普通科</td><td>昭島市</td><td>5,650</td><td>118,800</td><td>2026/08/06 (Thu) 学校説明会</td><td>6</td></tr>
-<tr><td><a href="https://www.metro.ed.jp/musashinokita-h/guide/meeting.html" target="_blank">都立武蔵野北高校</a></td><td>65</td><td>都立-推進校</td><td>武蔵野市</td><td>5,650</td><td>118,800</td><td>-</td><td>2</td></tr>
-<tr><td><a href="https://www.kinjo-highschool.ed.jp/" target="_blank">錦城高等学校</a></td><td>65</td><td>私立-共学</td><td>小平市</td><td>230,000</td><td>610,000</td><td>2026/07/21 (Tue) 学校説明会</td><td>3</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/musashinokita-h/guide/meeting.html" target="_blank">都立武蔵野北高校</a></td><td>65</td><td>都立-推進校</td><td>武蔵野市</td><td>5,650</td><td>118,800</td><td>-</td><td>0</td></tr>
+<tr><td><a href="https://www.kinjo-highschool.ed.jp/" target="_blank">錦城高等学校</a></td><td>65</td><td>私立-共学</td><td>小平市</td><td>230,000</td><td>610,000</td><td>2026/04/22 (Wed) オープンキャンパス</td><td>5</td></tr>
 <tr><td><a href="https://www.meijigakuin-higashi.ed.jp/" target="_blank">明治学院東村山高等学校</a></td><td>65</td><td>私立-共学</td><td>東村山市</td><td>280,000</td><td>732,000</td><td>2026/06/13 (Sat) オープンキャンパス</td><td>5</td></tr>
 <tr><td><a href="https://www.metro.ed.jp/koganeikita-h/guide/meeting.html" target="_blank">都立小金井北高校</a></td><td>64</td><td>都立-推進校</td><td>小金井市</td><td>5,650</td><td>118,800</td><td>2026/04/25 (Sat) 授業公開</td><td>3</td></tr>
 <tr><td><a href="https://www.metro.ed.jp/hinodai-h/guide/meeting.html" target="_blank">都立日野台高校</a></td><td>64</td><td>都立-普通科</td><td>日野市</td><td>5,650</td><td>118,800</td><td>-</td><td>0</td></tr>
 <tr><td><a href="https://www.metro.ed.jp/chofukita-h/guide/meeting.html" target="_blank">都立調布北高校</a></td><td>63</td><td>都立-推進校</td><td>調布市</td><td>5,650</td><td>118,800</td><td>2026/10/25 (Sun) 授業公開</td><td>3</td></tr>
-<tr><td><a href="https://www.dendai.ed.jp/" target="_blank">東京電機大学高等学校</a></td><td>62</td><td>私立-共学</td><td>小金井市</td><td>250,000</td><td>720,000</td><td>-</td><td>0</td></tr>
+<tr><td><a href="https://www.dendai.ed.jp/" target="_blank">東京電機大学高等学校</a></td><td>62</td><td>私立-共学</td><td>小金井市</td><td>250,000</td><td>720,000</td><td>2026/04/22 (Wed) 説明会</td><td>1</td></tr>
 <tr><td><a href="https://www.metro.ed.jp/minamidaira-h/guide/meeting.html" target="_blank">都立南平高校</a></td><td>62</td><td>都立-普通科</td><td>日野市</td><td>5,650</td><td>118,800</td><td>2026/07/27 (Mon) 学校説明会</td><td>2</td></tr>
-<tr><td><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html" target="_blank">都立多摩科学技術高校</a></td><td>61</td><td>都立-科学技術科</td><td>小金井市</td><td>5,650</td><td>118,800</td><td>2026/04/30 (Thu) 説明会</td><td>9</td></tr>
-<tr><td><a href="https://www.takuichi.ed.jp/" target="_blank">拓殖大学第一高等学校</a></td><td>61</td><td>私立-共学</td><td>武蔵村山市</td><td>250,000</td><td>678,000</td><td>2026/07/11 (Sat) 学校説明会</td><td>5</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html" target="_blank">都立多摩科学技術高校</a></td><td>61</td><td>都立-科学技術科</td><td>小金井市</td><td>5,650</td><td>118,800</td><td>2026/04/30 (Thu) 説明会</td><td>6</td></tr>
+<tr><td><a href="https://www.takuichi.ed.jp/" target="_blank">拓殖大学第一高等学校</a></td><td>61</td><td>私立-共学</td><td>武蔵村山市</td><td>250,000</td><td>678,000</td><td>2026/07/11 (Sat) 学校説明会</td><td>4</td></tr>
 <tr><td><a href="https://www.metro.ed.jp/kodaira-h/guide/meeting.html" target="_blank">都立小平高校</a></td><td>59</td><td>都立-普通科/外国語</td><td>小平市</td><td>5,650</td><td>118,800</td><td>-</td><td>0</td></tr>
-<tr><td><a href="https://www.meiho.ed.jp/" target="_blank">明法高等学校</a></td><td>59</td><td>私立-共学</td><td>東村山市</td><td>250,000</td><td>612,000</td><td>2026/04/25 (Sat) 学校説明会</td><td>26</td></tr>
+<tr><td><a href="https://www.meiho.ed.jp/" target="_blank">明法高等学校</a></td><td>59</td><td>私立-共学</td><td>東村山市</td><td>250,000</td><td>612,000</td><td>2026/05/23 (Sat) 学校説明会</td><td>21</td></tr>
 <tr><td><a href="https://jsh.shotoku.ed.jp/" target="_blank">聖徳学園高等学校</a></td><td>59</td><td>私立-共学</td><td>武蔵野市</td><td>180,000</td><td>837,600</td><td>-</td><td>0</td></tr>
 <tr><td><a href="https://www.metro.ed.jp/kodairaminami-h/guide/meeting.html" target="_blank">都立小平南高校</a></td><td>58</td><td>都立-普通科</td><td>小平市</td><td>5,650</td><td>118,800</td><td>-</td><td>0</td></tr>
 <tr><td><a href="https://www.metro.ed.jp/kiyose-h/guide/meeting.html" target="_blank">都立清瀬高校</a></td><td>58</td><td>都立-普通科</td><td>清瀬市</td><td>5,650</td><td>118,800</td><td>-</td><td>0</td></tr>
-<tr><td><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">都立東大和南高校</a></td><td>57</td><td>都立-普通科</td><td>東大和市</td><td>5,650</td><td>118,800</td><td>2026/05/09 (Sat) 見学会</td><td>13</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">都立東大和南高校</a></td><td>57</td><td>都立-普通科</td><td>東大和市</td><td>5,650</td><td>118,800</td><td>2026/05/09 (Sat) 学校説明会</td><td>12</td></tr>
 <tr><td><a href="https://www.metro.ed.jp/fuchu-h/guide/meeting.html" target="_blank">都立府中高校</a></td><td>54</td><td>都立-普通科</td><td>府中市</td><td>5,650</td><td>118,800</td><td>2026/04/25 (Sat) 授業公開</td><td>9</td></tr>
-<tr><td><a href="https://www.metro.ed.jp/higashiyamato-h/guide/meeting.html" target="_blank">都立東大和高校</a></td><td>54</td><td>都立-普通科</td><td>東大和市</td><td>5,650</td><td>118,800</td><td>-</td><td>0</td></tr>
+<tr><td><a href="https://www.metro.ed.jp/higashiyamato-h/guide/meeting.html" target="_blank">都立東大和高校</a></td><td>54</td><td>都立-普通科</td><td>東大和市</td><td>5,650</td><td>118,800</td><td>2026/04/22 (Wed) 説明会</td><td>1</td></tr>
 <tr><td><a href="https://www.metro.ed.jp/tanashi-h/guide/meeting.html" target="_blank">都立田無高校</a></td><td>50</td><td>都立-普通科</td><td>西東京市</td><td>5,650</td><td>118,800</td><td>-</td><td>0</td></tr>
 <tr><td><a href="https://www.taisei.ed.jp/" target="_blank">大成高等学校</a></td><td>50</td><td>私立-共学</td><td>三鷹市</td><td>250,000</td><td>596,600</td><td>2026/08/07 (Fri) 個別相談会</td><td>6</td></tr>
 <tr><td><a href="https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html" target="_blank">都立小平西高校</a></td><td>47</td><td>都立-普通科</td><td>小平市</td><td>5,650</td><td>118,800</td><td>2026/07/22 (Wed) 見学会</td><td>5</td></tr>
@@ -791,6 +1048,211 @@ function sortTable(tableId, colIdx, type) {
     table.tHead.rows[0].querySelectorAll('th').forEach(h => h.dataset.asc = '');
     th.dataset.asc = asc;
 }
+
+/* ===== カレンダーグリッド ===== */
+var calCurrent = null;  // Date (1日)
+var calSelectedKey = null; // 'YYYY-MM-DD'
+
+// 日本の祝日（2026/2027 受験準備期間をカバー）
+// 出典: 内閣府「国民の祝日」
+var CAL_HOLIDAYS = {
+    // 2026
+    '2026-01-01': '元日',
+    '2026-01-12': '成人の日',
+    '2026-02-11': '建国記念の日',
+    '2026-02-23': '天皇誕生日',
+    '2026-03-20': '春分の日',
+    '2026-04-29': '昭和の日',
+    '2026-05-03': '憲法記念日',
+    '2026-05-04': 'みどりの日',
+    '2026-05-05': 'こどもの日',
+    '2026-05-06': '振替休日',
+    '2026-07-20': '海の日',
+    '2026-08-11': '山の日',
+    '2026-09-21': '敬老の日',
+    '2026-09-22': '国民の休日',
+    '2026-09-23': '秋分の日',
+    '2026-10-12': 'スポーツの日',
+    '2026-11-03': '文化の日',
+    '2026-11-23': '勤労感謝の日',
+    // 2027
+    '2027-01-01': '元日',
+    '2027-01-11': '成人の日',
+    '2027-02-11': '建国記念の日',
+    '2027-02-23': '天皇誕生日',
+    '2027-03-21': '春分の日',
+    '2027-03-22': '振替休日',
+    '2027-04-29': '昭和の日',
+    '2027-05-03': '憲法記念日',
+    '2027-05-04': 'みどりの日',
+    '2027-05-05': 'こどもの日'
+};
+
+function calDevClass(d) {
+    d = Number(d) || 0;
+    if (d >= 65) return 'd-top';
+    if (d >= 58) return 'd-hi';
+    if (d >= 50) return 'd-mid';
+    return 'd-low';
+}
+function calShortName(name) {
+    return (name || '').replace('都立', '').replace('高等学校', '').replace('高校', '');
+}
+function calPad(n) { return n < 10 ? '0' + n : '' + n; }
+
+function initCalendar() {
+    if (!window.CAL_INIT_MONTH) return;
+    var parts = window.CAL_INIT_MONTH.split('-');
+    calCurrent = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, 1);
+    calSelectedKey = null;
+    // クリック委譲（セルの data-dk にISO日付を埋め込む）
+    var grid = document.getElementById('cal-grid');
+    if (grid && !grid.dataset.bound) {
+        grid.addEventListener('click', function (ev) {
+            var cell = ev.target.closest('[data-dk]');
+            if (cell && cell.classList.contains('has-events')) {
+                showCalDetail(cell.getAttribute('data-dk'));
+            }
+        });
+        grid.dataset.bound = '1';
+    }
+    renderCalendar();
+}
+function calPrev() { if (!calCurrent) return; calCurrent.setMonth(calCurrent.getMonth() - 1); renderCalendar(); }
+function calNext() { if (!calCurrent) return; calCurrent.setMonth(calCurrent.getMonth() + 1); renderCalendar(); }
+function calToday() {
+    var t = new Date();
+    calCurrent = new Date(t.getFullYear(), t.getMonth(), 1);
+    renderCalendar();
+}
+
+function renderCalendar() {
+    var grid = document.getElementById('cal-grid');
+    var title = document.getElementById('cal-title');
+    if (!grid || !calCurrent) return;
+    var y = calCurrent.getFullYear();
+    var m = calCurrent.getMonth();
+    title.textContent = y + '年' + (m + 1) + '月';
+
+    var events = (window.CAL_EVENTS || []).filter(function (e) {
+        var p = e.date.split('-');
+        return parseInt(p[0], 10) === y && parseInt(p[1], 10) === m + 1;
+    });
+    var byDay = {};
+    events.forEach(function (e) {
+        var d = parseInt(e.date.split('-')[2], 10);
+        (byDay[d] = byDay[d] || []).push(e);
+    });
+
+    var today = new Date();
+    var firstDow = new Date(y, m, 1).getDay();
+    var daysInMonth = new Date(y, m + 1, 0).getDate();
+
+    var wd = ['日', '月', '火', '水', '木', '金', '土'];
+    var html = '<div class="cal-weekdays">';
+    for (var i = 0; i < 7; i++) {
+        var wdCls = i === 0 ? ' sun' : (i === 6 ? ' sat' : '');
+        html += '<div class="cal-wd' + wdCls + '">' + wd[i] + '</div>';
+    }
+    html += '</div><div class="cal-days">';
+
+    for (var s = 0; s < firstDow; s++) {
+        html += '<div class="cal-cell empty"></div>';
+    }
+
+    for (var d = 1; d <= daysInMonth; d++) {
+        var evs = byDay[d] || [];
+        var isToday = (y === today.getFullYear() && m === today.getMonth() && d === today.getDate());
+        var dow = (firstDow + d - 1) % 7;
+        var dateKey = y + '-' + calPad(m + 1) + '-' + calPad(d);
+        var holiday = CAL_HOLIDAYS[dateKey];
+        var cls = 'cal-cell';
+        if (isToday) cls += ' today';
+        if (evs.length > 0) cls += ' has-events';
+        if (dow === 0) cls += ' sun';
+        if (dow === 6) cls += ' sat';
+        if (holiday) cls += ' holiday';
+        if (calSelectedKey === dateKey) cls += ' selected';
+        var dayLabel = '' + d;
+        if (holiday) {
+            dayLabel += '<span class="cal-holiday-name" title="' +
+                holiday.replace(/"/g, '&quot;') + '">' + holiday + '</span>';
+        }
+        var inner = '<div class="cal-day">' + dayLabel + '</div>';
+        if (evs.length > 0) {
+            inner += '<div class="cal-items">';
+            var limit = Math.min(evs.length, 3);
+            for (var k = 0; k < limit; k++) {
+                var e = evs[k];
+                var devCls = calDevClass(e.deviation);
+                var newCls = e.is_new ? ' is-new' : '';
+                inner += '<div class="cal-item ' + devCls + newCls + '" title="' +
+                    (e.school_name + ' ' + e.keyword).replace(/"/g, '&quot;') + '">' +
+                    calShortName(e.school_name) + '</div>';
+            }
+            if (evs.length > limit) {
+                inner += '<div class="cal-more">+' + (evs.length - limit) + '</div>';
+            }
+            inner += '</div>';
+        }
+        html += '<div class="' + cls + '" data-dk="' + dateKey + '">' + inner + '</div>';
+    }
+    html += '</div>';
+    grid.innerHTML = html;
+
+    // 選択中の詳細があれば再描画（同月内なら維持）
+    if (calSelectedKey && calSelectedKey.indexOf(y + '-' + calPad(m + 1) + '-') === 0) {
+        renderCalDetail(calSelectedKey);
+    } else {
+        var detail = document.getElementById('cal-detail');
+        if (detail) detail.innerHTML = '';
+        calSelectedKey = null;
+    }
+}
+
+function showCalDetail(dateKey) {
+    calSelectedKey = dateKey;
+    renderCalDetail(dateKey);
+    // 選択セルのハイライト更新
+    renderCalendar();
+    var el = document.getElementById('cal-detail');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function renderCalDetail(dateKey) {
+    var detail = document.getElementById('cal-detail');
+    if (!detail) return;
+    var evs = (window.CAL_EVENTS || []).filter(function (e) { return e.date === dateKey; });
+    if (evs.length === 0) { detail.innerHTML = ''; return; }
+    var parts = dateKey.split('-').map(Number);
+    var dt = new Date(parts[0], parts[1] - 1, parts[2]);
+    var wd = ['日', '月', '火', '水', '木', '金', '土'][dt.getDay()];
+    var html = '<h3>📅 ' + parts[0] + '年' + parts[1] + '月' + parts[2] + '日(' + wd + ') のイベント ' + evs.length + '件</h3>';
+    evs.forEach(function (e) {
+        var devCls = calDevClass(e.deviation);
+        var newBadge = e.is_new ? '<span class="new-badge">NEW</span>' : '';
+        html += '<div class="cal-detail-item ' + devCls + '">' +
+            '<div class="cdi-top">' +
+            '<span class="cal-dot ' + devCls + '"></span>' +
+            '<strong>' + e.school_name + (e.deviation ? '(' + e.deviation + ')' : '') + '</strong>' +
+            '<span class="ev-kw">' + e.keyword + '</span>' + newBadge +
+            '</div>' +
+            '<div class="cdi-link"><a href="' + e.source_url + '" target="_blank" rel="noopener">詳細ページへ →</a></div>' +
+            '</div>';
+    });
+    detail.innerHTML = html;
+}
+
+// タブ切替時、カレンダータブを開いたら初期化（未初期化の場合）
+(function () {
+    var _origShowTab = showTab;
+    showTab = function (id, btn) {
+        _origShowTab(id, btn);
+        if (id === 'tab-calendar' && calCurrent === null) {
+            initCalendar();
+        }
+    };
+})();
 </script>
 </body>
 </html>

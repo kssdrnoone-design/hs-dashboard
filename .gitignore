@@ -15,6 +15,10 @@ data/
 # ===== 日次アーカイブHTML（index.htmlだけ残す） =====
 reports/dashboard_*.html
 
+# ===== 開発用の一時スクリプト =====
+_regen_from_latest.py
+_tmpcheck.js
+
 # ===== Python =====
 __pycache__/
 *.py[cod]
