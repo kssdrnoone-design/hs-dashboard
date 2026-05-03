@@ -1406,7 +1406,7 @@ function rsvFormatDate(dstr) {
     if (!m) return dstr || '';
     var d = new Date(+m[1], +m[2]-1, +m[3]);
     var wd = '月火水木金土日'[d.getDay() === 0 ? 6 : d.getDay() - 1];
-    return d.getFullYear() + '/' + d.getMonth()+1 + '/' + d.getDate() + '(' + wd + ')';
+    return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate() + '(' + wd + ')';
 }
 
 function rsvSorted(items) {
