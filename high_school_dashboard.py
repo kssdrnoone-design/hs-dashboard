@@ -1437,11 +1437,11 @@ function rsvUpdateBadge(items) {
 
 function rsvInit() {
     rsvRender();
-    // 起動時にGASから最新を取得（URL未設定なら何もしない）
+    // 起動時にGASから最新を取得（埋め込み default URL があれば自動同期）
     if (typeof gasUrl === 'function' && gasUrl()) {
         rsvSyncDown(/*silent=*/true);
     } else {
-        rsvSetSyncStatus('家族と共有したい場合は「⚙️ 共有設定」でGAS URLを登録してください', 'warn');
+        rsvSetSyncStatus('GAS URL未設定。家族と共有するには「⚙️ 共有設定」から登録してください', 'warn');
     }
 }
 
@@ -1677,7 +1677,10 @@ document.addEventListener('rsv:changed', function(){
 var GAS_URL_KEY = 'hs_gas_url_v1';
 var RSV_LAST_SYNC_KEY = 'hs_rsv_last_sync_v1';
 
-function gasUrl() { return localStorage.getItem(GAS_URL_KEY) || ''; }
+function gasUrl() {
+    // localStorage の設定が最優先、無ければアプリに埋め込まれた default URL を使う
+    return localStorage.getItem(GAS_URL_KEY) || window.RSV_GAS_DEFAULT || '';
+}
 function gasSetUrl(u) {
     if (u) localStorage.setItem(GAS_URL_KEY, u);
     else localStorage.removeItem(GAS_URL_KEY);
@@ -2030,6 +2033,7 @@ def render_reserved_tab(reserved, schools, config=None):
     schools_json = json.dumps(schools_lookup, ensure_ascii=False)
     home_lat_js = "null" if home_lat is None else str(home_lat)
     home_lng_js = "null" if home_lng is None else str(home_lng)
+    gas_url_js = json.dumps((config or {}).get("gas_url", ""), ensure_ascii=False)
 
     return f"""
     <div id="reserved-root">
@@ -2056,6 +2060,7 @@ def render_reserved_tab(reserved, schools, config=None):
       window.RSV_SEED = {seed_json};
       window.RSV_SCHOOLS = {schools_json};
       window.RSV_HOME = {{"lat": {home_lat_js}, "lng": {home_lng_js}}};
+      window.RSV_GAS_DEFAULT = {gas_url_js};
       if (typeof rsvInit === 'function') rsvInit();
     </script>
     """

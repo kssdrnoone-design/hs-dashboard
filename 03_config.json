@@ -5,6 +5,7 @@
     "lat": 35.717,
     "lng": 139.4698
   },
+  "gas_url": "https://script.google.com/macros/s/AKfycbyzlBymhHYgsiizdfftZaZZX6MBZO5RZw2kN80ev-AH6F0ZrsM4M2hyPUbwSeIR_fPW-w/exec",
   "scrape": {
     "timeout_ms": 20000,
     "wait_between_ms": 2000,
