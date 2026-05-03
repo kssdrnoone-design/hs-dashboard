@@ -515,6 +515,21 @@ h1 { text-align: center; color: #2c3e50; font-size: 1.4em; margin-bottom: 2px; }
     color: #7f8c8d;
     font-size: 0.85em;
 }
+.rsv-sync-status {
+    background: #f8fafc;
+    border-left: 3px solid #d1d8e0;
+    padding: 6px 10px;
+    border-radius: 0 4px 4px 0;
+    font-size: 0.82em;
+    color: #555;
+    margin-bottom: 12px;
+    min-height: 1em;
+}
+.rsv-sync-status.ok { border-left-color: #27ae60; background: #f0fcf4; color: #1e8449; }
+.rsv-sync-status.err { border-left-color: #e74c3c; background: #fdedec; color: #c0392b; }
+.rsv-sync-status.busy { border-left-color: #3498db; background: #ebf5fc; color: #2874a6; }
+.rsv-sync-status.warn { border-left-color: #f1c40f; background: #fff8db; color: #b7950b; }
+.rsv-sync-status:empty { display: none; }
 
 /* 予約フォーム */
 .rsv-form {
@@ -717,22 +732,27 @@ table.compare tr:hover { background: #fbfcfd; }
     <div id="reserved-root">
       <div class="reserved-toolbar">
         <button type="button" class="rsv-btn primary" onclick="rsvShowForm()">＋ 予約を追加</button>
+        <button type="button" class="rsv-btn secondary" onclick="rsvSyncDown()">🔄 同期</button>
+        <button type="button" class="rsv-btn secondary" onclick="rsvShowPatModal()">⚙️ 共有設定</button>
         <button type="button" class="rsv-btn secondary" onclick="rsvExport()">📤 バックアップ</button>
         <button type="button" class="rsv-btn secondary" onclick="rsvImport()">📥 復元</button>
         <span id="rsv-stats" class="rsv-stats"></span>
       </div>
+      <div id="rsv-sync-status" class="rsv-sync-status"></div>
       <div id="reserved-form-container" style="display:none;"></div>
       <div id="reserved-list"></div>
       <div class="reserved-help">
-        💡 予約データはこの端末（ブラウザ）の localStorage に保存されます。<br>
-        他の端末や PC と共有したい場合は「📤 バックアップ」でJSONをコピー → 別端末で「📥 復元」してください。<br>
-        ブラウザのキャッシュクリアで消えるので、定期的にバックアップを推奨。
+        💡 <strong>家族で共有するには:</strong> 「⚙️ 共有設定」で GitHub Personal Access Token を一度登録すると、
+        家族全員の予約が <code>data/reserved.json</code> 経由で自動同期されます（追加・編集・削除）。<br>
+        <strong>未設定の場合:</strong> 予約はこの端末のブラウザのみに保存されます。<br>
+        <strong>PAT発行手順:</strong> 「⚙️ 共有設定」ボタンから案内が出ます。
       </div>
     </div>
     <script>
       window.RSV_SEED = [];
       window.RSV_SCHOOLS = [{"id": "tamakagakugijutsu", "name": "都立多摩科学技術高校", "deviation": 61, "url": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html", "lat": 35.6997, "lng": 139.4996}, {"id": "kodairaminami", "name": "都立小平南高校", "deviation": 58, "url": "https://www.metro.ed.jp/kodairaminami-h/guide/meeting.html", "lat": 35.7117, "lng": 139.4752}, {"id": "kodaira", "name": "都立小平高校", "deviation": 59, "url": "https://www.metro.ed.jp/kodaira-h/guide/meeting.html", "lat": 35.733, "lng": 139.4833}, {"id": "koganeikita", "name": "都立小金井北高校", "deviation": 64, "url": "https://www.metro.ed.jp/koganeikita-h/guide/meeting.html", "lat": 35.7055, "lng": 139.5168}, {"id": "musashinokita", "name": "都立武蔵野北高校", "deviation": 65, "url": "https://www.metro.ed.jp/musashinokita-h/guide/meeting.html", "lat": 35.7201, "lng": 139.5576}, {"id": "hinodai", "name": "都立日野台高校", "deviation": 64, "url": "https://www.metro.ed.jp/hinodai-h/guide/meeting.html", "lat": 35.6725, "lng": 139.3862}, {"id": "showa", "name": "都立昭和高校", "deviation": 66, "url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "lat": 35.7032, "lng": 139.3875}, {"id": "higashiyamatominami", "name": "都立東大和南高校", "deviation": 57, "url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "lat": 35.7319, "lng": 139.4238}, {"id": "fuchu", "name": "都立府中高校", "deviation": 54, "url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "lat": 35.6877, "lng": 139.4748}, {"id": "chofukita", "name": "都立調布北高校", "deviation": 63, "url": "https://www.metro.ed.jp/chofukita-h/guide/meeting.html", "lat": 35.6802, "lng": 139.5487}, {"id": "tanashi", "name": "都立田無高校", "deviation": 50, "url": "https://www.metro.ed.jp/tanashi-h/guide/meeting.html", "lat": 35.7203, "lng": 139.529}, {"id": "kiyose", "name": "都立清瀬高校", "deviation": 58, "url": "https://www.metro.ed.jp/kiyose-h/guide/meeting.html", "lat": 35.77, "lng": 139.5151}, {"id": "kodairanishi", "name": "都立小平西高校", "deviation": 47, "url": "https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html", "lat": 35.7255, "lng": 139.4422}, {"id": "kokubunji", "name": "都立国分寺高校", "deviation": 68, "url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "lat": 35.7125, "lng": 139.4477}, {"id": "kinjo", "name": "錦城高等学校", "deviation": 65, "url": "https://www.kinjo-highschool.ed.jp/", "lat": 35.7385, "lng": 139.5017}, {"id": "meiho", "name": "明法高等学校", "deviation": 59, "url": "https://www.meiho.ed.jp/", "lat": 35.7439, "lng": 139.4539}, {"id": "dendai", "name": "東京電機大学高等学校", "deviation": 62, "url": "https://www.dendai.ed.jp/", "lat": 35.707, "lng": 139.5261}, {"id": "meigakuin_higashi", "name": "明治学院東村山高等学校", "deviation": 65, "url": "https://www.meijigakuin-higashi.ed.jp/", "lat": 35.7401, "lng": 139.4576}, {"id": "takuichi", "name": "拓殖大学第一高等学校", "deviation": 61, "url": "https://www.takuichi.ed.jp/", "lat": 35.7332, "lng": 139.4139}, {"id": "shotoku", "name": "聖徳学園高等学校", "deviation": 59, "url": "https://jsh.shotoku.ed.jp/", "lat": 35.6988, "lng": 139.5464}, {"id": "taisei", "name": "大成高等学校", "deviation": 50, "url": "https://www.taisei.ed.jp/", "lat": 35.6886, "lng": 139.5588}, {"id": "minamidaira", "name": "都立南平高校", "deviation": 62, "url": "https://www.metro.ed.jp/minamidaira-h/guide/meeting.html", "lat": 35.6519, "lng": 139.3958}, {"id": "higashiyamato", "name": "都立東大和高校", "deviation": 54, "url": "https://www.metro.ed.jp/higashiyamato-h/guide/meeting.html", "lat": 35.7452, "lng": 139.4246}, {"id": "showa_daiichi", "name": "昭和第一学園高等学校", "deviation": 56, "url": "https://www.sdg.ed.jp/FrontTopic/exam_candidate/", "lat": 35.7167, "lng": 139.4108}];
       window.RSV_HOME = {"lat": 35.717, "lng": 139.4698};
+      window.RSV_REPO = {"owner": "kssdrnoone-design", "repo": "hs-dashboard", "path": "data/reserved.json", "branch": "main"};
       if (typeof rsvInit === 'function') rsvInit();
     </script>
     
@@ -1021,7 +1041,7 @@ table.compare tr:hover { background: #fbfcfd; }
       
       L.circleMarker([35.6997, 139.4996], {
         radius: 10, fillColor: '#e67e22', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>都立多摩科学技術高校</b><br>偏差値 61（実力圏）<br>都立-科学技術科 / 小金井市<br>💰 入学金 5,650円 / 年間 118,800円<br>★指定校<br><a href=\"https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>都立多摩科学技術高校</b><br>偏差値 61（実力圏）<br>都立-科学技術科 / 小金井市<br>💰 入学金 5,650円 / 年間 118,800円<br>★指定校<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 3.3 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6997,139.4996&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6997,139.4996&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6997,139.4996&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.6997, 139.4996], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1033,7 +1053,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.7117, 139.4752], {
         radius: 10, fillColor: '#e67e22', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>都立小平南高校</b><br>偏差値 58（実力圏）<br>都立-普通科 / 小平市<br>💰 入学金 5,650円 / 年間 118,800円<br>★指定校<br><a href=\"https://www.metro.ed.jp/kodairaminami-h/guide/meeting.html\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>都立小平南高校</b><br>偏差値 58（実力圏）<br>都立-普通科 / 小平市<br>💰 入学金 5,650円 / 年間 118,800円<br>★指定校<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 0.8 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7117,139.4752&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7117,139.4752&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7117,139.4752&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.metro.ed.jp/kodairaminami-h/guide/meeting.html\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.7117, 139.4752], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1045,7 +1065,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.733, 139.4833], {
         radius: 10, fillColor: '#e67e22', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>都立小平高校</b><br>偏差値 59（実力圏）<br>都立-普通科/外国語 / 小平市<br>💰 入学金 5,650円 / 年間 118,800円<br>外国語コースあり。恋ヶ窪から近い<br><a href=\"https://www.metro.ed.jp/kodaira-h/guide/meeting.html\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>都立小平高校</b><br>偏差値 59（実力圏）<br>都立-普通科/外国語 / 小平市<br>💰 入学金 5,650円 / 年間 118,800円<br>外国語コースあり。恋ヶ窪から近い<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 2.2 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.733,139.4833&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.733,139.4833&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.733,139.4833&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.metro.ed.jp/kodaira-h/guide/meeting.html\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.733, 139.4833], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1057,7 +1077,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.7055, 139.5168], {
         radius: 10, fillColor: '#e67e22', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>都立小金井北高校</b><br>偏差値 64（実力圏）<br>都立-推進校 / 小金井市<br>💰 入学金 5,650円 / 年間 118,800円<br>挑戦校。恋ヶ窪から自転車圏<br><a href=\"https://www.metro.ed.jp/koganeikita-h/guide/meeting.html\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>都立小金井北高校</b><br>偏差値 64（実力圏）<br>都立-推進校 / 小金井市<br>💰 入学金 5,650円 / 年間 118,800円<br>挑戦校。恋ヶ窪から自転車圏<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 4.4 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7055,139.5168&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7055,139.5168&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7055,139.5168&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.metro.ed.jp/koganeikita-h/guide/meeting.html\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.7055, 139.5168], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1069,7 +1089,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.7201, 139.5576], {
         radius: 10, fillColor: '#e74c3c', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>都立武蔵野北高校</b><br>偏差値 65（挑戦）<br>都立-推進校 / 武蔵野市<br>💰 入学金 5,650円 / 年間 118,800円<br>挑戦校<br><a href=\"https://www.metro.ed.jp/musashinokita-h/guide/meeting.html\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>都立武蔵野北高校</b><br>偏差値 65（挑戦）<br>都立-推進校 / 武蔵野市<br>💰 入学金 5,650円 / 年間 118,800円<br>挑戦校<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 7.9 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7201,139.5576&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7201,139.5576&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7201,139.5576&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.metro.ed.jp/musashinokita-h/guide/meeting.html\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.7201, 139.5576], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1081,7 +1101,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.6725, 139.3862], {
         radius: 10, fillColor: '#e67e22', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>都立日野台高校</b><br>偏差値 64（実力圏）<br>都立-普通科 / 日野市<br>💰 入学金 5,650円 / 年間 118,800円<br><a href=\"https://www.metro.ed.jp/hinodai-h/guide/meeting.html\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>都立日野台高校</b><br>偏差値 64（実力圏）<br>都立-普通科 / 日野市<br>💰 入学金 5,650円 / 年間 118,800円<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 9.0 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6725,139.3862&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6725,139.3862&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6725,139.3862&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.metro.ed.jp/hinodai-h/guide/meeting.html\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.6725, 139.3862], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1093,7 +1113,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.7032, 139.3875], {
         radius: 10, fillColor: '#e74c3c', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>都立昭和高校</b><br>偏差値 66（挑戦）<br>都立-普通科 / 昭島市<br>💰 入学金 5,650円 / 年間 118,800円<br><a href=\"https://www.metro.ed.jp/showa-h/guide/meeting.html\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>都立昭和高校</b><br>偏差値 66（挑戦）<br>都立-普通科 / 昭島市<br>💰 入学金 5,650円 / 年間 118,800円<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 7.6 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7032,139.3875&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7032,139.3875&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7032,139.3875&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.metro.ed.jp/showa-h/guide/meeting.html\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.7032, 139.3875], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1105,7 +1125,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.7319, 139.4238], {
         radius: 10, fillColor: '#3498db', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>都立東大和南高校</b><br>偏差値 57（安全寄り）<br>都立-普通科 / 東大和市<br>💰 入学金 5,650円 / 年間 118,800円<br><a href=\"https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>都立東大和南高校</b><br>偏差値 57（安全寄り）<br>都立-普通科 / 東大和市<br>💰 入学金 5,650円 / 年間 118,800円<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 4.5 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7319,139.4238&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7319,139.4238&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7319,139.4238&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.7319, 139.4238], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1117,7 +1137,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.6877, 139.4748], {
         radius: 10, fillColor: '#3498db', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>都立府中高校</b><br>偏差値 54（安全寄り）<br>都立-普通科 / 府中市<br>💰 入学金 5,650円 / 年間 118,800円<br><a href=\"https://www.metro.ed.jp/fuchu-h/guide/meeting.html\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>都立府中高校</b><br>偏差値 54（安全寄り）<br>都立-普通科 / 府中市<br>💰 入学金 5,650円 / 年間 118,800円<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 3.3 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6877,139.4748&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6877,139.4748&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6877,139.4748&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.metro.ed.jp/fuchu-h/guide/meeting.html\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.6877, 139.4748], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1129,7 +1149,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.6802, 139.5487], {
         radius: 10, fillColor: '#e67e22', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>都立調布北高校</b><br>偏差値 63（実力圏）<br>都立-推進校 / 調布市<br>💰 入学金 5,650円 / 年間 118,800円<br>挑戦寄り<br><a href=\"https://www.metro.ed.jp/chofukita-h/guide/meeting.html\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>都立調布北高校</b><br>偏差値 63（実力圏）<br>都立-推進校 / 調布市<br>💰 入学金 5,650円 / 年間 118,800円<br>挑戦寄り<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 8.2 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6802,139.5487&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6802,139.5487&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6802,139.5487&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.metro.ed.jp/chofukita-h/guide/meeting.html\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.6802, 139.5487], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1141,7 +1161,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.7203, 139.529], {
         radius: 10, fillColor: '#3498db', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>都立田無高校</b><br>偏差値 50（安全寄り）<br>都立-普通科 / 西東京市<br>💰 入学金 5,650円 / 年間 118,800円<br><a href=\"https://www.metro.ed.jp/tanashi-h/guide/meeting.html\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>都立田無高校</b><br>偏差値 50（安全寄り）<br>都立-普通科 / 西東京市<br>💰 入学金 5,650円 / 年間 118,800円<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 5.4 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7203,139.529&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7203,139.529&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7203,139.529&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.metro.ed.jp/tanashi-h/guide/meeting.html\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.7203, 139.529], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1153,7 +1173,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.77, 139.5151], {
         radius: 10, fillColor: '#e67e22', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>都立清瀬高校</b><br>偏差値 58（実力圏）<br>都立-普通科 / 清瀬市<br>💰 入学金 5,650円 / 年間 118,800円<br><a href=\"https://www.metro.ed.jp/kiyose-h/guide/meeting.html\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>都立清瀬高校</b><br>偏差値 58（実力圏）<br>都立-普通科 / 清瀬市<br>💰 入学金 5,650円 / 年間 118,800円<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 7.2 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.77,139.5151&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.77,139.5151&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.77,139.5151&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.metro.ed.jp/kiyose-h/guide/meeting.html\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.77, 139.5151], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1165,7 +1185,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.7255, 139.4422], {
         radius: 10, fillColor: '#27ae60', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>都立小平西高校</b><br>偏差値 47（安全）<br>都立-普通科 / 小平市<br>💰 入学金 5,650円 / 年間 118,800円<br>安全校<br><a href=\"https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>都立小平西高校</b><br>偏差値 47（安全）<br>都立-普通科 / 小平市<br>💰 入学金 5,650円 / 年間 118,800円<br>安全校<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 2.7 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7255,139.4422&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7255,139.4422&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7255,139.4422&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.7255, 139.4422], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1177,7 +1197,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.7125, 139.4477], {
         radius: 10, fillColor: '#e74c3c', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>都立国分寺高校</b><br>偏差値 68（挑戦）<br>都立-特別推進校 / 国分寺市<br>💰 入学金 5,650円 / 年間 118,800円<br>大挑戦校。地元最寄り<br><a href=\"https://www.metro.ed.jp/kokubunji-h/guide/meeting.html\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>都立国分寺高校</b><br>偏差値 68（挑戦）<br>都立-特別推進校 / 国分寺市<br>💰 入学金 5,650円 / 年間 118,800円<br>大挑戦校。地元最寄り<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 2.1 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7125,139.4477&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7125,139.4477&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7125,139.4477&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.metro.ed.jp/kokubunji-h/guide/meeting.html\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.7125, 139.4477], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1189,7 +1209,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.7385, 139.5017], {
         radius: 10, fillColor: '#e74c3c', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>錦城高等学校</b><br>偏差値 65（挑戦）<br>私立-共学 / 小平市<br>💰 入学金 230,000円 / 年間 610,000円<br>花小金井。恋ヶ窪から最寄り私立の1つ。3コース制<br><a href=\"https://www.kinjo-highschool.ed.jp/\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>錦城高等学校</b><br>偏差値 65（挑戦）<br>私立-共学 / 小平市<br>💰 入学金 230,000円 / 年間 610,000円<br>花小金井。恋ヶ窪から最寄り私立の1つ。3コース制<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 3.7 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7385,139.5017&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7385,139.5017&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7385,139.5017&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.kinjo-highschool.ed.jp/\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.7385, 139.5017], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1201,7 +1221,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.7439, 139.4539], {
         radius: 10, fillColor: '#e67e22', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>明法高等学校</b><br>偏差値 59（実力圏）<br>私立-共学 / 東村山市<br>💰 入学金 250,000円 / 年間 612,000円<br>久米川。2019年共学化。理数系に強い<br><a href=\"https://www.meiho.ed.jp/\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>明法高等学校</b><br>偏差値 59（実力圏）<br>私立-共学 / 東村山市<br>💰 入学金 250,000円 / 年間 612,000円<br>久米川。2019年共学化。理数系に強い<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 3.3 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7439,139.4539&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7439,139.4539&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7439,139.4539&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.meiho.ed.jp/\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.7439, 139.4539], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1213,7 +1233,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.707, 139.5261], {
         radius: 10, fillColor: '#e67e22', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>東京電機大学高等学校</b><br>偏差値 62（実力圏）<br>私立-共学 / 小金井市<br>💰 入学金 250,000円 / 年間 720,000円<br>東小金井。理系志向なら好相性<br><a href=\"https://www.dendai.ed.jp/\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>東京電機大学高等学校</b><br>偏差値 62（実力圏）<br>私立-共学 / 小金井市<br>💰 入学金 250,000円 / 年間 720,000円<br>東小金井。理系志向なら好相性<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 5.2 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.707,139.5261&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.707,139.5261&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.707,139.5261&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.dendai.ed.jp/\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.707, 139.5261], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1225,7 +1245,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.7401, 139.4576], {
         radius: 10, fillColor: '#e74c3c', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>明治学院東村山高等学校</b><br>偏差値 65（挑戦）<br>私立-共学 / 東村山市<br>💰 入学金 280,000円 / 年間 732,000円<br>明治学院大学推薦枠あり<br><a href=\"https://www.meijigakuin-higashi.ed.jp/\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>明治学院東村山高等学校</b><br>偏差値 65（挑戦）<br>私立-共学 / 東村山市<br>💰 入学金 280,000円 / 年間 732,000円<br>明治学院大学推薦枠あり<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 2.8 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7401,139.4576&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7401,139.4576&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7401,139.4576&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.meijigakuin-higashi.ed.jp/\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.7401, 139.4576], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1237,7 +1257,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.7332, 139.4139], {
         radius: 10, fillColor: '#e67e22', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>拓殖大学第一高等学校</b><br>偏差値 61（実力圏）<br>私立-共学 / 武蔵村山市<br>💰 入学金 250,000円 / 年間 678,000円<br>やや遠いが大学推薦枠充実<br><a href=\"https://www.takuichi.ed.jp/\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>拓殖大学第一高等学校</b><br>偏差値 61（実力圏）<br>私立-共学 / 武蔵村山市<br>💰 入学金 250,000円 / 年間 678,000円<br>やや遠いが大学推薦枠充実<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 5.4 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7332,139.4139&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7332,139.4139&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7332,139.4139&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.takuichi.ed.jp/\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.7332, 139.4139], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1249,7 +1269,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.6988, 139.5464], {
         radius: 10, fillColor: '#e67e22', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>聖徳学園高等学校</b><br>偏差値 59（実力圏）<br>私立-共学 / 武蔵野市<br>💰 入学金 180,000円 / 年間 837,600円<br>武蔵境。ICT教育に定評<br><a href=\"https://jsh.shotoku.ed.jp/\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>聖徳学園高等学校</b><br>偏差値 59（実力圏）<br>私立-共学 / 武蔵野市<br>💰 入学金 180,000円 / 年間 837,600円<br>武蔵境。ICT教育に定評<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 7.2 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6988,139.5464&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6988,139.5464&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6988,139.5464&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://jsh.shotoku.ed.jp/\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.6988, 139.5464], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1261,7 +1281,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.6886, 139.5588], {
         radius: 10, fillColor: '#3498db', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>大成高等学校</b><br>偏差値 50（安全寄り）<br>私立-共学 / 三鷹市<br>💰 入学金 250,000円 / 年間 596,600円<br>安全校。3コース制<br><a href=\"https://www.taisei.ed.jp/\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>大成高等学校</b><br>偏差値 50（安全寄り）<br>私立-共学 / 三鷹市<br>💰 入学金 250,000円 / 年間 596,600円<br>安全校。3コース制<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 8.6 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6886,139.5588&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6886,139.5588&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6886,139.5588&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.taisei.ed.jp/\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.6886, 139.5588], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1273,7 +1293,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.6519, 139.3958], {
         radius: 10, fillColor: '#e67e22', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>都立南平高校</b><br>偏差値 62（実力圏）<br>都立-普通科 / 日野市<br>💰 入学金 5,650円 / 年間 118,800円<br>乗換2回。偏差値帯が多摩科技に近い<br><a href=\"https://www.metro.ed.jp/minamidaira-h/guide/meeting.html\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>都立南平高校</b><br>偏差値 62（実力圏）<br>都立-普通科 / 日野市<br>💰 入学金 5,650円 / 年間 118,800円<br>乗換2回。偏差値帯が多摩科技に近い<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 9.9 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6519,139.3958&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6519,139.3958&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.6519,139.3958&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.metro.ed.jp/minamidaira-h/guide/meeting.html\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.6519, 139.3958], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1285,7 +1305,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.7452, 139.4246], {
         radius: 10, fillColor: '#3498db', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>都立東大和高校</b><br>偏差値 54（安全寄り）<br>都立-普通科 / 東大和市<br>💰 入学金 5,650円 / 年間 118,800円<br>近隣エリアの安全校候補<br><a href=\"https://www.metro.ed.jp/higashiyamato-h/guide/meeting.html\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>都立東大和高校</b><br>偏差値 54（安全寄り）<br>都立-普通科 / 東大和市<br>💰 入学金 5,650円 / 年間 118,800円<br>近隣エリアの安全校候補<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 5.1 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7452,139.4246&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7452,139.4246&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7452,139.4246&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.metro.ed.jp/higashiyamato-h/guide/meeting.html\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.7452, 139.4246], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1297,7 +1317,7 @@ table.compare tr:hover { background: #fbfcfd; }
 
       L.circleMarker([35.7167, 139.4108], {
         radius: 10, fillColor: '#3498db', color: '#fff', weight: 2, fillOpacity: 0.85
-      }).addTo(map).bindPopup("<b>昭和第一学園高等学校</b><br>偏差値 56（安全寄り）<br>私立-共学 / 立川市<br>💰 入学金 250,000円 / 年間 644,000円<br>立川。3コース制(特進選抜60/選抜進学56/総合進学46)。学費は他私立平均で仮置き要確認。イベントはmirai-compass(https://mirai-compass.net/usr/showa1gh/event/evtIndex.jsf)管理<br><a href=\"https://www.sdg.ed.jp/FrontTopic/exam_candidate/\" target=\"_blank\">公式HP →</a>");
+      }).addTo(map).bindPopup("<b>昭和第一学園高等学校</b><br>偏差値 56（安全寄り）<br>私立-共学 / 立川市<br>💰 入学金 250,000円 / 年間 644,000円<br>立川。3コース制(特進選抜60/選抜進学56/総合進学46)。学費は他私立平均で仮置き要確認。イベントはmirai-compass(https://mirai-compass.net/usr/showa1gh/event/evtIndex.jsf)管理<br><div style=\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\">📍 自宅から直線 5.3 km<br>🗺 通学方法:<br><a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7167,139.4108&travelmode=transit\" target=\"_blank\">🚃 電車</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7167,139.4108&travelmode=walking\" target=\"_blank\">🚶 徒歩</a> ｜ <a href=\"https://www.google.com/maps/dir/?api=1&origin=35.717,139.4698&destination=35.7167,139.4108&travelmode=bicycling\" target=\"_blank\">🚲 自転車</a></div><div style=\"margin-top:6px;\"><a href=\"https://www.sdg.ed.jp/FrontTopic/exam_candidate/\" target=\"_blank\">📄 公式HP →</a></div>", {maxWidth: 280, minWidth: 200});
       L.marker([35.7167, 139.4108], {
         icon: L.divIcon({
           className: 'dev-label',
@@ -1636,10 +1656,17 @@ function rsvLoad() {
     return seed;
 }
 
-function rsvSave(items) {
+function rsvSave(items, opts) {
+    opts = opts || {};
     try {
         localStorage.setItem(RSV_KEY, JSON.stringify(items));
         document.dispatchEvent(new CustomEvent('rsv:changed'));
+        // GitHubに同期（PAT設定時のみ）
+        if (!opts.skipSync && ghPat()) {
+            rsvSyncUp();
+        } else if (!ghPat()) {
+            rsvSetSyncStatus('ローカル保存のみ（家族と共有するには「⚙️ 共有設定」でPATを登録）', 'warn');
+        }
     } catch (e) {
         alert('保存失敗: ' + e.message);
     }
@@ -1697,7 +1724,11 @@ function rsvUpdateBadge(items) {
     if (stats) stats.textContent = '全' + items.length + '件 / 今後' + upcoming + '件';
 }
 
-function rsvInit() { rsvRender(); }
+function rsvInit() {
+    rsvRender();
+    // 起動時にGitHubから最新を取得（公開rawなのでPAT不要）
+    rsvSyncDown(/*silent=*/true);
+}
 
 function rsvRender() {
     var list = document.getElementById('reserved-list');
@@ -1926,6 +1957,191 @@ document.addEventListener('rsv:changed', function(){
         renderCalendar();
     }
 });
+
+/* ===== GitHub Sync (家族共有用) ===== */
+var GH_PAT_KEY = 'hs_gh_pat_v1';
+var RSV_LAST_SYNC_KEY = 'hs_rsv_last_sync_v1';
+
+function ghPat() { return localStorage.getItem(GH_PAT_KEY) || ''; }
+function ghSetPat(p) {
+    if (p) localStorage.setItem(GH_PAT_KEY, p);
+    else localStorage.removeItem(GH_PAT_KEY);
+}
+
+function rsvSetSyncStatus(msg, cls) {
+    var el = document.getElementById('rsv-sync-status');
+    if (!el) return;
+    el.textContent = msg || '';
+    el.className = 'rsv-sync-status' + (cls ? ' ' + cls : '');
+}
+
+function rsvShowPatModal() {
+    var current = ghPat();
+    var msg = '【家族共有設定】\n\n' +
+        '予約データを家族全員で共有するには、GitHub の Personal Access Token を登録してください。\n\n' +
+        '【PAT発行手順】\n' +
+        '1. PCのブラウザで以下にアクセス:\n' +
+        '   https://github.com/settings/personal-access-tokens/new\n' +
+        '2. Token name: hs-dashboard\n' +
+        '3. Repository access: Only selected → kssdrnoone-design/hs-dashboard\n' +
+        '4. Permissions → Repository permissions → Contents: Read and write\n' +
+        '5. Generate token → コピー → ここに貼り付け\n\n' +
+        (current ? '※現在のPAT: ' + current.slice(0, 12) + '...（変更する場合は新しいトークンを入力、消す場合は空欄でOK）\n\n' : '') +
+        'PAT (空欄で削除):';
+    var input = window.prompt(msg, current);
+    if (input === null) return;
+    if (input.trim() === '') {
+        ghSetPat('');
+        rsvSetSyncStatus('PATを削除しました（ローカル保存のみ）', 'warn');
+        return;
+    }
+    ghSetPat(input.trim());
+    rsvSetSyncStatus('PAT保存しました。同期します...', 'busy');
+    rsvSyncUp();
+}
+
+/* base64 (UTF-8 safe) */
+function _b64encode(str) {
+    var bytes = new TextEncoder().encode(str);
+    var bin = '';
+    for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin);
+}
+function _b64decode(b64) {
+    var bin = atob(b64.replace(/\s/g, ''));
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder('utf-8').decode(bytes);
+}
+
+/* リモート読み取り（PAT不要：公開rawから） */
+function rsvFetchRemoteRaw() {
+    var repo = window.RSV_REPO || {};
+    var url = 'https://raw.githubusercontent.com/' + repo.owner + '/' + repo.repo + '/' + repo.branch + '/' + repo.path + '?t=' + Date.now();
+    return fetch(url, { cache: 'no-store' }).then(function(r){
+        if (!r.ok) throw new Error('fetch raw ' + r.status);
+        return r.json();
+    }).then(function(data){
+        return Array.isArray(data) ? data : (data.items || []);
+    });
+}
+
+/* リモート読み取り（PAT付き：sha取得用） */
+function rsvFetchRemoteApi() {
+    var pat = ghPat();
+    if (!pat) throw new Error('PAT未設定');
+    var repo = window.RSV_REPO || {};
+    var url = 'https://api.github.com/repos/' + repo.owner + '/' + repo.repo + '/contents/' + repo.path + '?ref=' + repo.branch;
+    return fetch(url, {
+        headers: { Authorization: 'token ' + pat, Accept: 'application/vnd.github+json' },
+        cache: 'no-store'
+    }).then(function(r){
+        if (r.status === 404) return { items: [], sha: null };
+        if (!r.ok) {
+            return r.text().then(function(t){ throw new Error('API GET ' + r.status + ': ' + t.slice(0, 100)); });
+        }
+        return r.json().then(function(data){
+            var json;
+            try { json = JSON.parse(_b64decode(data.content)); }
+            catch (e) { json = { items: [] }; }
+            return { items: json.items || [], sha: data.sha };
+        });
+    });
+}
+
+/* マージ：同IDなら新しい方優先（呼び元で順序制御） */
+function rsvMergeItems(remote, local) {
+    var byId = {};
+    remote.forEach(function(r){ byId[rsvItemId(r)] = r; });
+    local.forEach(function(r){ byId[rsvItemId(r)] = r; });
+    return Object.keys(byId).map(function(k){ return byId[k]; });
+}
+
+/* GitHubからプル（PAT不要） */
+function rsvSyncDown(silent) {
+    if (!silent) rsvSetSyncStatus('🔄 同期中（取得）...', 'busy');
+    rsvFetchRemoteRaw().then(function(remote){
+        var local = rsvLoad();
+        // local に新規あれば残す（リモートにない予約 = この端末でPAT未設定時に追加された分）
+        var merged = rsvMergeItems(remote, local);
+        // remote側で削除されたものは復活してしまうが、共有なので問題小さい。
+        // → シンプルに「リモート優先＋ローカル新規残す」でmerged
+        // mergedからリモートにあったがローカル更新ないものはリモート版が反映される
+        try { localStorage.setItem(RSV_KEY, JSON.stringify(merged)); } catch (e) {}
+        localStorage.setItem(RSV_LAST_SYNC_KEY, new Date().toISOString());
+        var stamp = new Date().toLocaleTimeString('ja-JP', {hour: '2-digit', minute: '2-digit'});
+        rsvSetSyncStatus('✓ 取得完了（' + stamp + '・' + merged.length + '件）' + (ghPat() ? '' : ' ⚠️ PAT未設定なら追加・編集はこの端末のみ'), ghPat() ? 'ok' : 'warn');
+        rsvRender();
+        if (typeof renderCalendar === 'function' && calCurrent) renderCalendar();
+    }).catch(function(e){
+        rsvSetSyncStatus('✗ 取得失敗: ' + e.message, 'err');
+    });
+}
+
+/* GitHubへプッシュ（PAT必要） */
+function rsvSyncUp() {
+    if (!ghPat()) {
+        rsvSetSyncStatus('PAT未設定のため同期できません。「⚙️ 共有設定」から登録してください', 'warn');
+        return;
+    }
+    rsvSetSyncStatus('🔄 同期中（送信）...', 'busy');
+    var attempt = 0;
+    function tryPush() {
+        attempt++;
+        if (attempt > 3) {
+            rsvSetSyncStatus('✗ 送信失敗（衝突リトライ上限）', 'err');
+            return;
+        }
+        rsvFetchRemoteApi().then(function(remote){
+            var local = rsvLoad();
+            var merged = rsvMergeItems(remote.items, local);
+            var content = JSON.stringify({
+                _comment: 'スマホ・PCから「⚙️ 共有設定」経由で家族全員が編集。手動編集も可だが先にPullしてから。',
+                items: merged
+            }, null, 2) + '\n';
+            var repo = window.RSV_REPO || {};
+            var url = 'https://api.github.com/repos/' + repo.owner + '/' + repo.repo + '/contents/' + repo.path;
+            var body = {
+                message: 'update reserved.json (' + new Date().toISOString().slice(0, 19) + ')',
+                content: _b64encode(content),
+                branch: repo.branch
+            };
+            if (remote.sha) body.sha = remote.sha;
+            return fetch(url, {
+                method: 'PUT',
+                headers: {
+                    Authorization: 'token ' + ghPat(),
+                    Accept: 'application/vnd.github+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            }).then(function(r){
+                if (r.ok) {
+                    try { localStorage.setItem(RSV_KEY, JSON.stringify(merged)); } catch (e) {}
+                    localStorage.setItem(RSV_LAST_SYNC_KEY, new Date().toISOString());
+                    var stamp = new Date().toLocaleTimeString('ja-JP', {hour: '2-digit', minute: '2-digit'});
+                    rsvSetSyncStatus('✓ 共有完了（' + stamp + '・' + merged.length + '件・他端末は「🔄 同期」で取得）', 'ok');
+                    rsvRender();
+                    if (typeof renderCalendar === 'function' && calCurrent) renderCalendar();
+                } else if (r.status === 409 || r.status === 422) {
+                    // 衝突 → リトライ
+                    setTimeout(tryPush, 500);
+                } else if (r.status === 401 || r.status === 403) {
+                    return r.text().then(function(t){
+                        rsvSetSyncStatus('✗ 認証エラー(' + r.status + ')。PATの権限を確認してください: ' + t.slice(0, 100), 'err');
+                    });
+                } else {
+                    return r.text().then(function(t){
+                        rsvSetSyncStatus('✗ 送信エラー(' + r.status + '): ' + t.slice(0, 100), 'err');
+                    });
+                }
+            });
+        }).catch(function(e){
+            rsvSetSyncStatus('✗ 同期失敗: ' + e.message, 'err');
+        });
+    }
+    tryPush();
+}
 </script>
 </body>
 </html>

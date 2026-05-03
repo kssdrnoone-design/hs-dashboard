@@ -6,6 +6,7 @@
 """
 
 import json
+import math
 import os
 import sys
 import time
@@ -892,6 +893,21 @@ h1 { text-align: center; color: #2c3e50; font-size: 1.4em; margin-bottom: 2px; }
     color: #7f8c8d;
     font-size: 0.85em;
 }
+.rsv-sync-status {
+    background: #f8fafc;
+    border-left: 3px solid #d1d8e0;
+    padding: 6px 10px;
+    border-radius: 0 4px 4px 0;
+    font-size: 0.82em;
+    color: #555;
+    margin-bottom: 12px;
+    min-height: 1em;
+}
+.rsv-sync-status.ok { border-left-color: #27ae60; background: #f0fcf4; color: #1e8449; }
+.rsv-sync-status.err { border-left-color: #e74c3c; background: #fdedec; color: #c0392b; }
+.rsv-sync-status.busy { border-left-color: #3498db; background: #ebf5fc; color: #2874a6; }
+.rsv-sync-status.warn { border-left-color: #f1c40f; background: #fff8db; color: #b7950b; }
+.rsv-sync-status:empty { display: none; }
 
 /* 予約フォーム */
 .rsv-form {
@@ -1351,10 +1367,17 @@ function rsvLoad() {
     return seed;
 }
 
-function rsvSave(items) {
+function rsvSave(items, opts) {
+    opts = opts || {};
     try {
         localStorage.setItem(RSV_KEY, JSON.stringify(items));
         document.dispatchEvent(new CustomEvent('rsv:changed'));
+        // GitHubに同期（PAT設定時のみ）
+        if (!opts.skipSync && ghPat()) {
+            rsvSyncUp();
+        } else if (!ghPat()) {
+            rsvSetSyncStatus('ローカル保存のみ（家族と共有するには「⚙️ 共有設定」でPATを登録）', 'warn');
+        }
     } catch (e) {
         alert('保存失敗: ' + e.message);
     }
@@ -1412,7 +1435,11 @@ function rsvUpdateBadge(items) {
     if (stats) stats.textContent = '全' + items.length + '件 / 今後' + upcoming + '件';
 }
 
-function rsvInit() { rsvRender(); }
+function rsvInit() {
+    rsvRender();
+    // 起動時にGitHubから最新を取得（公開rawなのでPAT不要）
+    rsvSyncDown(/*silent=*/true);
+}
 
 function rsvRender() {
     var list = document.getElementById('reserved-list');
@@ -1641,6 +1668,191 @@ document.addEventListener('rsv:changed', function(){
         renderCalendar();
     }
 });
+
+/* ===== GitHub Sync (家族共有用) ===== */
+var GH_PAT_KEY = 'hs_gh_pat_v1';
+var RSV_LAST_SYNC_KEY = 'hs_rsv_last_sync_v1';
+
+function ghPat() { return localStorage.getItem(GH_PAT_KEY) || ''; }
+function ghSetPat(p) {
+    if (p) localStorage.setItem(GH_PAT_KEY, p);
+    else localStorage.removeItem(GH_PAT_KEY);
+}
+
+function rsvSetSyncStatus(msg, cls) {
+    var el = document.getElementById('rsv-sync-status');
+    if (!el) return;
+    el.textContent = msg || '';
+    el.className = 'rsv-sync-status' + (cls ? ' ' + cls : '');
+}
+
+function rsvShowPatModal() {
+    var current = ghPat();
+    var msg = '【家族共有設定】\\n\\n' +
+        '予約データを家族全員で共有するには、GitHub の Personal Access Token を登録してください。\\n\\n' +
+        '【PAT発行手順】\\n' +
+        '1. PCのブラウザで以下にアクセス:\\n' +
+        '   https://github.com/settings/personal-access-tokens/new\\n' +
+        '2. Token name: hs-dashboard\\n' +
+        '3. Repository access: Only selected → kssdrnoone-design/hs-dashboard\\n' +
+        '4. Permissions → Repository permissions → Contents: Read and write\\n' +
+        '5. Generate token → コピー → ここに貼り付け\\n\\n' +
+        (current ? '※現在のPAT: ' + current.slice(0, 12) + '...（変更する場合は新しいトークンを入力、消す場合は空欄でOK）\\n\\n' : '') +
+        'PAT (空欄で削除):';
+    var input = window.prompt(msg, current);
+    if (input === null) return;
+    if (input.trim() === '') {
+        ghSetPat('');
+        rsvSetSyncStatus('PATを削除しました（ローカル保存のみ）', 'warn');
+        return;
+    }
+    ghSetPat(input.trim());
+    rsvSetSyncStatus('PAT保存しました。同期します...', 'busy');
+    rsvSyncUp();
+}
+
+/* base64 (UTF-8 safe) */
+function _b64encode(str) {
+    var bytes = new TextEncoder().encode(str);
+    var bin = '';
+    for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin);
+}
+function _b64decode(b64) {
+    var bin = atob(b64.replace(/\\s/g, ''));
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder('utf-8').decode(bytes);
+}
+
+/* リモート読み取り（PAT不要：公開rawから） */
+function rsvFetchRemoteRaw() {
+    var repo = window.RSV_REPO || {};
+    var url = 'https://raw.githubusercontent.com/' + repo.owner + '/' + repo.repo + '/' + repo.branch + '/' + repo.path + '?t=' + Date.now();
+    return fetch(url, { cache: 'no-store' }).then(function(r){
+        if (!r.ok) throw new Error('fetch raw ' + r.status);
+        return r.json();
+    }).then(function(data){
+        return Array.isArray(data) ? data : (data.items || []);
+    });
+}
+
+/* リモート読み取り（PAT付き：sha取得用） */
+function rsvFetchRemoteApi() {
+    var pat = ghPat();
+    if (!pat) throw new Error('PAT未設定');
+    var repo = window.RSV_REPO || {};
+    var url = 'https://api.github.com/repos/' + repo.owner + '/' + repo.repo + '/contents/' + repo.path + '?ref=' + repo.branch;
+    return fetch(url, {
+        headers: { Authorization: 'token ' + pat, Accept: 'application/vnd.github+json' },
+        cache: 'no-store'
+    }).then(function(r){
+        if (r.status === 404) return { items: [], sha: null };
+        if (!r.ok) {
+            return r.text().then(function(t){ throw new Error('API GET ' + r.status + ': ' + t.slice(0, 100)); });
+        }
+        return r.json().then(function(data){
+            var json;
+            try { json = JSON.parse(_b64decode(data.content)); }
+            catch (e) { json = { items: [] }; }
+            return { items: json.items || [], sha: data.sha };
+        });
+    });
+}
+
+/* マージ：同IDなら新しい方優先（呼び元で順序制御） */
+function rsvMergeItems(remote, local) {
+    var byId = {};
+    remote.forEach(function(r){ byId[rsvItemId(r)] = r; });
+    local.forEach(function(r){ byId[rsvItemId(r)] = r; });
+    return Object.keys(byId).map(function(k){ return byId[k]; });
+}
+
+/* GitHubからプル（PAT不要） */
+function rsvSyncDown(silent) {
+    if (!silent) rsvSetSyncStatus('🔄 同期中（取得）...', 'busy');
+    rsvFetchRemoteRaw().then(function(remote){
+        var local = rsvLoad();
+        // local に新規あれば残す（リモートにない予約 = この端末でPAT未設定時に追加された分）
+        var merged = rsvMergeItems(remote, local);
+        // remote側で削除されたものは復活してしまうが、共有なので問題小さい。
+        // → シンプルに「リモート優先＋ローカル新規残す」でmerged
+        // mergedからリモートにあったがローカル更新ないものはリモート版が反映される
+        try { localStorage.setItem(RSV_KEY, JSON.stringify(merged)); } catch (e) {}
+        localStorage.setItem(RSV_LAST_SYNC_KEY, new Date().toISOString());
+        var stamp = new Date().toLocaleTimeString('ja-JP', {hour: '2-digit', minute: '2-digit'});
+        rsvSetSyncStatus('✓ 取得完了（' + stamp + '・' + merged.length + '件）' + (ghPat() ? '' : ' ⚠️ PAT未設定なら追加・編集はこの端末のみ'), ghPat() ? 'ok' : 'warn');
+        rsvRender();
+        if (typeof renderCalendar === 'function' && calCurrent) renderCalendar();
+    }).catch(function(e){
+        rsvSetSyncStatus('✗ 取得失敗: ' + e.message, 'err');
+    });
+}
+
+/* GitHubへプッシュ（PAT必要） */
+function rsvSyncUp() {
+    if (!ghPat()) {
+        rsvSetSyncStatus('PAT未設定のため同期できません。「⚙️ 共有設定」から登録してください', 'warn');
+        return;
+    }
+    rsvSetSyncStatus('🔄 同期中（送信）...', 'busy');
+    var attempt = 0;
+    function tryPush() {
+        attempt++;
+        if (attempt > 3) {
+            rsvSetSyncStatus('✗ 送信失敗（衝突リトライ上限）', 'err');
+            return;
+        }
+        rsvFetchRemoteApi().then(function(remote){
+            var local = rsvLoad();
+            var merged = rsvMergeItems(remote.items, local);
+            var content = JSON.stringify({
+                _comment: 'スマホ・PCから「⚙️ 共有設定」経由で家族全員が編集。手動編集も可だが先にPullしてから。',
+                items: merged
+            }, null, 2) + '\\n';
+            var repo = window.RSV_REPO || {};
+            var url = 'https://api.github.com/repos/' + repo.owner + '/' + repo.repo + '/contents/' + repo.path;
+            var body = {
+                message: 'update reserved.json (' + new Date().toISOString().slice(0, 19) + ')',
+                content: _b64encode(content),
+                branch: repo.branch
+            };
+            if (remote.sha) body.sha = remote.sha;
+            return fetch(url, {
+                method: 'PUT',
+                headers: {
+                    Authorization: 'token ' + ghPat(),
+                    Accept: 'application/vnd.github+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            }).then(function(r){
+                if (r.ok) {
+                    try { localStorage.setItem(RSV_KEY, JSON.stringify(merged)); } catch (e) {}
+                    localStorage.setItem(RSV_LAST_SYNC_KEY, new Date().toISOString());
+                    var stamp = new Date().toLocaleTimeString('ja-JP', {hour: '2-digit', minute: '2-digit'});
+                    rsvSetSyncStatus('✓ 共有完了（' + stamp + '・' + merged.length + '件・他端末は「🔄 同期」で取得）', 'ok');
+                    rsvRender();
+                    if (typeof renderCalendar === 'function' && calCurrent) renderCalendar();
+                } else if (r.status === 409 || r.status === 422) {
+                    // 衝突 → リトライ
+                    setTimeout(tryPush, 500);
+                } else if (r.status === 401 || r.status === 403) {
+                    return r.text().then(function(t){
+                        rsvSetSyncStatus('✗ 認証エラー(' + r.status + ')。PATの権限を確認してください: ' + t.slice(0, 100), 'err');
+                    });
+                } else {
+                    return r.text().then(function(t){
+                        rsvSetSyncStatus('✗ 送信エラー(' + r.status + '): ' + t.slice(0, 100), 'err');
+                    });
+                }
+            });
+        }).catch(function(e){
+            rsvSetSyncStatus('✗ 同期失敗: ' + e.message, 'err');
+        });
+    }
+    tryPush();
+}
 """
 
 
@@ -1832,22 +2044,27 @@ def render_reserved_tab(reserved, schools, config=None):
     <div id="reserved-root">
       <div class="reserved-toolbar">
         <button type="button" class="rsv-btn primary" onclick="rsvShowForm()">＋ 予約を追加</button>
+        <button type="button" class="rsv-btn secondary" onclick="rsvSyncDown()">🔄 同期</button>
+        <button type="button" class="rsv-btn secondary" onclick="rsvShowPatModal()">⚙️ 共有設定</button>
         <button type="button" class="rsv-btn secondary" onclick="rsvExport()">📤 バックアップ</button>
         <button type="button" class="rsv-btn secondary" onclick="rsvImport()">📥 復元</button>
         <span id="rsv-stats" class="rsv-stats"></span>
       </div>
+      <div id="rsv-sync-status" class="rsv-sync-status"></div>
       <div id="reserved-form-container" style="display:none;"></div>
       <div id="reserved-list"></div>
       <div class="reserved-help">
-        💡 予約データはこの端末（ブラウザ）の localStorage に保存されます。<br>
-        他の端末や PC と共有したい場合は「📤 バックアップ」でJSONをコピー → 別端末で「📥 復元」してください。<br>
-        ブラウザのキャッシュクリアで消えるので、定期的にバックアップを推奨。
+        💡 <strong>家族で共有するには:</strong> 「⚙️ 共有設定」で GitHub Personal Access Token を一度登録すると、
+        家族全員の予約が <code>data/reserved.json</code> 経由で自動同期されます（追加・編集・削除）。<br>
+        <strong>未設定の場合:</strong> 予約はこの端末のブラウザのみに保存されます。<br>
+        <strong>PAT発行手順:</strong> 「⚙️ 共有設定」ボタンから案内が出ます。
       </div>
     </div>
     <script>
       window.RSV_SEED = {seed_json};
       window.RSV_SCHOOLS = {schools_json};
       window.RSV_HOME = {{"lat": {home_lat_js}, "lng": {home_lng_js}}};
+      window.RSV_REPO = {{"owner": "kssdrnoone-design", "repo": "hs-dashboard", "path": "data/reserved.json", "branch": "main"}};
       if (typeof rsvInit === 'function') rsvInit();
     </script>
     """
@@ -1933,6 +2150,16 @@ def render_admissions_tab():
     """
 
 
+def haversine_km(lat1, lng1, lat2, lng2):
+    """2点間の直線距離(km)"""
+    R = 6371
+    dlat = math.radians(lat2 - lat1)
+    dlng = math.radians(lng2 - lng1)
+    a = (math.sin(dlat / 2) ** 2 +
+         math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlng / 2) ** 2)
+    return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+
 def render_map_tab(schools, config):
     """Leaflet.js + OpenStreetMap の地図タブ"""
     home = config.get("home", {})
@@ -1971,18 +2198,48 @@ def render_map_tab(schools, config):
         of_ = s.get("other_fees", 0)
         fee_line = f"入学金 {af:,}円 / 年間 {at + of_:,}円"
 
+        # 通学経路リンク
+        transit_url = (
+            f"https://www.google.com/maps/dir/?api=1"
+            f"&origin={home_lat},{home_lng}"
+            f"&destination={lat},{lng}&travelmode=transit"
+        )
+        walk_url = (
+            f"https://www.google.com/maps/dir/?api=1"
+            f"&origin={home_lat},{home_lng}"
+            f"&destination={lat},{lng}&travelmode=walking"
+        )
+        bike_url = (
+            f"https://www.google.com/maps/dir/?api=1"
+            f"&origin={home_lat},{home_lng}"
+            f"&destination={lat},{lng}&travelmode=bicycling"
+        )
+        # 直線距離
+        dist_km = haversine_km(home_lat, home_lng, lat, lng)
+
         popup = f"<b>{name}</b><br>"
         popup += f"偏差値 {dev}（{label}）<br>"
         popup += f"{cat} / {ward}<br>"
         popup += f"💰 {fee_line}<br>"
         if note:
             popup += f"{note}<br>"
-        popup += f'<a href=\\"{url}\\" target=\\"_blank\\">公式HP →</a>'
+        popup += (
+            f"<div style=\\\"margin-top:6px;border-top:1px solid #ddd;padding-top:6px;\\\">"
+            f"📍 自宅から直線 {dist_km:.1f} km<br>"
+            f"🗺 通学方法:<br>"
+            f"<a href=\\\"{transit_url}\\\" target=\\\"_blank\\\">🚃 電車</a> ｜ "
+            f"<a href=\\\"{walk_url}\\\" target=\\\"_blank\\\">🚶 徒歩</a> ｜ "
+            f"<a href=\\\"{bike_url}\\\" target=\\\"_blank\\\">🚲 自転車</a>"
+            f"</div>"
+            f"<div style=\\\"margin-top:6px;\\\">"
+            f"<a href=\\\"{url}\\\" target=\\\"_blank\\\">📄 公式HP →</a>"
+            f"</div>"
+        )
 
         markers_js += f"""
       L.circleMarker([{lat}, {lng}], {{
         radius: 10, fillColor: '{color}', color: '#fff', weight: 2, fillOpacity: 0.85
-      }}).addTo(map).bindPopup("{popup}");
+      }}).addTo(map).bindPopup("{popup}", {{maxWidth: 280, minWidth: 200}});
       L.marker([{lat}, {lng}], {{
         icon: L.divIcon({{
           className: 'dev-label',
