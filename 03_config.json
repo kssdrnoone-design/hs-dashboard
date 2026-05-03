@@ -326,6 +326,20 @@
       "_note": "近隣エリアの安全校候補",
       "admission_fee": 5650,
       "annual_tuition": 118800
+    },
+    {
+      "id": "showa_daiichi",
+      "name": "昭和第一学園高等学校",
+      "category": "私立-共学",
+      "ward": "立川市",
+      "deviation": 56,
+      "lat": 35.7167,
+      "lng": 139.4108,
+      "url_top": "https://www.sdg.ed.jp/",
+      "_note": "立川。3コース制(特進選抜60/選抜進学56/総合進学46)。学費は他私立平均で仮置き要確認",
+      "admission_fee": 250000,
+      "annual_tuition": 444000,
+      "other_fees": 200000
     }
   ]
 }
