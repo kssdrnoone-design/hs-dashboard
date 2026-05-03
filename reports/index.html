@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>高校受験ダッシュボード - 2026/05/03</title>
+<title>高校受験ダッシュボード - 2026/05/04</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -705,10 +705,10 @@ table.compare tr:hover { background: #fbfcfd; }
   <div class="header-fixed">
     <h1>🎓 高校受験ダッシュボード</h1>
     <div class="subtitle">
-      更新: 2026/05/03 | 対象校 24 | 取得成功 24 | イベント検出 95 | 新着 0
+      更新: 2026/05/04 | 対象校 24 | 取得成功 24 | イベント検出 96 | 新着 1
     </div>
     <div class="tabs">
-      <button class="tab-btn active" onclick="showTab('tab-new', this)">🆕 新着</button>
+      <button class="tab-btn active" onclick="showTab('tab-new', this)">🆕 新着 (1)</button>
       <button class="tab-btn" onclick="showTab('tab-reserved', this)">✅ 予約済</button>
       <button class="tab-btn" onclick="showTab('tab-calendar', this)">📅 カレンダー</button>
       <button class="tab-btn" onclick="showTab('tab-schools', this)">🏫 学校</button>
@@ -721,7 +721,8 @@ table.compare tr:hover { background: #fbfcfd; }
   <div id="tab-new" class="tab-panel active">
     <div class="section">
       <h2>🆕 新着イベント</h2>
-      <div class="empty">新着イベントはありません。</div>
+      <p style="color:#7f8c8d; font-size:0.85em; margin-bottom:12px;">前回収集からの新着 1件</p>
+<div class="event-item is-new"><span class="ev-date">2027/01/29 (Fri)</span><span class="ev-school">明治学院東村山高等学校(65)</span><span class="ev-kw">学校見学</span><div class="ev-context">化祭） １１月３日（火・祝） クリスマスの集い １２月２１日（月） ハンドベル定期演奏会 １月２９日（金） 学校見学 学校見学 敷地内の見学が可能です。（日曜日・学校休校日除く）</div><div class="ev-link"><a href="https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/" target="_blank">詳細ページへ →</a></div></div>
     </div>
   </div>
 
@@ -733,7 +734,7 @@ table.compare tr:hover { background: #fbfcfd; }
       <div class="reserved-toolbar">
         <button type="button" class="rsv-btn primary" onclick="rsvShowForm()">＋ 予約を追加</button>
         <button type="button" class="rsv-btn secondary" onclick="rsvSyncDown()">🔄 同期</button>
-        <button type="button" class="rsv-btn secondary" onclick="rsvShowPatModal()">⚙️ 共有設定</button>
+        <button type="button" class="rsv-btn secondary" onclick="rsvShowGasModal()">⚙️ 共有設定</button>
         <button type="button" class="rsv-btn secondary" onclick="rsvExport()">📤 バックアップ</button>
         <button type="button" class="rsv-btn secondary" onclick="rsvImport()">📥 復元</button>
         <span id="rsv-stats" class="rsv-stats"></span>
@@ -742,17 +743,17 @@ table.compare tr:hover { background: #fbfcfd; }
       <div id="reserved-form-container" style="display:none;"></div>
       <div id="reserved-list"></div>
       <div class="reserved-help">
-        💡 <strong>家族で共有するには:</strong> 「⚙️ 共有設定」で GitHub Personal Access Token を一度登録すると、
-        家族全員の予約が <code>data/reserved.json</code> 経由で自動同期されます（追加・編集・削除）。<br>
-        <strong>未設定の場合:</strong> 予約はこの端末のブラウザのみに保存されます。<br>
-        <strong>PAT発行手順:</strong> 「⚙️ 共有設定」ボタンから案内が出ます。
+        💡 <strong>家族で共有するには:</strong>
+        最初に1回だけ Google Apps Script (GAS) でWebアプリをデプロイ → URLをアプリの「⚙️ 共有設定」に登録するだけ。<br>
+        以後は追加・編集・削除すべて家族全員に自動同期されます。<br>
+        <strong>家族端末への配布:</strong> 設定後「📦 家族配布用リンクをコピー」ボタンで自動セットアップ用URLが生成されます。<br>
+        <strong>セットアップ手順</strong>は「⚙️ 共有設定」ボタン内に詳細あり、または リポジトリの <code>gas_sync.gs</code> を参照。
       </div>
     </div>
     <script>
       window.RSV_SEED = [];
       window.RSV_SCHOOLS = [{"id": "tamakagakugijutsu", "name": "都立多摩科学技術高校", "deviation": 61, "url": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html", "lat": 35.6997, "lng": 139.4996}, {"id": "kodairaminami", "name": "都立小平南高校", "deviation": 58, "url": "https://www.metro.ed.jp/kodairaminami-h/guide/meeting.html", "lat": 35.7117, "lng": 139.4752}, {"id": "kodaira", "name": "都立小平高校", "deviation": 59, "url": "https://www.metro.ed.jp/kodaira-h/guide/meeting.html", "lat": 35.733, "lng": 139.4833}, {"id": "koganeikita", "name": "都立小金井北高校", "deviation": 64, "url": "https://www.metro.ed.jp/koganeikita-h/guide/meeting.html", "lat": 35.7055, "lng": 139.5168}, {"id": "musashinokita", "name": "都立武蔵野北高校", "deviation": 65, "url": "https://www.metro.ed.jp/musashinokita-h/guide/meeting.html", "lat": 35.7201, "lng": 139.5576}, {"id": "hinodai", "name": "都立日野台高校", "deviation": 64, "url": "https://www.metro.ed.jp/hinodai-h/guide/meeting.html", "lat": 35.6725, "lng": 139.3862}, {"id": "showa", "name": "都立昭和高校", "deviation": 66, "url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "lat": 35.7032, "lng": 139.3875}, {"id": "higashiyamatominami", "name": "都立東大和南高校", "deviation": 57, "url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "lat": 35.7319, "lng": 139.4238}, {"id": "fuchu", "name": "都立府中高校", "deviation": 54, "url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "lat": 35.6877, "lng": 139.4748}, {"id": "chofukita", "name": "都立調布北高校", "deviation": 63, "url": "https://www.metro.ed.jp/chofukita-h/guide/meeting.html", "lat": 35.6802, "lng": 139.5487}, {"id": "tanashi", "name": "都立田無高校", "deviation": 50, "url": "https://www.metro.ed.jp/tanashi-h/guide/meeting.html", "lat": 35.7203, "lng": 139.529}, {"id": "kiyose", "name": "都立清瀬高校", "deviation": 58, "url": "https://www.metro.ed.jp/kiyose-h/guide/meeting.html", "lat": 35.77, "lng": 139.5151}, {"id": "kodairanishi", "name": "都立小平西高校", "deviation": 47, "url": "https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html", "lat": 35.7255, "lng": 139.4422}, {"id": "kokubunji", "name": "都立国分寺高校", "deviation": 68, "url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "lat": 35.7125, "lng": 139.4477}, {"id": "kinjo", "name": "錦城高等学校", "deviation": 65, "url": "https://www.kinjo-highschool.ed.jp/", "lat": 35.7385, "lng": 139.5017}, {"id": "meiho", "name": "明法高等学校", "deviation": 59, "url": "https://www.meiho.ed.jp/", "lat": 35.7439, "lng": 139.4539}, {"id": "dendai", "name": "東京電機大学高等学校", "deviation": 62, "url": "https://www.dendai.ed.jp/", "lat": 35.707, "lng": 139.5261}, {"id": "meigakuin_higashi", "name": "明治学院東村山高等学校", "deviation": 65, "url": "https://www.meijigakuin-higashi.ed.jp/", "lat": 35.7401, "lng": 139.4576}, {"id": "takuichi", "name": "拓殖大学第一高等学校", "deviation": 61, "url": "https://www.takuichi.ed.jp/", "lat": 35.7332, "lng": 139.4139}, {"id": "shotoku", "name": "聖徳学園高等学校", "deviation": 59, "url": "https://jsh.shotoku.ed.jp/", "lat": 35.6988, "lng": 139.5464}, {"id": "taisei", "name": "大成高等学校", "deviation": 50, "url": "https://www.taisei.ed.jp/", "lat": 35.6886, "lng": 139.5588}, {"id": "minamidaira", "name": "都立南平高校", "deviation": 62, "url": "https://www.metro.ed.jp/minamidaira-h/guide/meeting.html", "lat": 35.6519, "lng": 139.3958}, {"id": "higashiyamato", "name": "都立東大和高校", "deviation": 54, "url": "https://www.metro.ed.jp/higashiyamato-h/guide/meeting.html", "lat": 35.7452, "lng": 139.4246}, {"id": "showa_daiichi", "name": "昭和第一学園高等学校", "deviation": 56, "url": "https://www.sdg.ed.jp/FrontTopic/exam_candidate/", "lat": 35.7167, "lng": 139.4108}];
       window.RSV_HOME = {"lat": 35.717, "lng": 139.4698};
-      window.RSV_REPO = {"owner": "kssdrnoone-design", "repo": "hs-dashboard", "path": "data/reserved.json", "branch": "main"};
       if (typeof rsvInit === 'function') rsvInit();
     </script>
     
@@ -783,7 +784,7 @@ table.compare tr:hover { background: #fbfcfd; }
     <div id="cal-detail"></div>
 
     <details class="cal-list-wrap" style="margin-top:24px;">
-      <summary>📋 全イベント一覧（95件・日付順リスト）</summary>
+      <summary>📋 全イベント一覧（96件・日付順リスト）</summary>
       <div class="event-item"><span class="ev-date">2026/05/08 (Fri)</span><span class="ev-school">都立多摩科学技術高校(61)</span><span class="ev-kw">授業体験</span><div class="ev-link"><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/news/2026/04/8_1_1.html" target="_blank">詳細ページへ →</a></div></div>
 <div class="event-item"><span class="ev-date">2026/05/09 (Sat)</span><span class="ev-school">都立多摩科学技術高校(61)</span><span class="ev-kw">見学会</span><div class="ev-link"><a href="https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
 <div class="event-item"><span class="ev-date">2026/05/09 (Sat)</span><span class="ev-school">都立東大和南高校(57)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html" target="_blank">詳細ページへ →</a></div></div>
@@ -879,10 +880,11 @@ table.compare tr:hover { background: #fbfcfd; }
 <div class="event-item"><span class="ev-date">2026/12/20 (Sun)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
 <div class="event-item"><span class="ev-date">2026/12/21 (Mon)</span><span class="ev-school">明治学院東村山高等学校(65)</span><span class="ev-kw">学校見学</span><div class="ev-link"><a href="https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/" target="_blank">詳細ページへ →</a></div></div>
 <div class="event-item"><span class="ev-date">2027/01/16 (Sat)</span><span class="ev-school">明法高等学校(59)</span><span class="ev-kw">学校説明会</span><div class="ev-link"><a href="https://www.meiho.ed.jp/guide/jhs/" target="_blank">詳細ページへ →</a></div></div>
+<div class="event-item is-new"><span class="ev-date">2027/01/29 (Fri)</span><span class="ev-school">明治学院東村山高等学校(65)</span><span class="ev-kw">学校見学</span><span class="new-badge">NEW</span><div class="ev-link"><a href="https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/" target="_blank">詳細ページへ →</a></div></div>
     </details>
 
     <script>
-      window.CAL_EVENTS = [{"id": "b12ecb8360567323", "school_id": "tamakagakugijutsu", "date": "2026-05-08", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "授業体験", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/news/2026/04/8_1_1.html", "is_new": false}, {"id": "be659b188837850d", "school_id": "tamakagakugijutsu", "date": "2026-05-09", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html", "is_new": false}, {"id": "648daec6158a95ca", "school_id": "higashiyamatominami", "date": "2026-05-09", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "269ff93ede31c313", "school_id": "higashiyamatominami", "date": "2026-05-09", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/", "is_new": false}, {"id": "98feca74745f376d", "school_id": "meiho", "date": "2026-05-23", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "597e46b14ff7cc10", "school_id": "tamakagakugijutsu", "date": "2026-05-30", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "体験入学", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html", "is_new": false}, {"id": "47a986c3a976c7ef", "school_id": "fuchu", "date": "2026-06-06", "school_name": "都立府中高校", "deviation": 54, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "403c5ca2b64d120b", "school_id": "meiho", "date": "2026-06-06", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "99c2a544a7b51eb7", "school_id": "tamakagakugijutsu", "date": "2026-06-13", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "授業公開", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html", "is_new": false}, {"id": "3752d31508d1a34c", "school_id": "koganeikita", "date": "2026-06-13", "school_name": "都立小金井北高校", "deviation": 64, "keyword": "授業公開", "source_url": "https://www.metro.ed.jp/koganeikita-h/news/2026/04/newsentry_160.html", "is_new": false}, {"id": "ba494db2896ff383", "school_id": "meigakuin_higashi", "date": "2026-06-13", "school_name": "明治学院東村山高等学校", "deviation": 65, "keyword": "オープンキャンパス", "source_url": "https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/", "is_new": false}, {"id": "f57c8664e0b8d4c1", "school_id": "kodaira", "date": "2026-06-15", "school_name": "都立小平高校", "deviation": 59, "keyword": "説明会", "source_url": "https://www.metro.ed.jp/kodaira-h/guide/meeting.html", "is_new": false}, {"id": "1d0dc50534bcc10d", "school_id": "meiho", "date": "2026-06-20", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "e87836c139592ab7", "school_id": "meiho", "date": "2026-07-11", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "778fa25ca3504f1c", "school_id": "takuichi", "date": "2026-07-11", "school_name": "拓殖大学第一高等学校", "deviation": 61, "keyword": "学校説明会", "source_url": "https://www.takuichi.ed.jp/admission/", "is_new": false}, {"id": "675d19de9d46c1ee", "school_id": "kodaira", "date": "2026-07-18", "school_name": "都立小平高校", "deviation": 59, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kodaira-h/guide/meeting.html", "is_new": false}, {"id": "5ad64ef651cfcd8b", "school_id": "kinjo", "date": "2026-07-21", "school_name": "錦城高等学校", "deviation": 65, "keyword": "学校説明会", "source_url": "https://www.kinjo-highschool.ed.jp/admission/briefing-session.php", "is_new": false}, {"id": "ec1b011a363e8ae2", "school_id": "fuchu", "date": "2026-07-22", "school_name": "都立府中高校", "deviation": 54, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "acc1e349f1441f4e", "school_id": "kodairanishi", "date": "2026-07-22", "school_name": "都立小平西高校", "deviation": 47, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html", "is_new": false}, {"id": "0a7899e3972369ec", "school_id": "kokubunji", "date": "2026-07-22", "school_name": "都立国分寺高校", "deviation": 68, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "is_new": false}, {"id": "90f16233e362da20", "school_id": "takuichi", "date": "2026-07-22", "school_name": "拓殖大学第一高等学校", "deviation": 61, "keyword": "見学会", "source_url": "https://www.takuichi.ed.jp/admission/", "is_new": false}, {"id": "2e12ffdd39d80213", "school_id": "fuchu", "date": "2026-07-23", "school_name": "都立府中高校", "deviation": 54, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "398964bd79304b69", "school_id": "kodairanishi", "date": "2026-07-23", "school_name": "都立小平西高校", "deviation": 47, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html", "is_new": false}, {"id": "df216ec214a95cae", "school_id": "higashiyamatominami", "date": "2026-07-24", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "d08f25663c4cbc0f", "school_id": "fuchu", "date": "2026-07-24", "school_name": "都立府中高校", "deviation": 54, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "54858a6151e8a6e3", "school_id": "kodairanishi", "date": "2026-07-24", "school_name": "都立小平西高校", "deviation": 47, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html", "is_new": false}, {"id": "732998987f1b5344", "school_id": "meiho", "date": "2026-07-25", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "3f897bf185eacd23", "school_id": "minamidaira", "date": "2026-07-27", "school_name": "都立南平高校", "deviation": 62, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/minamidaira-h/guide/meeting.html", "is_new": false}, {"id": "dd515fa0fbd55271", "school_id": "higashiyamatominami", "date": "2026-07-30", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "db0d3b347e466e3e", "school_id": "tamakagakugijutsu", "date": "2026-07-31", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html", "is_new": false}, {"id": "7abfb54563588b6a", "school_id": "kokubunji", "date": "2026-07-31", "school_name": "都立国分寺高校", "deviation": 68, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "is_new": false}, {"id": "24f748bee461e98f", "school_id": "kokubunji", "date": "2026-08-01", "school_name": "都立国分寺高校", "deviation": 68, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "is_new": false}, {"id": "48faff5fad8597a9", "school_id": "meiho", "date": "2026-08-01", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "69977f7047d824fd", "school_id": "higashiyamatominami", "date": "2026-08-04", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "f21bd84443c49060", "school_id": "showa", "date": "2026-08-06", "school_name": "都立昭和高校", "deviation": 66, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "is_new": false}, {"id": "ccd7eb2586ef4e73", "school_id": "showa", "date": "2026-08-07", "school_name": "都立昭和高校", "deviation": 66, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "is_new": false}, {"id": "7ba5b91671d442d6", "school_id": "taisei", "date": "2026-08-07", "school_name": "大成高等学校", "deviation": 50, "keyword": "個別相談会", "source_url": "https://www.taisei.ed.jp/exam/blog/", "is_new": false}, {"id": "a947bf1f6819e7a3", "school_id": "meiho", "date": "2026-08-08", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "de40b49995c93479", "school_id": "higashiyamatominami", "date": "2026-08-19", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "7e0bcb99a0487fd4", "school_id": "tamakagakugijutsu", "date": "2026-08-21", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "体験入学", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html", "is_new": false}, {"id": "c5b361de05c54a89", "school_id": "higashiyamatominami", "date": "2026-08-21", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "a4c9ea68d8930fdc", "school_id": "kinjo", "date": "2026-08-22", "school_name": "錦城高等学校", "deviation": 65, "keyword": "学校説明会", "source_url": "https://www.kinjo-highschool.ed.jp/admission/briefing-session.php", "is_new": false}, {"id": "be3f499edd15c5f6", "school_id": "meiho", "date": "2026-08-22", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "a5b4bb47ee71749b", "school_id": "takuichi", "date": "2026-08-28", "school_name": "拓殖大学第一高等学校", "deviation": 61, "keyword": "文化祭", "source_url": "https://www.takuichi.ed.jp/admission/", "is_new": false}, {"id": "4491e084f2708ec6", "school_id": "kodairanishi", "date": "2026-08-29", "school_name": "都立小平西高校", "deviation": 47, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html", "is_new": false}, {"id": "34adc5d76495271b", "school_id": "kodairanishi", "date": "2026-08-30", "school_name": "都立小平西高校", "deviation": 47, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html", "is_new": false}, {"id": "a0a9fd181526ea88", "school_id": "higashiyamatominami", "date": "2026-09-05", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "6ed5c8e6a613e781", "school_id": "meiho", "date": "2026-09-05", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "947ebb2b578823bf", "school_id": "takuichi", "date": "2026-09-12", "school_name": "拓殖大学第一高等学校", "deviation": 61, "keyword": "文化祭", "source_url": "https://www.takuichi.ed.jp/admission/", "is_new": false}, {"id": "6c4a4c3dfc2a937f", "school_id": "meiho", "date": "2026-09-26", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "ca7f17c7ef0414b8", "school_id": "tamakagakugijutsu", "date": "2026-10-03", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html", "is_new": false}, {"id": "f60d62c9f17133de", "school_id": "kodaira", "date": "2026-10-03", "school_name": "都立小平高校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/kodaira-h/guide/meeting.html", "is_new": false}, {"id": "60505a44de3eac1d", "school_id": "fuchu", "date": "2026-10-03", "school_name": "都立府中高校", "deviation": 54, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "21cb6e5694eec642", "school_id": "kinjo", "date": "2026-10-03", "school_name": "錦城高等学校", "deviation": 65, "keyword": "説明会", "source_url": "https://www.kinjo-highschool.ed.jp/admission/briefing-session.php", "is_new": false}, {"id": "cd7d93a46ad199e2", "school_id": "meiho", "date": "2026-10-03", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "44c22bbd751ac2c7", "school_id": "meiho", "date": "2026-10-03", "school_name": "明法高等学校", "deviation": 59, "keyword": "説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "151b4700754be9f5", "school_id": "meigakuin_higashi", "date": "2026-10-03", "school_name": "明治学院東村山高等学校", "deviation": 65, "keyword": "文化祭", "source_url": "https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/", "is_new": false}, {"id": "2d8be77af53a8dcd", "school_id": "minamidaira", "date": "2026-10-03", "school_name": "都立南平高校", "deviation": 62, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/minamidaira-h/guide/meeting.html", "is_new": false}, {"id": "6619dde3e37b751d", "school_id": "kokubunji", "date": "2026-10-10", "school_name": "都立国分寺高校", "deviation": 68, "keyword": "説明会", "source_url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "is_new": false}, {"id": "3f90e5957e94acfa", "school_id": "meiho", "date": "2026-10-10", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "16cc4774ed072dec", "school_id": "higashiyamatominami", "date": "2026-10-11", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "個別相談会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "0320f0098a529ad9", "school_id": "taisei", "date": "2026-10-18", "school_name": "大成高等学校", "deviation": 50, "keyword": "学校説明会", "source_url": "https://www.taisei.ed.jp/exam/briefing-inf/", "is_new": false}, {"id": "bd746c7c42e3f09e", "school_id": "showa", "date": "2026-10-24", "school_name": "都立昭和高校", "deviation": 66, "keyword": "説明会", "source_url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "is_new": false}, {"id": "c199a84201125ff7", "school_id": "higashiyamatominami", "date": "2026-10-24", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "f8401c67491befcf", "school_id": "taisei", "date": "2026-10-24", "school_name": "大成高等学校", "deviation": 50, "keyword": "学校説明会", "source_url": "https://www.taisei.ed.jp/exam/briefing-inf/", "is_new": false}, {"id": "6638330333951f1c", "school_id": "chofukita", "date": "2026-10-25", "school_name": "都立調布北高校", "deviation": 63, "keyword": "授業公開", "source_url": "https://www.metro.ed.jp/chofukita-h/guide/meeting.html", "is_new": false}, {"id": "b8209d258922493c", "school_id": "chofukita", "date": "2026-10-25", "school_name": "都立調布北高校", "deviation": 63, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/chofukita-h/guide/meeting.html", "is_new": false}, {"id": "ee98258e9d319011", "school_id": "meiho", "date": "2026-10-31", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "f699ddd898319f5a", "school_id": "meigakuin_higashi", "date": "2026-11-03", "school_name": "明治学院東村山高等学校", "deviation": 65, "keyword": "文化祭", "source_url": "https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/", "is_new": false}, {"id": "52a328a4e95328ad", "school_id": "taisei", "date": "2026-11-03", "school_name": "大成高等学校", "deviation": 50, "keyword": "学校説明会", "source_url": "https://www.taisei.ed.jp/exam/briefing-inf/", "is_new": false}, {"id": "a03b89f0306cca92", "school_id": "kodaira", "date": "2026-11-05", "school_name": "都立小平高校", "deviation": 59, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kodaira-h/guide/meeting.html", "is_new": false}, {"id": "02fca57f3a789849", "school_id": "koganeikita", "date": "2026-11-07", "school_name": "都立小金井北高校", "deviation": 64, "keyword": "授業公開", "source_url": "https://www.metro.ed.jp/koganeikita-h/news/2026/04/newsentry_160.html", "is_new": false}, {"id": "fbfa69f3747426d1", "school_id": "fuchu", "date": "2026-11-07", "school_name": "都立府中高校", "deviation": 54, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "09b18179f3914fa4", "school_id": "meiho", "date": "2026-11-07", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "1fb65cb414689d8f", "school_id": "taisei", "date": "2026-11-07", "school_name": "大成高等学校", "deviation": 50, "keyword": "学校説明会", "source_url": "https://www.taisei.ed.jp/exam/briefing-inf/", "is_new": false}, {"id": "88ea9013ed0644b2", "school_id": "chofukita", "date": "2026-11-08", "school_name": "都立調布北高校", "deviation": 63, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/chofukita-h/guide/meeting.html", "is_new": false}, {"id": "a0e2c2c032950b10", "school_id": "showa", "date": "2026-11-14", "school_name": "都立昭和高校", "deviation": 66, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "is_new": false}, {"id": "faa2534673d1f1ab", "school_id": "showa", "date": "2026-11-14", "school_name": "都立昭和高校", "deviation": 66, "keyword": "個別相談会", "source_url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "is_new": false}, {"id": "e04415d1f88c2d79", "school_id": "higashiyamatominami", "date": "2026-11-14", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "06e77a2a94a53b0d", "school_id": "meiho", "date": "2026-11-14", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "ff11ec82da3c6bea", "school_id": "fuchu", "date": "2026-11-21", "school_name": "都立府中高校", "deviation": 54, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "a418851aa4cd5836", "school_id": "kokubunji", "date": "2026-11-21", "school_name": "都立国分寺高校", "deviation": 68, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "is_new": false}, {"id": "c4beac037f09ff31", "school_id": "meiho", "date": "2026-11-21", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "f185b312d71528a4", "school_id": "meigakuin_higashi", "date": "2026-11-21", "school_name": "明治学院東村山高等学校", "deviation": 65, "keyword": "オープンキャンパス", "source_url": "https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/", "is_new": false}, {"id": "19a96d6fe130793f", "school_id": "meiho", "date": "2026-11-28", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "8dff77a8b9f940e8", "school_id": "taisei", "date": "2026-11-29", "school_name": "大成高等学校", "deviation": 50, "keyword": "学校説明会", "source_url": "https://www.taisei.ed.jp/exam/briefing-inf/", "is_new": false}, {"id": "5d659175ad979262", "school_id": "showa", "date": "2026-12-12", "school_name": "都立昭和高校", "deviation": 66, "keyword": "個別相談会", "source_url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "is_new": false}, {"id": "5b9e48ef13bec7fd", "school_id": "higashiyamatominami", "date": "2026-12-12", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "f419e373758d4ffb", "school_id": "kokubunji", "date": "2026-12-12", "school_name": "都立国分寺高校", "deviation": 68, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "is_new": false}, {"id": "f9a7960264a24d49", "school_id": "meiho", "date": "2026-12-13", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "aa31f23dc8187241", "school_id": "kodaira", "date": "2026-12-19", "school_name": "都立小平高校", "deviation": 59, "keyword": "個別相談会", "source_url": "https://www.metro.ed.jp/kodaira-h/guide/meeting.html", "is_new": false}, {"id": "d0b8dfadbe511840", "school_id": "fuchu", "date": "2026-12-19", "school_name": "都立府中高校", "deviation": 54, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "fbe8e2124ec73d35", "school_id": "meiho", "date": "2026-12-20", "school_name": "明法高等学校", "deviation": 59, "keyword": "説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "3b46dcbba93d11e7", "school_id": "meigakuin_higashi", "date": "2026-12-21", "school_name": "明治学院東村山高等学校", "deviation": 65, "keyword": "学校見学", "source_url": "https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/", "is_new": false}, {"id": "f60eeb74af371e49", "school_id": "meiho", "date": "2027-01-16", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}];
+      window.CAL_EVENTS = [{"id": "b12ecb8360567323", "school_id": "tamakagakugijutsu", "date": "2026-05-08", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "授業体験", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/news/2026/04/8_1_1.html", "is_new": false}, {"id": "be659b188837850d", "school_id": "tamakagakugijutsu", "date": "2026-05-09", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html", "is_new": false}, {"id": "648daec6158a95ca", "school_id": "higashiyamatominami", "date": "2026-05-09", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "269ff93ede31c313", "school_id": "higashiyamatominami", "date": "2026-05-09", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/", "is_new": false}, {"id": "98feca74745f376d", "school_id": "meiho", "date": "2026-05-23", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "597e46b14ff7cc10", "school_id": "tamakagakugijutsu", "date": "2026-05-30", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "体験入学", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html", "is_new": false}, {"id": "47a986c3a976c7ef", "school_id": "fuchu", "date": "2026-06-06", "school_name": "都立府中高校", "deviation": 54, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "403c5ca2b64d120b", "school_id": "meiho", "date": "2026-06-06", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "99c2a544a7b51eb7", "school_id": "tamakagakugijutsu", "date": "2026-06-13", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "授業公開", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html", "is_new": false}, {"id": "3752d31508d1a34c", "school_id": "koganeikita", "date": "2026-06-13", "school_name": "都立小金井北高校", "deviation": 64, "keyword": "授業公開", "source_url": "https://www.metro.ed.jp/koganeikita-h/news/2026/04/newsentry_160.html", "is_new": false}, {"id": "ba494db2896ff383", "school_id": "meigakuin_higashi", "date": "2026-06-13", "school_name": "明治学院東村山高等学校", "deviation": 65, "keyword": "オープンキャンパス", "source_url": "https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/", "is_new": false}, {"id": "f57c8664e0b8d4c1", "school_id": "kodaira", "date": "2026-06-15", "school_name": "都立小平高校", "deviation": 59, "keyword": "説明会", "source_url": "https://www.metro.ed.jp/kodaira-h/guide/meeting.html", "is_new": false}, {"id": "1d0dc50534bcc10d", "school_id": "meiho", "date": "2026-06-20", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "e87836c139592ab7", "school_id": "meiho", "date": "2026-07-11", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "778fa25ca3504f1c", "school_id": "takuichi", "date": "2026-07-11", "school_name": "拓殖大学第一高等学校", "deviation": 61, "keyword": "学校説明会", "source_url": "https://www.takuichi.ed.jp/admission/", "is_new": false}, {"id": "675d19de9d46c1ee", "school_id": "kodaira", "date": "2026-07-18", "school_name": "都立小平高校", "deviation": 59, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kodaira-h/guide/meeting.html", "is_new": false}, {"id": "5ad64ef651cfcd8b", "school_id": "kinjo", "date": "2026-07-21", "school_name": "錦城高等学校", "deviation": 65, "keyword": "学校説明会", "source_url": "https://www.kinjo-highschool.ed.jp/admission/briefing-session.php", "is_new": false}, {"id": "ec1b011a363e8ae2", "school_id": "fuchu", "date": "2026-07-22", "school_name": "都立府中高校", "deviation": 54, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "acc1e349f1441f4e", "school_id": "kodairanishi", "date": "2026-07-22", "school_name": "都立小平西高校", "deviation": 47, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html", "is_new": false}, {"id": "0a7899e3972369ec", "school_id": "kokubunji", "date": "2026-07-22", "school_name": "都立国分寺高校", "deviation": 68, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "is_new": false}, {"id": "90f16233e362da20", "school_id": "takuichi", "date": "2026-07-22", "school_name": "拓殖大学第一高等学校", "deviation": 61, "keyword": "見学会", "source_url": "https://www.takuichi.ed.jp/admission/", "is_new": false}, {"id": "2e12ffdd39d80213", "school_id": "fuchu", "date": "2026-07-23", "school_name": "都立府中高校", "deviation": 54, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "398964bd79304b69", "school_id": "kodairanishi", "date": "2026-07-23", "school_name": "都立小平西高校", "deviation": 47, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html", "is_new": false}, {"id": "df216ec214a95cae", "school_id": "higashiyamatominami", "date": "2026-07-24", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "d08f25663c4cbc0f", "school_id": "fuchu", "date": "2026-07-24", "school_name": "都立府中高校", "deviation": 54, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "54858a6151e8a6e3", "school_id": "kodairanishi", "date": "2026-07-24", "school_name": "都立小平西高校", "deviation": 47, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html", "is_new": false}, {"id": "732998987f1b5344", "school_id": "meiho", "date": "2026-07-25", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "3f897bf185eacd23", "school_id": "minamidaira", "date": "2026-07-27", "school_name": "都立南平高校", "deviation": 62, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/minamidaira-h/guide/meeting.html", "is_new": false}, {"id": "dd515fa0fbd55271", "school_id": "higashiyamatominami", "date": "2026-07-30", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "db0d3b347e466e3e", "school_id": "tamakagakugijutsu", "date": "2026-07-31", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html", "is_new": false}, {"id": "7abfb54563588b6a", "school_id": "kokubunji", "date": "2026-07-31", "school_name": "都立国分寺高校", "deviation": 68, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "is_new": false}, {"id": "24f748bee461e98f", "school_id": "kokubunji", "date": "2026-08-01", "school_name": "都立国分寺高校", "deviation": 68, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "is_new": false}, {"id": "48faff5fad8597a9", "school_id": "meiho", "date": "2026-08-01", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "69977f7047d824fd", "school_id": "higashiyamatominami", "date": "2026-08-04", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "f21bd84443c49060", "school_id": "showa", "date": "2026-08-06", "school_name": "都立昭和高校", "deviation": 66, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "is_new": false}, {"id": "ccd7eb2586ef4e73", "school_id": "showa", "date": "2026-08-07", "school_name": "都立昭和高校", "deviation": 66, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "is_new": false}, {"id": "7ba5b91671d442d6", "school_id": "taisei", "date": "2026-08-07", "school_name": "大成高等学校", "deviation": 50, "keyword": "個別相談会", "source_url": "https://www.taisei.ed.jp/exam/blog/", "is_new": false}, {"id": "a947bf1f6819e7a3", "school_id": "meiho", "date": "2026-08-08", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "de40b49995c93479", "school_id": "higashiyamatominami", "date": "2026-08-19", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "7e0bcb99a0487fd4", "school_id": "tamakagakugijutsu", "date": "2026-08-21", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "体験入学", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html", "is_new": false}, {"id": "c5b361de05c54a89", "school_id": "higashiyamatominami", "date": "2026-08-21", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "a4c9ea68d8930fdc", "school_id": "kinjo", "date": "2026-08-22", "school_name": "錦城高等学校", "deviation": 65, "keyword": "学校説明会", "source_url": "https://www.kinjo-highschool.ed.jp/admission/briefing-session.php", "is_new": false}, {"id": "be3f499edd15c5f6", "school_id": "meiho", "date": "2026-08-22", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "a5b4bb47ee71749b", "school_id": "takuichi", "date": "2026-08-28", "school_name": "拓殖大学第一高等学校", "deviation": 61, "keyword": "文化祭", "source_url": "https://www.takuichi.ed.jp/admission/", "is_new": false}, {"id": "4491e084f2708ec6", "school_id": "kodairanishi", "date": "2026-08-29", "school_name": "都立小平西高校", "deviation": 47, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html", "is_new": false}, {"id": "34adc5d76495271b", "school_id": "kodairanishi", "date": "2026-08-30", "school_name": "都立小平西高校", "deviation": 47, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kodairanishi-h/guide/meeting.html", "is_new": false}, {"id": "a0a9fd181526ea88", "school_id": "higashiyamatominami", "date": "2026-09-05", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "6ed5c8e6a613e781", "school_id": "meiho", "date": "2026-09-05", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "947ebb2b578823bf", "school_id": "takuichi", "date": "2026-09-12", "school_name": "拓殖大学第一高等学校", "deviation": 61, "keyword": "文化祭", "source_url": "https://www.takuichi.ed.jp/admission/", "is_new": false}, {"id": "6c4a4c3dfc2a937f", "school_id": "meiho", "date": "2026-09-26", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "ca7f17c7ef0414b8", "school_id": "tamakagakugijutsu", "date": "2026-10-03", "school_name": "都立多摩科学技術高校", "deviation": 61, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/tamakagakugijutsu-h/guide/meeting.html", "is_new": false}, {"id": "f60d62c9f17133de", "school_id": "kodaira", "date": "2026-10-03", "school_name": "都立小平高校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/kodaira-h/guide/meeting.html", "is_new": false}, {"id": "60505a44de3eac1d", "school_id": "fuchu", "date": "2026-10-03", "school_name": "都立府中高校", "deviation": 54, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "21cb6e5694eec642", "school_id": "kinjo", "date": "2026-10-03", "school_name": "錦城高等学校", "deviation": 65, "keyword": "説明会", "source_url": "https://www.kinjo-highschool.ed.jp/admission/briefing-session.php", "is_new": false}, {"id": "cd7d93a46ad199e2", "school_id": "meiho", "date": "2026-10-03", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "44c22bbd751ac2c7", "school_id": "meiho", "date": "2026-10-03", "school_name": "明法高等学校", "deviation": 59, "keyword": "説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "151b4700754be9f5", "school_id": "meigakuin_higashi", "date": "2026-10-03", "school_name": "明治学院東村山高等学校", "deviation": 65, "keyword": "文化祭", "source_url": "https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/", "is_new": false}, {"id": "2d8be77af53a8dcd", "school_id": "minamidaira", "date": "2026-10-03", "school_name": "都立南平高校", "deviation": 62, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/minamidaira-h/guide/meeting.html", "is_new": false}, {"id": "6619dde3e37b751d", "school_id": "kokubunji", "date": "2026-10-10", "school_name": "都立国分寺高校", "deviation": 68, "keyword": "説明会", "source_url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "is_new": false}, {"id": "3f90e5957e94acfa", "school_id": "meiho", "date": "2026-10-10", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "16cc4774ed072dec", "school_id": "higashiyamatominami", "date": "2026-10-11", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "個別相談会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "0320f0098a529ad9", "school_id": "taisei", "date": "2026-10-18", "school_name": "大成高等学校", "deviation": 50, "keyword": "学校説明会", "source_url": "https://www.taisei.ed.jp/exam/briefing-inf/", "is_new": false}, {"id": "bd746c7c42e3f09e", "school_id": "showa", "date": "2026-10-24", "school_name": "都立昭和高校", "deviation": 66, "keyword": "説明会", "source_url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "is_new": false}, {"id": "c199a84201125ff7", "school_id": "higashiyamatominami", "date": "2026-10-24", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "f8401c67491befcf", "school_id": "taisei", "date": "2026-10-24", "school_name": "大成高等学校", "deviation": 50, "keyword": "学校説明会", "source_url": "https://www.taisei.ed.jp/exam/briefing-inf/", "is_new": false}, {"id": "6638330333951f1c", "school_id": "chofukita", "date": "2026-10-25", "school_name": "都立調布北高校", "deviation": 63, "keyword": "授業公開", "source_url": "https://www.metro.ed.jp/chofukita-h/guide/meeting.html", "is_new": false}, {"id": "b8209d258922493c", "school_id": "chofukita", "date": "2026-10-25", "school_name": "都立調布北高校", "deviation": 63, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/chofukita-h/guide/meeting.html", "is_new": false}, {"id": "ee98258e9d319011", "school_id": "meiho", "date": "2026-10-31", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "f699ddd898319f5a", "school_id": "meigakuin_higashi", "date": "2026-11-03", "school_name": "明治学院東村山高等学校", "deviation": 65, "keyword": "文化祭", "source_url": "https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/", "is_new": false}, {"id": "52a328a4e95328ad", "school_id": "taisei", "date": "2026-11-03", "school_name": "大成高等学校", "deviation": 50, "keyword": "学校説明会", "source_url": "https://www.taisei.ed.jp/exam/briefing-inf/", "is_new": false}, {"id": "a03b89f0306cca92", "school_id": "kodaira", "date": "2026-11-05", "school_name": "都立小平高校", "deviation": 59, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/kodaira-h/guide/meeting.html", "is_new": false}, {"id": "02fca57f3a789849", "school_id": "koganeikita", "date": "2026-11-07", "school_name": "都立小金井北高校", "deviation": 64, "keyword": "授業公開", "source_url": "https://www.metro.ed.jp/koganeikita-h/news/2026/04/newsentry_160.html", "is_new": false}, {"id": "fbfa69f3747426d1", "school_id": "fuchu", "date": "2026-11-07", "school_name": "都立府中高校", "deviation": 54, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "09b18179f3914fa4", "school_id": "meiho", "date": "2026-11-07", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "1fb65cb414689d8f", "school_id": "taisei", "date": "2026-11-07", "school_name": "大成高等学校", "deviation": 50, "keyword": "学校説明会", "source_url": "https://www.taisei.ed.jp/exam/briefing-inf/", "is_new": false}, {"id": "88ea9013ed0644b2", "school_id": "chofukita", "date": "2026-11-08", "school_name": "都立調布北高校", "deviation": 63, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/chofukita-h/guide/meeting.html", "is_new": false}, {"id": "a0e2c2c032950b10", "school_id": "showa", "date": "2026-11-14", "school_name": "都立昭和高校", "deviation": 66, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "is_new": false}, {"id": "faa2534673d1f1ab", "school_id": "showa", "date": "2026-11-14", "school_name": "都立昭和高校", "deviation": 66, "keyword": "個別相談会", "source_url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "is_new": false}, {"id": "e04415d1f88c2d79", "school_id": "higashiyamatominami", "date": "2026-11-14", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "06e77a2a94a53b0d", "school_id": "meiho", "date": "2026-11-14", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "ff11ec82da3c6bea", "school_id": "fuchu", "date": "2026-11-21", "school_name": "都立府中高校", "deviation": 54, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "a418851aa4cd5836", "school_id": "kokubunji", "date": "2026-11-21", "school_name": "都立国分寺高校", "deviation": 68, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "is_new": false}, {"id": "c4beac037f09ff31", "school_id": "meiho", "date": "2026-11-21", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "f185b312d71528a4", "school_id": "meigakuin_higashi", "date": "2026-11-21", "school_name": "明治学院東村山高等学校", "deviation": 65, "keyword": "オープンキャンパス", "source_url": "https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/", "is_new": false}, {"id": "19a96d6fe130793f", "school_id": "meiho", "date": "2026-11-28", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/hs/", "is_new": false}, {"id": "8dff77a8b9f940e8", "school_id": "taisei", "date": "2026-11-29", "school_name": "大成高等学校", "deviation": 50, "keyword": "学校説明会", "source_url": "https://www.taisei.ed.jp/exam/briefing-inf/", "is_new": false}, {"id": "5d659175ad979262", "school_id": "showa", "date": "2026-12-12", "school_name": "都立昭和高校", "deviation": 66, "keyword": "個別相談会", "source_url": "https://www.metro.ed.jp/showa-h/guide/meeting.html", "is_new": false}, {"id": "5b9e48ef13bec7fd", "school_id": "higashiyamatominami", "date": "2026-12-12", "school_name": "都立東大和南高校", "deviation": 57, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/higashiyamatominami-h/guide/meeting.html", "is_new": false}, {"id": "f419e373758d4ffb", "school_id": "kokubunji", "date": "2026-12-12", "school_name": "都立国分寺高校", "deviation": 68, "keyword": "学校説明会", "source_url": "https://www.metro.ed.jp/kokubunji-h/guide/meeting.html", "is_new": false}, {"id": "f9a7960264a24d49", "school_id": "meiho", "date": "2026-12-13", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "aa31f23dc8187241", "school_id": "kodaira", "date": "2026-12-19", "school_name": "都立小平高校", "deviation": 59, "keyword": "個別相談会", "source_url": "https://www.metro.ed.jp/kodaira-h/guide/meeting.html", "is_new": false}, {"id": "d0b8dfadbe511840", "school_id": "fuchu", "date": "2026-12-19", "school_name": "都立府中高校", "deviation": 54, "keyword": "見学会", "source_url": "https://www.metro.ed.jp/fuchu-h/guide/meeting.html", "is_new": false}, {"id": "fbe8e2124ec73d35", "school_id": "meiho", "date": "2026-12-20", "school_name": "明法高等学校", "deviation": 59, "keyword": "説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "3b46dcbba93d11e7", "school_id": "meigakuin_higashi", "date": "2026-12-21", "school_name": "明治学院東村山高等学校", "deviation": 65, "keyword": "学校見学", "source_url": "https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/", "is_new": false}, {"id": "f60eeb74af371e49", "school_id": "meiho", "date": "2027-01-16", "school_name": "明法高等学校", "deviation": 59, "keyword": "学校説明会", "source_url": "https://www.meiho.ed.jp/guide/jhs/", "is_new": false}, {"id": "df71affd8da24774", "school_id": "meigakuin_higashi", "date": "2027-01-29", "school_name": "明治学院東村山高等学校", "deviation": 65, "keyword": "学校見学", "source_url": "https://www.meijigakuin-higashi.ed.jp/junior/exam/setumei/", "is_new": true}];
       window.CAL_INIT_MONTH = "2026-05";
       if (typeof initCalendar === 'function') initCalendar();
     </script>
@@ -940,7 +942,7 @@ table.compare tr:hover { background: #fbfcfd; }
 <tr><td><a href="https://www.metro.ed.jp/showa-h/guide/meeting.html" target="_blank">都立昭和高校</a></td><td>66</td><td>都立-普通科</td><td>昭島市</td><td>5,650</td><td>118,800</td><td>2026/08/06 (Thu) 学校説明会</td><td>6</td></tr>
 <tr><td><a href="https://www.metro.ed.jp/musashinokita-h/guide/meeting.html" target="_blank">都立武蔵野北高校</a></td><td>65</td><td>都立-推進校</td><td>武蔵野市</td><td>5,650</td><td>118,800</td><td>-</td><td>0</td></tr>
 <tr><td><a href="https://www.kinjo-highschool.ed.jp/" target="_blank">錦城高等学校</a></td><td>65</td><td>私立-共学</td><td>小平市</td><td>230,000</td><td>610,000</td><td>2026/07/21 (Tue) 学校説明会</td><td>3</td></tr>
-<tr><td><a href="https://www.meijigakuin-higashi.ed.jp/" target="_blank">明治学院東村山高等学校</a></td><td>65</td><td>私立-共学</td><td>東村山市</td><td>280,000</td><td>732,000</td><td>2026/06/13 (Sat) オープンキャンパス</td><td>5</td></tr>
+<tr><td><a href="https://www.meijigakuin-higashi.ed.jp/" target="_blank">明治学院東村山高等学校</a></td><td>65</td><td>私立-共学</td><td>東村山市</td><td>280,000</td><td>732,000</td><td>2026/06/13 (Sat) オープンキャンパス</td><td>6</td></tr>
 <tr><td><a href="https://www.metro.ed.jp/koganeikita-h/guide/meeting.html" target="_blank">都立小金井北高校</a></td><td>64</td><td>都立-推進校</td><td>小金井市</td><td>5,650</td><td>118,800</td><td>2026/06/13 (Sat) 授業公開</td><td>2</td></tr>
 <tr><td><a href="https://www.metro.ed.jp/hinodai-h/guide/meeting.html" target="_blank">都立日野台高校</a></td><td>64</td><td>都立-普通科</td><td>日野市</td><td>5,650</td><td>118,800</td><td>-</td><td>0</td></tr>
 <tr><td><a href="https://www.metro.ed.jp/chofukita-h/guide/meeting.html" target="_blank">都立調布北高校</a></td><td>63</td><td>都立-推進校</td><td>調布市</td><td>5,650</td><td>118,800</td><td>2026/10/25 (Sun) 授業公開</td><td>3</td></tr>
@@ -1661,11 +1663,11 @@ function rsvSave(items, opts) {
     try {
         localStorage.setItem(RSV_KEY, JSON.stringify(items));
         document.dispatchEvent(new CustomEvent('rsv:changed'));
-        // GitHubに同期（PAT設定時のみ）
-        if (!opts.skipSync && ghPat()) {
+        // GAS同期（URL設定時のみ）
+        if (!opts.skipSync && typeof gasUrl === 'function' && gasUrl()) {
             rsvSyncUp();
-        } else if (!ghPat()) {
-            rsvSetSyncStatus('ローカル保存のみ（家族と共有するには「⚙️ 共有設定」でPATを登録）', 'warn');
+        } else if (typeof gasUrl === 'function' && !gasUrl()) {
+            rsvSetSyncStatus('ローカル保存のみ（家族と共有するには「⚙️ 共有設定」でGAS URLを登録）', 'warn');
         }
     } catch (e) {
         alert('保存失敗: ' + e.message);
@@ -1726,8 +1728,12 @@ function rsvUpdateBadge(items) {
 
 function rsvInit() {
     rsvRender();
-    // 起動時にGitHubから最新を取得（公開rawなのでPAT不要）
-    rsvSyncDown(/*silent=*/true);
+    // 起動時にGASから最新を取得（URL未設定なら何もしない）
+    if (typeof gasUrl === 'function' && gasUrl()) {
+        rsvSyncDown(/*silent=*/true);
+    } else {
+        rsvSetSyncStatus('家族と共有したい場合は「⚙️ 共有設定」でGAS URLを登録してください', 'warn');
+    }
 }
 
 function rsvRender() {
@@ -1958,14 +1964,39 @@ document.addEventListener('rsv:changed', function(){
     }
 });
 
-/* ===== GitHub Sync (家族共有用) ===== */
-var GH_PAT_KEY = 'hs_gh_pat_v1';
+/* ===== GAS Sync (家族共有用) ===== */
+var GAS_URL_KEY = 'hs_gas_url_v1';
 var RSV_LAST_SYNC_KEY = 'hs_rsv_last_sync_v1';
 
-function ghPat() { return localStorage.getItem(GH_PAT_KEY) || ''; }
-function ghSetPat(p) {
-    if (p) localStorage.setItem(GH_PAT_KEY, p);
-    else localStorage.removeItem(GH_PAT_KEY);
+function gasUrl() { return localStorage.getItem(GAS_URL_KEY) || ''; }
+function gasSetUrl(u) {
+    if (u) localStorage.setItem(GAS_URL_KEY, u);
+    else localStorage.removeItem(GAS_URL_KEY);
+}
+
+/* URL hash / search パラメータからGAS URL自動取得（家族配布用リンクで来た場合） */
+function rsvCheckUrlParam() {
+    try {
+        var params = new URLSearchParams(window.location.search);
+        var fromQuery = params.get('gas');
+        var hashParams = new URLSearchParams((window.location.hash || '').replace(/^#/, ''));
+        var fromHash = hashParams.get('gas');
+        var u = fromQuery || fromHash;
+        if (u && /^https:\/\/script\.google\.com\//.test(u)) {
+            gasSetUrl(u);
+            // URLからパラメータ消す（履歴汚さない・トークン残らない）
+            params.delete('gas');
+            hashParams.delete('gas');
+            var newSearch = params.toString();
+            var newHash = hashParams.toString();
+            var newUrl = window.location.pathname +
+                (newSearch ? '?' + newSearch : '') +
+                (newHash ? '#' + newHash : '');
+            history.replaceState(null, '', newUrl);
+            return true;
+        }
+    } catch (e) {}
+    return false;
 }
 
 function rsvSetSyncStatus(msg, cls) {
@@ -1975,173 +2006,135 @@ function rsvSetSyncStatus(msg, cls) {
     el.className = 'rsv-sync-status' + (cls ? ' ' + cls : '');
 }
 
-function rsvShowPatModal() {
-    var current = ghPat();
-    var msg = '【家族共有設定】\n\n' +
-        '予約データを家族全員で共有するには、GitHub の Personal Access Token を登録してください。\n\n' +
-        '【PAT発行手順】\n' +
-        '1. PCのブラウザで以下にアクセス:\n' +
-        '   https://github.com/settings/personal-access-tokens/new\n' +
-        '2. Token name: hs-dashboard\n' +
-        '3. Repository access: Only selected → kssdrnoone-design/hs-dashboard\n' +
-        '4. Permissions → Repository permissions → Contents: Read and write\n' +
-        '5. Generate token → コピー → ここに貼り付け\n\n' +
-        (current ? '※現在のPAT: ' + current.slice(0, 12) + '...（変更する場合は新しいトークンを入力、消す場合は空欄でOK）\n\n' : '') +
-        'PAT (空欄で削除):';
-    var input = window.prompt(msg, current);
+function rsvShowGasModal() {
+    var current = gasUrl();
+    var lines = [
+        '【家族共有設定 - GAS Webアプリ】',
+        '',
+        '初回セットアップ手順（PCで一度だけ）:',
+        '1. https://script.new を開く',
+        '2. 表示されるコードを全消去 → リポジトリの gas_sync.gs を全コピペ',
+        '3. プロジェクト名を「hs-dashboard-sync」に変更',
+        '4. 右上「デプロイ」→「新しいデプロイ」',
+        '5. 種類: ウェブアプリ',
+        '6. 実行: 自分 / アクセス: 全員',
+        '7. デプロイ → URL コピー → ここに貼り付け',
+        '',
+        (current ? '現在のURL: ' + current.slice(0, 60) + '...\n削除する場合は空欄、変更する場合は新URL貼り付け\n' : ''),
+        'GAS WebアプリURL (空欄で削除):'
+    ];
+    var input = window.prompt(lines.join('\n'), current);
     if (input === null) return;
-    if (input.trim() === '') {
-        ghSetPat('');
-        rsvSetSyncStatus('PATを削除しました（ローカル保存のみ）', 'warn');
+    var trimmed = input.trim();
+    if (trimmed === '') {
+        gasSetUrl('');
+        rsvSetSyncStatus('GAS URLを削除しました（ローカル保存のみ）', 'warn');
         return;
     }
-    ghSetPat(input.trim());
-    rsvSetSyncStatus('PAT保存しました。同期します...', 'busy');
-    rsvSyncUp();
+    if (!/^https:\/\/script\.google\.com\//.test(trimmed)) {
+        if (!confirm('script.google.com で始まらないURLです。本当に保存しますか？')) return;
+    }
+    gasSetUrl(trimmed);
+    rsvSetSyncStatus('URL保存しました。同期します...', 'busy');
+    // 接続確認とともに pull→push
+    rsvSyncDown();
+    setTimeout(function(){
+        // 家族配布用リンク作成のお誘い
+        if (confirm('GAS URLを保存しました。\n\n家族の端末用に「自動セットアップ済みリンク」をクリップボードにコピーしますか？\n\n（家族にこのリンクを送るだけで、URL登録の手間ゼロで使えます）')) {
+            rsvCopyShareLink();
+        }
+    }, 1500);
 }
 
-/* base64 (UTF-8 safe) */
-function _b64encode(str) {
-    var bytes = new TextEncoder().encode(str);
-    var bin = '';
-    for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-    return btoa(bin);
-}
-function _b64decode(b64) {
-    var bin = atob(b64.replace(/\s/g, ''));
-    var bytes = new Uint8Array(bin.length);
-    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    return new TextDecoder('utf-8').decode(bytes);
+function rsvCopyShareLink() {
+    var u = gasUrl();
+    if (!u) { alert('先にGAS URLを設定してください'); return; }
+    var base = window.location.origin + window.location.pathname;
+    var shareUrl = base + '?gas=' + encodeURIComponent(u);
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(shareUrl).then(function(){
+            alert('家族配布用リンクをコピーしました:\n\n' + shareUrl + '\n\nLINE等で家族に送ると、開いた瞬間にGAS URLが自動登録されます。');
+        }, function(){
+            window.prompt('全選択してコピー:', shareUrl);
+        });
+    } else {
+        window.prompt('全選択してコピー:', shareUrl);
+    }
 }
 
-/* リモート読み取り（PAT不要：公開rawから） */
-function rsvFetchRemoteRaw() {
-    var repo = window.RSV_REPO || {};
-    var url = 'https://raw.githubusercontent.com/' + repo.owner + '/' + repo.repo + '/' + repo.branch + '/' + repo.path + '?t=' + Date.now();
-    return fetch(url, { cache: 'no-store' }).then(function(r){
-        if (!r.ok) throw new Error('fetch raw ' + r.status);
+/* 取得 (GET) */
+function rsvSyncDown(silent) {
+    var url = gasUrl();
+    if (!url) {
+        if (!silent) rsvSetSyncStatus('GAS URL未設定。「⚙️ 共有設定」で登録すると家族で共有できます', 'warn');
+        return;
+    }
+    if (!silent) rsvSetSyncStatus('🔄 取得中...', 'busy');
+    fetch(url + '?t=' + Date.now(), { cache: 'no-store' }).then(function(r){
+        if (!r.ok) throw new Error('GET ' + r.status);
         return r.json();
     }).then(function(data){
-        return Array.isArray(data) ? data : (data.items || []);
+        if (!data.ok) throw new Error(data.error || 'GAS error');
+        var remote = data.items || [];
+        var local = rsvLoad();
+        // local に新規あれば残す（リモートにない予約 = オフライン中追加分）
+        var merged = rsvMergeItems(remote, local);
+        var localOnly = local.filter(function(l){
+            return !remote.some(function(r){ return rsvItemId(r) === rsvItemId(l); });
+        });
+        try { localStorage.setItem(RSV_KEY, JSON.stringify(merged)); } catch (e) {}
+        localStorage.setItem(RSV_LAST_SYNC_KEY, new Date().toISOString());
+        var stamp = new Date().toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'});
+        rsvSetSyncStatus('✓ 取得完了（' + stamp + '・' + merged.length + '件）', 'ok');
+        rsvRender();
+        if (typeof renderCalendar === 'function' && calCurrent) renderCalendar();
+        // ローカル新規があればpush
+        if (localOnly.length > 0) {
+            rsvSyncUp();
+        }
+    }).catch(function(e){
+        rsvSetSyncStatus('✗ 取得失敗: ' + e.message + (silent ? '（自動取得・GAS URL未設定 or オフライン）' : ''), 'err');
     });
 }
 
-/* リモート読み取り（PAT付き：sha取得用） */
-function rsvFetchRemoteApi() {
-    var pat = ghPat();
-    if (!pat) throw new Error('PAT未設定');
-    var repo = window.RSV_REPO || {};
-    var url = 'https://api.github.com/repos/' + repo.owner + '/' + repo.repo + '/contents/' + repo.path + '?ref=' + repo.branch;
-    return fetch(url, {
-        headers: { Authorization: 'token ' + pat, Accept: 'application/vnd.github+json' },
+/* 送信 (POST) */
+function rsvSyncUp() {
+    var url = gasUrl();
+    if (!url) {
+        rsvSetSyncStatus('GAS URL未設定のため同期できません。「⚙️ 共有設定」から登録してください', 'warn');
+        return;
+    }
+    rsvSetSyncStatus('🔄 送信中...', 'busy');
+    var items = rsvLoad();
+    // GAS は preflight に応答しないので Content-Type は text/plain にして OPTIONS 回避
+    fetch(url, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'save', items: items }),
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         cache: 'no-store'
     }).then(function(r){
-        if (r.status === 404) return { items: [], sha: null };
-        if (!r.ok) {
-            return r.text().then(function(t){ throw new Error('API GET ' + r.status + ': ' + t.slice(0, 100)); });
-        }
-        return r.json().then(function(data){
-            var json;
-            try { json = JSON.parse(_b64decode(data.content)); }
-            catch (e) { json = { items: [] }; }
-            return { items: json.items || [], sha: data.sha };
-        });
+        if (!r.ok) throw new Error('POST ' + r.status);
+        return r.json();
+    }).then(function(data){
+        if (!data.ok) throw new Error(data.error || 'GAS save error');
+        localStorage.setItem(RSV_LAST_SYNC_KEY, new Date().toISOString());
+        var stamp = new Date().toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'});
+        rsvSetSyncStatus('✓ 共有完了（' + stamp + '・' + data.count + '件・家族端末は「🔄 同期」で受信）', 'ok');
+    }).catch(function(e){
+        rsvSetSyncStatus('✗ 送信失敗: ' + e.message + '（次回同期で再試行）', 'err');
     });
 }
 
-/* マージ：同IDなら新しい方優先（呼び元で順序制御） */
+/* マージ：同IDなら local 優先 */
 function rsvMergeItems(remote, local) {
     var byId = {};
-    remote.forEach(function(r){ byId[rsvItemId(r)] = r; });
-    local.forEach(function(r){ byId[rsvItemId(r)] = r; });
+    (remote || []).forEach(function(r){ byId[rsvItemId(r)] = r; });
+    (local || []).forEach(function(r){ byId[rsvItemId(r)] = r; });
     return Object.keys(byId).map(function(k){ return byId[k]; });
 }
 
-/* GitHubからプル（PAT不要） */
-function rsvSyncDown(silent) {
-    if (!silent) rsvSetSyncStatus('🔄 同期中（取得）...', 'busy');
-    rsvFetchRemoteRaw().then(function(remote){
-        var local = rsvLoad();
-        // local に新規あれば残す（リモートにない予約 = この端末でPAT未設定時に追加された分）
-        var merged = rsvMergeItems(remote, local);
-        // remote側で削除されたものは復活してしまうが、共有なので問題小さい。
-        // → シンプルに「リモート優先＋ローカル新規残す」でmerged
-        // mergedからリモートにあったがローカル更新ないものはリモート版が反映される
-        try { localStorage.setItem(RSV_KEY, JSON.stringify(merged)); } catch (e) {}
-        localStorage.setItem(RSV_LAST_SYNC_KEY, new Date().toISOString());
-        var stamp = new Date().toLocaleTimeString('ja-JP', {hour: '2-digit', minute: '2-digit'});
-        rsvSetSyncStatus('✓ 取得完了（' + stamp + '・' + merged.length + '件）' + (ghPat() ? '' : ' ⚠️ PAT未設定なら追加・編集はこの端末のみ'), ghPat() ? 'ok' : 'warn');
-        rsvRender();
-        if (typeof renderCalendar === 'function' && calCurrent) renderCalendar();
-    }).catch(function(e){
-        rsvSetSyncStatus('✗ 取得失敗: ' + e.message, 'err');
-    });
-}
-
-/* GitHubへプッシュ（PAT必要） */
-function rsvSyncUp() {
-    if (!ghPat()) {
-        rsvSetSyncStatus('PAT未設定のため同期できません。「⚙️ 共有設定」から登録してください', 'warn');
-        return;
-    }
-    rsvSetSyncStatus('🔄 同期中（送信）...', 'busy');
-    var attempt = 0;
-    function tryPush() {
-        attempt++;
-        if (attempt > 3) {
-            rsvSetSyncStatus('✗ 送信失敗（衝突リトライ上限）', 'err');
-            return;
-        }
-        rsvFetchRemoteApi().then(function(remote){
-            var local = rsvLoad();
-            var merged = rsvMergeItems(remote.items, local);
-            var content = JSON.stringify({
-                _comment: 'スマホ・PCから「⚙️ 共有設定」経由で家族全員が編集。手動編集も可だが先にPullしてから。',
-                items: merged
-            }, null, 2) + '\n';
-            var repo = window.RSV_REPO || {};
-            var url = 'https://api.github.com/repos/' + repo.owner + '/' + repo.repo + '/contents/' + repo.path;
-            var body = {
-                message: 'update reserved.json (' + new Date().toISOString().slice(0, 19) + ')',
-                content: _b64encode(content),
-                branch: repo.branch
-            };
-            if (remote.sha) body.sha = remote.sha;
-            return fetch(url, {
-                method: 'PUT',
-                headers: {
-                    Authorization: 'token ' + ghPat(),
-                    Accept: 'application/vnd.github+json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            }).then(function(r){
-                if (r.ok) {
-                    try { localStorage.setItem(RSV_KEY, JSON.stringify(merged)); } catch (e) {}
-                    localStorage.setItem(RSV_LAST_SYNC_KEY, new Date().toISOString());
-                    var stamp = new Date().toLocaleTimeString('ja-JP', {hour: '2-digit', minute: '2-digit'});
-                    rsvSetSyncStatus('✓ 共有完了（' + stamp + '・' + merged.length + '件・他端末は「🔄 同期」で取得）', 'ok');
-                    rsvRender();
-                    if (typeof renderCalendar === 'function' && calCurrent) renderCalendar();
-                } else if (r.status === 409 || r.status === 422) {
-                    // 衝突 → リトライ
-                    setTimeout(tryPush, 500);
-                } else if (r.status === 401 || r.status === 403) {
-                    return r.text().then(function(t){
-                        rsvSetSyncStatus('✗ 認証エラー(' + r.status + ')。PATの権限を確認してください: ' + t.slice(0, 100), 'err');
-                    });
-                } else {
-                    return r.text().then(function(t){
-                        rsvSetSyncStatus('✗ 送信エラー(' + r.status + '): ' + t.slice(0, 100), 'err');
-                    });
-                }
-            });
-        }).catch(function(e){
-            rsvSetSyncStatus('✗ 同期失敗: ' + e.message, 'err');
-        });
-    }
-    tryPush();
-}
+/* 起動時に URL パラメータからGAS URLを拾う */
+rsvCheckUrlParam();
 </script>
 </body>
 </html>

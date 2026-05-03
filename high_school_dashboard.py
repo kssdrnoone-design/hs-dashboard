@@ -1372,11 +1372,11 @@ function rsvSave(items, opts) {
     try {
         localStorage.setItem(RSV_KEY, JSON.stringify(items));
         document.dispatchEvent(new CustomEvent('rsv:changed'));
-        // GitHubに同期（PAT設定時のみ）
-        if (!opts.skipSync && ghPat()) {
+        // GAS同期（URL設定時のみ）
+        if (!opts.skipSync && typeof gasUrl === 'function' && gasUrl()) {
             rsvSyncUp();
-        } else if (!ghPat()) {
-            rsvSetSyncStatus('ローカル保存のみ（家族と共有するには「⚙️ 共有設定」でPATを登録）', 'warn');
+        } else if (typeof gasUrl === 'function' && !gasUrl()) {
+            rsvSetSyncStatus('ローカル保存のみ（家族と共有するには「⚙️ 共有設定」でGAS URLを登録）', 'warn');
         }
     } catch (e) {
         alert('保存失敗: ' + e.message);
@@ -1437,8 +1437,12 @@ function rsvUpdateBadge(items) {
 
 function rsvInit() {
     rsvRender();
-    // 起動時にGitHubから最新を取得（公開rawなのでPAT不要）
-    rsvSyncDown(/*silent=*/true);
+    // 起動時にGASから最新を取得（URL未設定なら何もしない）
+    if (typeof gasUrl === 'function' && gasUrl()) {
+        rsvSyncDown(/*silent=*/true);
+    } else {
+        rsvSetSyncStatus('家族と共有したい場合は「⚙️ 共有設定」でGAS URLを登録してください', 'warn');
+    }
 }
 
 function rsvRender() {
@@ -1669,14 +1673,39 @@ document.addEventListener('rsv:changed', function(){
     }
 });
 
-/* ===== GitHub Sync (家族共有用) ===== */
-var GH_PAT_KEY = 'hs_gh_pat_v1';
+/* ===== GAS Sync (家族共有用) ===== */
+var GAS_URL_KEY = 'hs_gas_url_v1';
 var RSV_LAST_SYNC_KEY = 'hs_rsv_last_sync_v1';
 
-function ghPat() { return localStorage.getItem(GH_PAT_KEY) || ''; }
-function ghSetPat(p) {
-    if (p) localStorage.setItem(GH_PAT_KEY, p);
-    else localStorage.removeItem(GH_PAT_KEY);
+function gasUrl() { return localStorage.getItem(GAS_URL_KEY) || ''; }
+function gasSetUrl(u) {
+    if (u) localStorage.setItem(GAS_URL_KEY, u);
+    else localStorage.removeItem(GAS_URL_KEY);
+}
+
+/* URL hash / search パラメータからGAS URL自動取得（家族配布用リンクで来た場合） */
+function rsvCheckUrlParam() {
+    try {
+        var params = new URLSearchParams(window.location.search);
+        var fromQuery = params.get('gas');
+        var hashParams = new URLSearchParams((window.location.hash || '').replace(/^#/, ''));
+        var fromHash = hashParams.get('gas');
+        var u = fromQuery || fromHash;
+        if (u && /^https:\\/\\/script\\.google\\.com\\//.test(u)) {
+            gasSetUrl(u);
+            // URLからパラメータ消す（履歴汚さない・トークン残らない）
+            params.delete('gas');
+            hashParams.delete('gas');
+            var newSearch = params.toString();
+            var newHash = hashParams.toString();
+            var newUrl = window.location.pathname +
+                (newSearch ? '?' + newSearch : '') +
+                (newHash ? '#' + newHash : '');
+            history.replaceState(null, '', newUrl);
+            return true;
+        }
+    } catch (e) {}
+    return false;
 }
 
 function rsvSetSyncStatus(msg, cls) {
@@ -1686,173 +1715,135 @@ function rsvSetSyncStatus(msg, cls) {
     el.className = 'rsv-sync-status' + (cls ? ' ' + cls : '');
 }
 
-function rsvShowPatModal() {
-    var current = ghPat();
-    var msg = '【家族共有設定】\\n\\n' +
-        '予約データを家族全員で共有するには、GitHub の Personal Access Token を登録してください。\\n\\n' +
-        '【PAT発行手順】\\n' +
-        '1. PCのブラウザで以下にアクセス:\\n' +
-        '   https://github.com/settings/personal-access-tokens/new\\n' +
-        '2. Token name: hs-dashboard\\n' +
-        '3. Repository access: Only selected → kssdrnoone-design/hs-dashboard\\n' +
-        '4. Permissions → Repository permissions → Contents: Read and write\\n' +
-        '5. Generate token → コピー → ここに貼り付け\\n\\n' +
-        (current ? '※現在のPAT: ' + current.slice(0, 12) + '...（変更する場合は新しいトークンを入力、消す場合は空欄でOK）\\n\\n' : '') +
-        'PAT (空欄で削除):';
-    var input = window.prompt(msg, current);
+function rsvShowGasModal() {
+    var current = gasUrl();
+    var lines = [
+        '【家族共有設定 - GAS Webアプリ】',
+        '',
+        '初回セットアップ手順（PCで一度だけ）:',
+        '1. https://script.new を開く',
+        '2. 表示されるコードを全消去 → リポジトリの gas_sync.gs を全コピペ',
+        '3. プロジェクト名を「hs-dashboard-sync」に変更',
+        '4. 右上「デプロイ」→「新しいデプロイ」',
+        '5. 種類: ウェブアプリ',
+        '6. 実行: 自分 / アクセス: 全員',
+        '7. デプロイ → URL コピー → ここに貼り付け',
+        '',
+        (current ? '現在のURL: ' + current.slice(0, 60) + '...\\n削除する場合は空欄、変更する場合は新URL貼り付け\\n' : ''),
+        'GAS WebアプリURL (空欄で削除):'
+    ];
+    var input = window.prompt(lines.join('\\n'), current);
     if (input === null) return;
-    if (input.trim() === '') {
-        ghSetPat('');
-        rsvSetSyncStatus('PATを削除しました（ローカル保存のみ）', 'warn');
+    var trimmed = input.trim();
+    if (trimmed === '') {
+        gasSetUrl('');
+        rsvSetSyncStatus('GAS URLを削除しました（ローカル保存のみ）', 'warn');
         return;
     }
-    ghSetPat(input.trim());
-    rsvSetSyncStatus('PAT保存しました。同期します...', 'busy');
-    rsvSyncUp();
+    if (!/^https:\\/\\/script\\.google\\.com\\//.test(trimmed)) {
+        if (!confirm('script.google.com で始まらないURLです。本当に保存しますか？')) return;
+    }
+    gasSetUrl(trimmed);
+    rsvSetSyncStatus('URL保存しました。同期します...', 'busy');
+    // 接続確認とともに pull→push
+    rsvSyncDown();
+    setTimeout(function(){
+        // 家族配布用リンク作成のお誘い
+        if (confirm('GAS URLを保存しました。\\n\\n家族の端末用に「自動セットアップ済みリンク」をクリップボードにコピーしますか？\\n\\n（家族にこのリンクを送るだけで、URL登録の手間ゼロで使えます）')) {
+            rsvCopyShareLink();
+        }
+    }, 1500);
 }
 
-/* base64 (UTF-8 safe) */
-function _b64encode(str) {
-    var bytes = new TextEncoder().encode(str);
-    var bin = '';
-    for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-    return btoa(bin);
-}
-function _b64decode(b64) {
-    var bin = atob(b64.replace(/\\s/g, ''));
-    var bytes = new Uint8Array(bin.length);
-    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    return new TextDecoder('utf-8').decode(bytes);
+function rsvCopyShareLink() {
+    var u = gasUrl();
+    if (!u) { alert('先にGAS URLを設定してください'); return; }
+    var base = window.location.origin + window.location.pathname;
+    var shareUrl = base + '?gas=' + encodeURIComponent(u);
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(shareUrl).then(function(){
+            alert('家族配布用リンクをコピーしました:\\n\\n' + shareUrl + '\\n\\nLINE等で家族に送ると、開いた瞬間にGAS URLが自動登録されます。');
+        }, function(){
+            window.prompt('全選択してコピー:', shareUrl);
+        });
+    } else {
+        window.prompt('全選択してコピー:', shareUrl);
+    }
 }
 
-/* リモート読み取り（PAT不要：公開rawから） */
-function rsvFetchRemoteRaw() {
-    var repo = window.RSV_REPO || {};
-    var url = 'https://raw.githubusercontent.com/' + repo.owner + '/' + repo.repo + '/' + repo.branch + '/' + repo.path + '?t=' + Date.now();
-    return fetch(url, { cache: 'no-store' }).then(function(r){
-        if (!r.ok) throw new Error('fetch raw ' + r.status);
+/* 取得 (GET) */
+function rsvSyncDown(silent) {
+    var url = gasUrl();
+    if (!url) {
+        if (!silent) rsvSetSyncStatus('GAS URL未設定。「⚙️ 共有設定」で登録すると家族で共有できます', 'warn');
+        return;
+    }
+    if (!silent) rsvSetSyncStatus('🔄 取得中...', 'busy');
+    fetch(url + '?t=' + Date.now(), { cache: 'no-store' }).then(function(r){
+        if (!r.ok) throw new Error('GET ' + r.status);
         return r.json();
     }).then(function(data){
-        return Array.isArray(data) ? data : (data.items || []);
+        if (!data.ok) throw new Error(data.error || 'GAS error');
+        var remote = data.items || [];
+        var local = rsvLoad();
+        // local に新規あれば残す（リモートにない予約 = オフライン中追加分）
+        var merged = rsvMergeItems(remote, local);
+        var localOnly = local.filter(function(l){
+            return !remote.some(function(r){ return rsvItemId(r) === rsvItemId(l); });
+        });
+        try { localStorage.setItem(RSV_KEY, JSON.stringify(merged)); } catch (e) {}
+        localStorage.setItem(RSV_LAST_SYNC_KEY, new Date().toISOString());
+        var stamp = new Date().toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'});
+        rsvSetSyncStatus('✓ 取得完了（' + stamp + '・' + merged.length + '件）', 'ok');
+        rsvRender();
+        if (typeof renderCalendar === 'function' && calCurrent) renderCalendar();
+        // ローカル新規があればpush
+        if (localOnly.length > 0) {
+            rsvSyncUp();
+        }
+    }).catch(function(e){
+        rsvSetSyncStatus('✗ 取得失敗: ' + e.message + (silent ? '（自動取得・GAS URL未設定 or オフライン）' : ''), 'err');
     });
 }
 
-/* リモート読み取り（PAT付き：sha取得用） */
-function rsvFetchRemoteApi() {
-    var pat = ghPat();
-    if (!pat) throw new Error('PAT未設定');
-    var repo = window.RSV_REPO || {};
-    var url = 'https://api.github.com/repos/' + repo.owner + '/' + repo.repo + '/contents/' + repo.path + '?ref=' + repo.branch;
-    return fetch(url, {
-        headers: { Authorization: 'token ' + pat, Accept: 'application/vnd.github+json' },
+/* 送信 (POST) */
+function rsvSyncUp() {
+    var url = gasUrl();
+    if (!url) {
+        rsvSetSyncStatus('GAS URL未設定のため同期できません。「⚙️ 共有設定」から登録してください', 'warn');
+        return;
+    }
+    rsvSetSyncStatus('🔄 送信中...', 'busy');
+    var items = rsvLoad();
+    // GAS は preflight に応答しないので Content-Type は text/plain にして OPTIONS 回避
+    fetch(url, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'save', items: items }),
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         cache: 'no-store'
     }).then(function(r){
-        if (r.status === 404) return { items: [], sha: null };
-        if (!r.ok) {
-            return r.text().then(function(t){ throw new Error('API GET ' + r.status + ': ' + t.slice(0, 100)); });
-        }
-        return r.json().then(function(data){
-            var json;
-            try { json = JSON.parse(_b64decode(data.content)); }
-            catch (e) { json = { items: [] }; }
-            return { items: json.items || [], sha: data.sha };
-        });
+        if (!r.ok) throw new Error('POST ' + r.status);
+        return r.json();
+    }).then(function(data){
+        if (!data.ok) throw new Error(data.error || 'GAS save error');
+        localStorage.setItem(RSV_LAST_SYNC_KEY, new Date().toISOString());
+        var stamp = new Date().toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'});
+        rsvSetSyncStatus('✓ 共有完了（' + stamp + '・' + data.count + '件・家族端末は「🔄 同期」で受信）', 'ok');
+    }).catch(function(e){
+        rsvSetSyncStatus('✗ 送信失敗: ' + e.message + '（次回同期で再試行）', 'err');
     });
 }
 
-/* マージ：同IDなら新しい方優先（呼び元で順序制御） */
+/* マージ：同IDなら local 優先 */
 function rsvMergeItems(remote, local) {
     var byId = {};
-    remote.forEach(function(r){ byId[rsvItemId(r)] = r; });
-    local.forEach(function(r){ byId[rsvItemId(r)] = r; });
+    (remote || []).forEach(function(r){ byId[rsvItemId(r)] = r; });
+    (local || []).forEach(function(r){ byId[rsvItemId(r)] = r; });
     return Object.keys(byId).map(function(k){ return byId[k]; });
 }
 
-/* GitHubからプル（PAT不要） */
-function rsvSyncDown(silent) {
-    if (!silent) rsvSetSyncStatus('🔄 同期中（取得）...', 'busy');
-    rsvFetchRemoteRaw().then(function(remote){
-        var local = rsvLoad();
-        // local に新規あれば残す（リモートにない予約 = この端末でPAT未設定時に追加された分）
-        var merged = rsvMergeItems(remote, local);
-        // remote側で削除されたものは復活してしまうが、共有なので問題小さい。
-        // → シンプルに「リモート優先＋ローカル新規残す」でmerged
-        // mergedからリモートにあったがローカル更新ないものはリモート版が反映される
-        try { localStorage.setItem(RSV_KEY, JSON.stringify(merged)); } catch (e) {}
-        localStorage.setItem(RSV_LAST_SYNC_KEY, new Date().toISOString());
-        var stamp = new Date().toLocaleTimeString('ja-JP', {hour: '2-digit', minute: '2-digit'});
-        rsvSetSyncStatus('✓ 取得完了（' + stamp + '・' + merged.length + '件）' + (ghPat() ? '' : ' ⚠️ PAT未設定なら追加・編集はこの端末のみ'), ghPat() ? 'ok' : 'warn');
-        rsvRender();
-        if (typeof renderCalendar === 'function' && calCurrent) renderCalendar();
-    }).catch(function(e){
-        rsvSetSyncStatus('✗ 取得失敗: ' + e.message, 'err');
-    });
-}
-
-/* GitHubへプッシュ（PAT必要） */
-function rsvSyncUp() {
-    if (!ghPat()) {
-        rsvSetSyncStatus('PAT未設定のため同期できません。「⚙️ 共有設定」から登録してください', 'warn');
-        return;
-    }
-    rsvSetSyncStatus('🔄 同期中（送信）...', 'busy');
-    var attempt = 0;
-    function tryPush() {
-        attempt++;
-        if (attempt > 3) {
-            rsvSetSyncStatus('✗ 送信失敗（衝突リトライ上限）', 'err');
-            return;
-        }
-        rsvFetchRemoteApi().then(function(remote){
-            var local = rsvLoad();
-            var merged = rsvMergeItems(remote.items, local);
-            var content = JSON.stringify({
-                _comment: 'スマホ・PCから「⚙️ 共有設定」経由で家族全員が編集。手動編集も可だが先にPullしてから。',
-                items: merged
-            }, null, 2) + '\\n';
-            var repo = window.RSV_REPO || {};
-            var url = 'https://api.github.com/repos/' + repo.owner + '/' + repo.repo + '/contents/' + repo.path;
-            var body = {
-                message: 'update reserved.json (' + new Date().toISOString().slice(0, 19) + ')',
-                content: _b64encode(content),
-                branch: repo.branch
-            };
-            if (remote.sha) body.sha = remote.sha;
-            return fetch(url, {
-                method: 'PUT',
-                headers: {
-                    Authorization: 'token ' + ghPat(),
-                    Accept: 'application/vnd.github+json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            }).then(function(r){
-                if (r.ok) {
-                    try { localStorage.setItem(RSV_KEY, JSON.stringify(merged)); } catch (e) {}
-                    localStorage.setItem(RSV_LAST_SYNC_KEY, new Date().toISOString());
-                    var stamp = new Date().toLocaleTimeString('ja-JP', {hour: '2-digit', minute: '2-digit'});
-                    rsvSetSyncStatus('✓ 共有完了（' + stamp + '・' + merged.length + '件・他端末は「🔄 同期」で取得）', 'ok');
-                    rsvRender();
-                    if (typeof renderCalendar === 'function' && calCurrent) renderCalendar();
-                } else if (r.status === 409 || r.status === 422) {
-                    // 衝突 → リトライ
-                    setTimeout(tryPush, 500);
-                } else if (r.status === 401 || r.status === 403) {
-                    return r.text().then(function(t){
-                        rsvSetSyncStatus('✗ 認証エラー(' + r.status + ')。PATの権限を確認してください: ' + t.slice(0, 100), 'err');
-                    });
-                } else {
-                    return r.text().then(function(t){
-                        rsvSetSyncStatus('✗ 送信エラー(' + r.status + '): ' + t.slice(0, 100), 'err');
-                    });
-                }
-            });
-        }).catch(function(e){
-            rsvSetSyncStatus('✗ 同期失敗: ' + e.message, 'err');
-        });
-    }
-    tryPush();
-}
+/* 起動時に URL パラメータからGAS URLを拾う */
+rsvCheckUrlParam();
 """
 
 
@@ -2045,7 +2036,7 @@ def render_reserved_tab(reserved, schools, config=None):
       <div class="reserved-toolbar">
         <button type="button" class="rsv-btn primary" onclick="rsvShowForm()">＋ 予約を追加</button>
         <button type="button" class="rsv-btn secondary" onclick="rsvSyncDown()">🔄 同期</button>
-        <button type="button" class="rsv-btn secondary" onclick="rsvShowPatModal()">⚙️ 共有設定</button>
+        <button type="button" class="rsv-btn secondary" onclick="rsvShowGasModal()">⚙️ 共有設定</button>
         <button type="button" class="rsv-btn secondary" onclick="rsvExport()">📤 バックアップ</button>
         <button type="button" class="rsv-btn secondary" onclick="rsvImport()">📥 復元</button>
         <span id="rsv-stats" class="rsv-stats"></span>
@@ -2054,17 +2045,17 @@ def render_reserved_tab(reserved, schools, config=None):
       <div id="reserved-form-container" style="display:none;"></div>
       <div id="reserved-list"></div>
       <div class="reserved-help">
-        💡 <strong>家族で共有するには:</strong> 「⚙️ 共有設定」で GitHub Personal Access Token を一度登録すると、
-        家族全員の予約が <code>data/reserved.json</code> 経由で自動同期されます（追加・編集・削除）。<br>
-        <strong>未設定の場合:</strong> 予約はこの端末のブラウザのみに保存されます。<br>
-        <strong>PAT発行手順:</strong> 「⚙️ 共有設定」ボタンから案内が出ます。
+        💡 <strong>家族で共有するには:</strong>
+        最初に1回だけ Google Apps Script (GAS) でWebアプリをデプロイ → URLをアプリの「⚙️ 共有設定」に登録するだけ。<br>
+        以後は追加・編集・削除すべて家族全員に自動同期されます。<br>
+        <strong>家族端末への配布:</strong> 設定後「📦 家族配布用リンクをコピー」ボタンで自動セットアップ用URLが生成されます。<br>
+        <strong>セットアップ手順</strong>は「⚙️ 共有設定」ボタン内に詳細あり、または リポジトリの <code>gas_sync.gs</code> を参照。
       </div>
     </div>
     <script>
       window.RSV_SEED = {seed_json};
       window.RSV_SCHOOLS = {schools_json};
       window.RSV_HOME = {{"lat": {home_lat_js}, "lng": {home_lng_js}}};
-      window.RSV_REPO = {{"owner": "kssdrnoone-design", "repo": "hs-dashboard", "path": "data/reserved.json", "branch": "main"}};
       if (typeof rsvInit === 'function') rsvInit();
     </script>
     """
