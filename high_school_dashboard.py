@@ -838,12 +838,163 @@ h1 { text-align: center; color: #2c3e50; font-size: 1.4em; margin-bottom: 2px; }
     font-size: 0.82em;
     color: #555;
     margin-top: 16px;
+    line-height: 1.6;
 }
 .reserved-help code {
     background: #ecf0f1;
     padding: 1px 4px;
     border-radius: 3px;
     font-size: 0.95em;
+}
+
+/* 予約タブ ツールバー */
+.reserved-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+    align-items: center;
+}
+.rsv-btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.92em;
+    font-weight: 600;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+}
+.rsv-btn.primary {
+    background: #f1c40f;
+    color: #2c3e50;
+    box-shadow: 0 2px 6px rgba(241, 196, 15, 0.4);
+}
+.rsv-btn.primary:hover { background: #f39c12; }
+.rsv-btn.secondary {
+    background: #ecf0f1;
+    color: #2c3e50;
+    border: 1px solid #d1d8e0;
+}
+.rsv-btn.secondary:hover { background: #d1d8e0; }
+.rsv-btn.danger {
+    background: #fff;
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+}
+.rsv-btn.danger:hover { background: #fadbd8; }
+.rsv-btn.small {
+    padding: 4px 10px;
+    font-size: 0.8em;
+}
+.rsv-stats {
+    margin-left: auto;
+    color: #7f8c8d;
+    font-size: 0.85em;
+}
+
+/* 予約フォーム */
+.rsv-form {
+    background: #fffbe6;
+    border: 2px solid #f1c40f;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+}
+.rsv-form h3 {
+    color: #2c3e50;
+    margin-bottom: 12px;
+    font-size: 1.05em;
+}
+.rsv-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 12px;
+    margin-bottom: 12px;
+}
+.rsv-field { display: flex; flex-direction: column; }
+.rsv-field.full { grid-column: 1 / -1; }
+.rsv-field label {
+    font-size: 0.82em;
+    color: #555;
+    margin-bottom: 3px;
+    font-weight: 600;
+}
+.rsv-field label .req { color: #e74c3c; }
+.rsv-field input,
+.rsv-field select,
+.rsv-field textarea {
+    padding: 8px 10px;
+    border: 1px solid #d1d8e0;
+    border-radius: 6px;
+    font-size: 16px; /* iOS auto-zoom 防止のため 16px 以上 */
+    font-family: inherit;
+    background: #fff;
+    width: 100%;
+}
+.rsv-field textarea { min-height: 60px; resize: vertical; }
+.rsv-field input:focus,
+.rsv-field select:focus,
+.rsv-field textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+.rsv-form-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.reserved-card .res-card-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    border-top: 1px dashed #f1c40f;
+    padding-top: 8px;
+    flex-wrap: wrap;
+}
+.reserved-card .res-card-actions button {
+    background: transparent;
+    border: 1px solid #d1d8e0;
+    border-radius: 4px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 0.8em;
+    color: #555;
+}
+.reserved-card .res-card-actions button:hover { background: #f8fafc; }
+.reserved-card .res-card-actions button.danger {
+    color: #e74c3c;
+    border-color: #fadbd8;
+}
+.reserved-card .res-card-actions button.danger:hover { background: #fadbd8; }
+
+/* 地図タブ レスポンシブ */
+.map-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    margin-bottom: 10px;
+    font-size: 0.82em;
+    color: #555;
+}
+.map-legend .map-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+#schoolMap {
+    height: 65vh;
+    max-height: 600px;
+    min-height: 360px;
+    border-radius: 10px;
+    border: 1px solid #e0e6ed;
+    background: #f0f4f8;
 }
 
 /* 比較表 */
@@ -893,6 +1044,21 @@ table.compare tr:hover { background: #fbfcfd; }
     .cal-nav button { padding: 4px 10px; font-size: 0.85em; }
     /* 祝日名はスマホでは表示領域が狭いので小さくする（タップでツールチップ代わり） */
     .cal-holiday-name { font-size: 0.6em; padding: 0 2px; }
+    /* 地図はスマホでより大きく */
+    #schoolMap { height: 70vh; min-height: 400px; }
+    .map-legend { font-size: 0.72em; gap: 6px 10px; }
+    /* 予約フォーム1カラム化 */
+    .rsv-form-grid { grid-template-columns: 1fr; }
+    .rsv-form { padding: 10px 12px; }
+    .reserved-toolbar { gap: 6px; }
+    .rsv-btn { padding: 8px 12px; font-size: 0.85em; flex: 1 1 auto; }
+    .rsv-stats { width: 100%; margin-left: 0; text-align: center; }
+}
+
+/* 地図ラベル: 学校マーカーの吹き出しテキスト */
+.dev-label { pointer-events: none; }
+@media (max-width: 600px) {
+    .dev-label span { font-size: 9px !important; padding: 1px 3px !important; }
 }
 """
 
@@ -1008,7 +1174,22 @@ function renderCalendar() {
     var m = calCurrent.getMonth();
     title.textContent = y + '年' + (m + 1) + '月';
 
-    var events = (window.CAL_EVENTS || []).filter(function (e) {
+    // スクレイプ済みイベント + localStorage予約を統合
+    var allCalEvents = (window.CAL_EVENTS || []).slice();
+    if (typeof rsvAsCalendarEvents === 'function') {
+        allCalEvents = allCalEvents.concat(rsvAsCalendarEvents());
+        // 予約済みフラグをスクレイプ済み側にも転写（重複日付の判定）
+        var reservedKeys = {};
+        allCalEvents.forEach(function(e){
+            if (e.is_reserved) reservedKeys[e.school_id + '|' + e.date] = true;
+        });
+        allCalEvents.forEach(function(e){
+            if (!e.is_reserved && reservedKeys[e.school_id + '|' + e.date]) {
+                e.is_reserved = true;  // 重複ハイライト
+            }
+        });
+    }
+    var events = allCalEvents.filter(function (e) {
         var p = e.date.split('-');
         return parseInt(p[0], 10) === y && parseInt(p[1], 10) === m + 1;
     });
@@ -1106,7 +1287,12 @@ function showCalDetail(dateKey) {
 function renderCalDetail(dateKey) {
     var detail = document.getElementById('cal-detail');
     if (!detail) return;
-    var evs = (window.CAL_EVENTS || []).filter(function (e) { return e.date === dateKey; });
+    // スクレイプ済み + localStorage予約 を統合
+    var pool = (window.CAL_EVENTS || []).slice();
+    if (typeof rsvAsCalendarEvents === 'function') {
+        pool = pool.concat(rsvAsCalendarEvents());
+    }
+    var evs = pool.filter(function (e) { return e.date === dateKey; });
     if (evs.length === 0) { detail.innerHTML = ''; return; }
     var parts = dateKey.split('-').map(Number);
     var dt = new Date(parts[0], parts[1] - 1, parts[2]);
@@ -1128,7 +1314,7 @@ function renderCalDetail(dateKey) {
     detail.innerHTML = html;
 }
 
-// タブ切替時、カレンダータブを開いたら初期化（未初期化の場合）
+// タブ切替時、各タブの遅延初期化
 (function () {
     var _origShowTab = showTab;
     showTab = function (id, btn) {
@@ -1136,66 +1322,348 @@ function renderCalDetail(dateKey) {
         if (id === 'tab-calendar' && calCurrent === null) {
             initCalendar();
         }
+        if (id === 'tab-map') {
+            // 地図はタブ表示時に初期化（display:noneの間はLeafletがサイズ取れない）
+            if (typeof initSchoolMap === 'function') initSchoolMap();
+            setTimeout(function() {
+                if (window._schoolMap) window._schoolMap.invalidateSize();
+            }, 150);
+        }
+        if (id === 'tab-reserved' && typeof rsvRender === 'function') {
+            rsvRender();
+        }
     };
 })();
+
+/* ===== 予約システム (localStorage 駆動) ===== */
+var RSV_KEY = 'hs_reserved_v1';
+
+function rsvLoad() {
+    try {
+        var raw = localStorage.getItem(RSV_KEY);
+        if (raw !== null) return JSON.parse(raw);
+    } catch (e) { console.warn('rsvLoad error', e); }
+    // 初回: シードデータをマイグレート（サンプル除外: title が "（サンプル）" 始まりは入れない）
+    var seed = (window.RSV_SEED || []).filter(function(r){
+        return !(r.title && r.title.indexOf('（サンプル）') === 0);
+    });
+    try { localStorage.setItem(RSV_KEY, JSON.stringify(seed)); } catch (e) {}
+    return seed;
+}
+
+function rsvSave(items) {
+    try {
+        localStorage.setItem(RSV_KEY, JSON.stringify(items));
+        document.dispatchEvent(new CustomEvent('rsv:changed'));
+    } catch (e) {
+        alert('保存失敗: ' + e.message);
+    }
+}
+
+function rsvSchoolById(id) {
+    var list = window.RSV_SCHOOLS || [];
+    for (var i = 0; i < list.length; i++) {
+        if (list[i].id === id) return list[i];
+    }
+    return { id: id, name: id, deviation: 0, url: '#' };
+}
+
+function rsvItemId(item) {
+    return (item.school_id || '') + '|' + (item.date || '') + '|' + (item.title || '') + '|' + (item.time || '');
+}
+
+function rsvHtmlEscape(s) {
+    if (s === null || s === undefined) return '';
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function rsvFormatDate(dstr) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(dstr || '');
+    if (!m) return dstr || '';
+    var d = new Date(+m[1], +m[2]-1, +m[3]);
+    var wd = '月火水木金土日'[d.getDay() === 0 ? 6 : d.getDay() - 1];
+    return d.getFullYear() + '/' + d.getMonth()+1 + '/' + d.getDate() + '(' + wd + ')';
+}
+
+function rsvSorted(items) {
+    var stOrder = { '予約中': 0, '参加済': 1, 'キャンセル': 2 };
+    return items.slice().sort(function(a, b){
+        var sa = stOrder[a.status] || 0;
+        var sb = stOrder[b.status] || 0;
+        if (sa !== sb) return sa - sb;
+        return (a.date || '').localeCompare(b.date || '');
+    });
+}
+
+function rsvUpdateBadge(items) {
+    var todayIso = new Date().toISOString().slice(0, 10);
+    var upcoming = items.filter(function(r){
+        return (r.status || '予約中') === '予約中' && r.date >= todayIso;
+    }).length;
+    // タブボタンのバッジ更新
+    var btns = document.querySelectorAll('.tab-btn');
+    btns.forEach(function(b){
+        if (b.getAttribute('onclick') && b.getAttribute('onclick').indexOf('tab-reserved') >= 0) {
+            b.textContent = '✅ 予約済' + (upcoming > 0 ? ' (' + upcoming + ')' : '');
+        }
+    });
+    var stats = document.getElementById('rsv-stats');
+    if (stats) stats.textContent = '全' + items.length + '件 / 今後' + upcoming + '件';
+}
+
+function rsvInit() { rsvRender(); }
+
+function rsvRender() {
+    var list = document.getElementById('reserved-list');
+    if (!list) return;
+    var items = rsvLoad();
+    rsvUpdateBadge(items);
+    if (items.length === 0) {
+        list.innerHTML = '<div class="empty">予約済み説明会はありません。<br>「＋ 予約を追加」ボタンから登録してください。</div>';
+        return;
+    }
+    var sorted = rsvSorted(items);
+    var home = window.RSV_HOME || {};
+    var html = sorted.map(function(r){
+        var sch = rsvSchoolById(r.school_id);
+        var rid = rsvItemId(r);
+        var status = r.status || '予約中';
+        var statusCls = { '予約中': 's-reserved', '参加済': 's-attended', 'キャンセル': 's-cancelled' }[status] || 's-reserved';
+        var cardCls = 'reserved-card';
+        if (status === '参加済') cardCls += ' status-attended';
+        else if (status === 'キャンセル') cardCls += ' status-cancelled';
+
+        var time = r.time || '';
+        var timeHtml = time ? '<span class="res-time">⏰ ' + rsvHtmlEscape(time) + '</span>' : '';
+
+        var meta = [];
+        if (r.place) meta.push('📍 ' + rsvHtmlEscape(r.place));
+        if (r.with) meta.push('👥 ' + rsvHtmlEscape(r.with));
+        if (r.reservation_no) meta.push('🔖 ' + rsvHtmlEscape(r.reservation_no));
+        var metaHtml = meta.length ? '<div class="res-meta">' + meta.join(' / ') + '</div>' : '';
+
+        var memoHtml = r.memo ? '<div class="res-memo">📝 ' + rsvHtmlEscape(r.memo) + '</div>' : '';
+
+        var actions = ['<a href="' + rsvHtmlEscape(sch.url || '#') + '" target="_blank" rel="noopener">📄 学校HP →</a>'];
+        if (home.lat && home.lng && sch.lat && sch.lng) {
+            var transit = 'https://www.google.com/maps/dir/?api=1&origin=' + home.lat + ',' + home.lng +
+                '&destination=' + sch.lat + ',' + sch.lng + '&travelmode=transit';
+            actions.push('<a href="' + rsvHtmlEscape(transit) + '" target="_blank" rel="noopener">🚃 経路 →</a>');
+        }
+
+        var ridEsc = rsvHtmlEscape(rid);
+        return '<div class="' + cardCls + '">' +
+            '<div class="res-top">' +
+                '<span class="res-date">' + rsvFormatDate(r.date) + '</span>' +
+                timeHtml +
+                '<span class="status-badge ' + statusCls + '">' + rsvHtmlEscape(status) + '</span>' +
+            '</div>' +
+            '<div><span class="res-school">' + rsvHtmlEscape(sch.name) + '(' + (sch.deviation || '-') + ')</span> ' +
+                '<span class="reserved-badge">' + rsvHtmlEscape(r.title || '予約') + '</span></div>' +
+            metaHtml +
+            memoHtml +
+            '<div class="res-actions">' + actions.join(' ') + '</div>' +
+            '<div class="res-card-actions">' +
+                '<button onclick="rsvShowForm(\\'' + ridEsc + '\\')">✏️ 編集</button>' +
+                '<button onclick="rsvCycleStatus(\\'' + ridEsc + '\\')">🔄 ステータス変更</button>' +
+                '<button class="danger" onclick="rsvDelete(\\'' + ridEsc + '\\')">🗑 削除</button>' +
+            '</div>' +
+            '</div>';
+    }).join('');
+    list.innerHTML = html;
+}
+
+function rsvShowForm(editId) {
+    var c = document.getElementById('reserved-form-container');
+    if (!c) return;
+    var item = {};
+    if (editId) {
+        var found = rsvLoad().filter(function(r){ return rsvItemId(r) === editId; });
+        if (found.length) item = found[0];
+    }
+    var schoolOpts = (window.RSV_SCHOOLS || []).map(function(s){
+        var sel = (item.school_id === s.id) ? ' selected' : '';
+        return '<option value="' + rsvHtmlEscape(s.id) + '"' + sel + '>' +
+            rsvHtmlEscape(s.name) + ' (偏差値' + (s.deviation || '-') + ')</option>';
+    }).join('');
+    var statusOpts = ['予約中', '参加済', 'キャンセル'].map(function(s){
+        return '<option value="' + s + '"' + ((item.status || '予約中') === s ? ' selected' : '') + '>' + s + '</option>';
+    }).join('');
+
+    c.innerHTML =
+        '<form class="rsv-form" onsubmit="return rsvSubmitForm(event, ' +
+            (editId ? "'" + rsvHtmlEscape(editId) + "'" : 'null') + ')">' +
+        '<h3>' + (editId ? '✏️ 予約を編集' : '＋ 予約を追加') + '</h3>' +
+        '<div class="rsv-form-grid">' +
+            '<div class="rsv-field full"><label>学校 <span class="req">*</span></label>' +
+                '<select name="school_id" required><option value="">-- 選択 --</option>' + schoolOpts + '</select></div>' +
+            '<div class="rsv-field"><label>日付 <span class="req">*</span></label>' +
+                '<input type="date" name="date" value="' + rsvHtmlEscape(item.date || '') + '" required></div>' +
+            '<div class="rsv-field"><label>時刻</label>' +
+                '<input type="time" name="time" value="' + rsvHtmlEscape(item.time || '') + '"></div>' +
+            '<div class="rsv-field full"><label>イベント名</label>' +
+                '<input type="text" name="title" placeholder="学校説明会" value="' + rsvHtmlEscape(item.title || '') + '"></div>' +
+            '<div class="rsv-field"><label>場所</label>' +
+                '<input type="text" name="place" placeholder="本校 など" value="' + rsvHtmlEscape(item.place || '') + '"></div>' +
+            '<div class="rsv-field"><label>同伴者</label>' +
+                '<input type="text" name="with_who" placeholder="母 など" value="' + rsvHtmlEscape(item.with || '') + '"></div>' +
+            '<div class="rsv-field"><label>予約番号</label>' +
+                '<input type="text" name="reservation_no" value="' + rsvHtmlEscape(item.reservation_no || '') + '"></div>' +
+            '<div class="rsv-field"><label>ステータス</label>' +
+                '<select name="status">' + statusOpts + '</select></div>' +
+            '<div class="rsv-field full"><label>メモ</label>' +
+                '<textarea name="memo" placeholder="持ち物 / 備考">' + rsvHtmlEscape(item.memo || '') + '</textarea></div>' +
+        '</div>' +
+        '<div class="rsv-form-actions">' +
+            '<button type="button" class="rsv-btn secondary" onclick="rsvCancelForm()">キャンセル</button>' +
+            '<button type="submit" class="rsv-btn primary">' + (editId ? '更新' : '追加') + '</button>' +
+        '</div></form>';
+    c.style.display = 'block';
+    c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function rsvCancelForm() {
+    var c = document.getElementById('reserved-form-container');
+    if (c) { c.innerHTML = ''; c.style.display = 'none'; }
+}
+
+function rsvSubmitForm(ev, editId) {
+    ev.preventDefault();
+    var f = ev.target;
+    var item = {
+        school_id: f.school_id.value,
+        title: f.title.value || '学校説明会',
+        date: f.date.value,
+        time: f.time.value || '',
+        place: f.place.value || '',
+        reservation_no: f.reservation_no.value || '',
+        with: f.with_who.value || '',
+        memo: f.memo.value || '',
+        status: f.status.value || '予約中'
+    };
+    if (!item.school_id || !item.date) {
+        alert('学校と日付は必須です');
+        return false;
+    }
+    var items = rsvLoad();
+    if (editId) {
+        items = items.filter(function(r){ return rsvItemId(r) !== editId; });
+    }
+    items.push(item);
+    rsvSave(items);
+    rsvCancelForm();
+    return false;
+}
+
+function rsvDelete(rid) {
+    if (!confirm('この予約を削除しますか？')) return;
+    var items = rsvLoad().filter(function(r){ return rsvItemId(r) !== rid; });
+    rsvSave(items);
+}
+
+function rsvCycleStatus(rid) {
+    var items = rsvLoad();
+    var cycle = ['予約中', '参加済', 'キャンセル'];
+    items.forEach(function(r){
+        if (rsvItemId(r) === rid) {
+            var idx = cycle.indexOf(r.status || '予約中');
+            r.status = cycle[(idx + 1) % cycle.length];
+        }
+    });
+    rsvSave(items);
+}
+
+function rsvExport() {
+    var data = JSON.stringify({ items: rsvLoad() }, null, 2);
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(data).then(function(){
+            alert('クリップボードにコピーしました（' + rsvLoad().length + '件）。\\n\\n他端末で「📥 復元」に貼り付けてください。\\nPC永続化したい場合は data/reserved.json に貼り付け→保存。');
+        }, function(){
+            window.prompt('全選択してコピーしてください:', data);
+        });
+    } else {
+        window.prompt('全選択してコピーしてください:', data);
+    }
+}
+
+function rsvImport() {
+    var raw = window.prompt('JSON文字列を貼り付けてください（{"items":[...]} か [...] 形式）');
+    if (!raw) return;
+    try {
+        var d = JSON.parse(raw);
+        var items = Array.isArray(d) ? d : (d.items || []);
+        if (!Array.isArray(items)) throw new Error('items 配列が見つかりません');
+        var current = rsvLoad();
+        var msg = '現在' + current.length + '件 → 取り込み' + items.length + '件\\n\\nOK: 完全置換 / キャンセル: マージ（重複は新しい方優先）';
+        if (confirm(msg)) {
+            rsvSave(items);
+        } else {
+            // マージ
+            var byId = {};
+            current.forEach(function(r){ byId[rsvItemId(r)] = r; });
+            items.forEach(function(r){ byId[rsvItemId(r)] = r; });
+            var merged = Object.keys(byId).map(function(k){ return byId[k]; });
+            rsvSave(merged);
+        }
+    } catch (e) {
+        alert('JSONパースエラー: ' + e.message);
+    }
+}
+
+/* localStorageの予約をカレンダーに反映 */
+function rsvAsCalendarEvents() {
+    var todayIso = new Date().toISOString().slice(0, 10);
+    return rsvLoad().filter(function(r){
+        return r.status !== 'キャンセル' &&
+               (r.date >= todayIso || r.status === '参加済');
+    }).map(function(r){
+        var sch = rsvSchoolById(r.school_id);
+        var label = '⭐' + (r.title || '予約済') + (r.time ? ' ' + r.time : '');
+        return {
+            id: 'res-' + rsvItemId(r),
+            school_id: r.school_id,
+            date: r.date,
+            school_name: sch.name,
+            deviation: sch.deviation || 0,
+            keyword: label,
+            source_url: sch.url || '#',
+            is_new: false,
+            is_reserved: true
+        };
+    });
+}
+
+/* イベント変更時、予約タブ＆カレンダー再描画 */
+document.addEventListener('rsv:changed', function(){
+    rsvRender();
+    if (typeof renderCalendar === 'function' && calCurrent) {
+        renderCalendar();
+    }
+});
 """
 
 
-def render_calendar_tab(all_events, new_ids, reserved=None, schools=None):
+def render_calendar_tab(all_events, new_ids):
+    if not all_events:
+        all_events = []
     today = date.today()
     upcoming = [e for e in all_events if date.fromisoformat(e["date"]) >= today]
     upcoming.sort(key=lambda e: e["date"])
 
-    # 予約済みも表示するためカレンダーは空イベントでも描画
-    if not all_events and not reserved:
-        return '<div class="empty">説明会データが見つかりませんでした。各校HPを直接ご確認ください。</div>'
-
-    school_by_id = {s["id"]: s for s in (schools or [])}
-
-    # 予約済みイベントを擬似イベントとしてカレンダーに混ぜる
-    reserved_keys = set()  # (school_id, date) for highlighting collision in scraped events
-    reserved_events = []
-    for r in (reserved or []):
-        try:
-            d = date.fromisoformat(r["date"])
-        except (ValueError, KeyError):
-            continue
-        if d < today and r.get("status", "予約中") != "参加済":
-            continue
-        sch = school_by_id.get(r["school_id"], {})
-        sname = sch.get("name", r["school_id"])
-        sdev = sch.get("deviation", 0)
-        url = sch.get("url_event") or sch.get("url_top", "#")
-        title = r.get("title", "予約済み")
-        time_str = r.get("time", "")
-        kw_label = f"⭐{title}" + (f" {time_str}" if time_str else "")
-        reserved_events.append({
-            "id": "res-" + hashlib.md5((r["school_id"] + r["date"] + title).encode("utf-8")).hexdigest()[:10],
-            "date": r["date"],
-            "school_name": sname,
-            "deviation": sdev,
-            "keyword": kw_label,
-            "source_url": url,
-            "is_new": False,
-            "is_reserved": True,
-        })
-        reserved_keys.add((r["school_id"], r["date"]))
-
-    # JS に渡すイベント配列（カレンダーグリッド用の最小データ）
+    # JS に渡すスクレイプ済みイベント（予約済みはJS側でlocalStorageから動的に統合）
     events_for_js = []
     for e in upcoming:
         events_for_js.append({
             "id": e["event_id"],
+            "school_id": e["school_id"],
             "date": e["date"],
             "school_name": e["school_name"],
             "deviation": e.get("deviation") or 0,
             "keyword": e["keyword"],
             "source_url": e["source_url"],
             "is_new": e["event_id"] in new_ids,
-            "is_reserved": (e["school_id"], e["date"]) in reserved_keys,
         })
-    # 予約済みは先頭に来るよう前置
-    events_for_js = reserved_events + events_for_js
     events_json = json.dumps(events_for_js, ensure_ascii=False)
 
     # 初期表示月: 最初のイベント月（= 今月以降で最も近い）。無ければ今月
@@ -1338,131 +1806,51 @@ def render_schools_tab(schools, all_events, config=None):
 
 
 def render_reserved_tab(reserved, schools, config=None):
-    """予約済み説明会タブ"""
-    school_by_id = {s["id"]: s for s in (schools or [])}
+    """予約済み説明会タブ - localStorage駆動。reserved.jsonは初回シードのみ。"""
     home = (config or {}).get("home", {})
     home_lat = home.get("lat")
     home_lng = home.get("lng")
 
-    today = date.today()
+    # JS用の学校ルックアップ
+    schools_lookup = []
+    for s in schools or []:
+        schools_lookup.append({
+            "id": s["id"],
+            "name": s["name"],
+            "deviation": s.get("deviation", 0),
+            "url": s.get("url_event") or s.get("url_top", ""),
+            "lat": s.get("lat"),
+            "lng": s.get("lng"),
+        })
 
-    if not reserved:
-        return f'''
-        <div class="empty">
-            予約済み説明会はありません。
-        </div>
-        <div class="reserved-help">
-            <strong>📝 予約を追加するには:</strong><br>
-            <code>data/reserved.json</code> をテキストエディタで編集して <code>items</code> に追記し、
-            <code>00_高校情報収集.bat</code> を再実行してください。<br><br>
-            <strong>記入例:</strong><br>
-            <code>{{"school_id": "tamakagakugijutsu", "title": "学校説明会", "date": "2026-07-15", "time": "14:00", "memo": "上履き持参", "with": "母", "status": "予約中"}}</code><br><br>
-            <strong>school_idの一覧</strong>は <code>03_config.json</code> で確認できます。
-            <strong>statusは</strong> 予約中 / 参加済 / キャンセル のいずれか。
-        </div>
-        '''
+    seed_json = json.dumps(reserved or [], ensure_ascii=False)
+    schools_json = json.dumps(schools_lookup, ensure_ascii=False)
+    home_lat_js = "null" if home_lat is None else str(home_lat)
+    home_lng_js = "null" if home_lng is None else str(home_lng)
 
-    # 並べ替え: 未来＋予約中 → 過去＋参加済 → キャンセル
-    def sort_key(r):
-        try:
-            d = date.fromisoformat(r["date"])
-        except (ValueError, KeyError):
-            d = date.max
-        st = r.get("status", "予約中")
-        st_order = {"予約中": 0, "参加済": 1, "キャンセル": 2}.get(st, 0)
-        return (st_order, d)
-
-    sorted_reserved = sorted(reserved, key=sort_key)
-
-    parts = []
-    upcoming = sum(1 for r in reserved if date.fromisoformat(r["date"]) >= today and r.get("status", "予約中") == "予約中")
-    parts.append(
-        f'<p style="color:#7f8c8d; font-size:0.85em; margin-bottom:14px;">'
-        f'予約 {len(reserved)}件 / うち今後 {upcoming}件'
-        f'</p>'
-    )
-    parts.append('<div class="reserved-list">')
-
-    for r in sorted_reserved:
-        sid = r["school_id"]
-        sch = school_by_id.get(sid, {})
-        sname = sch.get("name", sid)
-        sdev = sch.get("deviation", "-")
-        url = sch.get("url_event") or sch.get("url_top", "#")
-        title = r.get("title", "(タイトル未設定)")
-        date_str = r.get("date", "")
-        try:
-            d = date.fromisoformat(date_str)
-            # weekday(): Mon=0..Sun=6
-            wd = "月火水木金土日"[d.weekday()]
-            date_human = f"{d.year}/{d.month}/{d.day}({wd})"
-            is_past = d < today
-        except (ValueError, KeyError):
-            date_human = date_str
-            is_past = False
-        status = r.get("status", "予約中")
-        status_cls = {"予約中": "s-reserved", "参加済": "s-attended", "キャンセル": "s-cancelled"}.get(status, "s-reserved")
-        card_cls = "reserved-card"
-        if status == "参加済":
-            card_cls += " status-attended"
-        elif status == "キャンセル":
-            card_cls += " status-cancelled"
-
-        time_str = r.get("time", "")
-        time_html = f'<span class="res-time">⏰ {escape_html(time_str)}</span>' if time_str else ""
-        place = r.get("place", "")
-        with_who = r.get("with", "")
-        memo = r.get("memo", "")
-        res_no = r.get("reservation_no", "")
-
-        meta_parts = []
-        if place:
-            meta_parts.append(f"📍 {escape_html(place)}")
-        if with_who:
-            meta_parts.append(f"👥 {escape_html(with_who)}")
-        if res_no:
-            meta_parts.append(f"🔖 予約番号 {escape_html(res_no)}")
-        meta_html = (
-            f'<div class="res-meta">{" / ".join(meta_parts)}</div>' if meta_parts else ""
-        )
-        memo_html = f'<div class="res-memo">📝 {escape_html(memo)}</div>' if memo else ""
-
-        # アクション: 学校HP / 通学経路
-        actions = [f'<a href="{escape_html(url)}" target="_blank">📄 学校HP →</a>']
-        if home_lat and home_lng and sch.get("lat") and sch.get("lng"):
-            transit_url = (
-                f"https://www.google.com/maps/dir/?api=1"
-                f"&origin={home_lat},{home_lng}"
-                f"&destination={sch['lat']},{sch['lng']}"
-                f"&travelmode=transit"
-            )
-            actions.append(f'<a href="{escape_html(transit_url)}" target="_blank">🚃 経路確認 →</a>')
-        actions_html = f'<div class="res-actions">{" ".join(actions)}</div>'
-
-        parts.append(
-            f'<div class="{card_cls}">'
-            f'<div class="res-top">'
-            f'<span class="res-date">{escape_html(date_human)}</span>'
-            f'{time_html}'
-            f'<span class="status-badge {status_cls}">{escape_html(status)}</span>'
-            f'</div>'
-            f'<div><span class="res-school">{escape_html(sname)}({sdev})</span> '
-            f'<span class="reserved-badge">{escape_html(title)}</span></div>'
-            f'{meta_html}'
-            f'{memo_html}'
-            f'{actions_html}'
-            f'</div>'
-        )
-
-    parts.append('</div>')
-    parts.append(
-        '<div class="reserved-help">'
-        '<strong>📝 予約を追加・編集するには:</strong> '
-        '<code>data/reserved.json</code> の <code>items</code> 配列を直接編集してください。'
-        ' 編集後 <code>00_高校情報収集.bat</code> を再実行すると反映されます。'
-        '</div>'
-    )
-    return "\n".join(parts)
+    return f"""
+    <div id="reserved-root">
+      <div class="reserved-toolbar">
+        <button type="button" class="rsv-btn primary" onclick="rsvShowForm()">＋ 予約を追加</button>
+        <button type="button" class="rsv-btn secondary" onclick="rsvExport()">📤 バックアップ</button>
+        <button type="button" class="rsv-btn secondary" onclick="rsvImport()">📥 復元</button>
+        <span id="rsv-stats" class="rsv-stats"></span>
+      </div>
+      <div id="reserved-form-container" style="display:none;"></div>
+      <div id="reserved-list"></div>
+      <div class="reserved-help">
+        💡 予約データはこの端末（ブラウザ）の localStorage に保存されます。<br>
+        他の端末や PC と共有したい場合は「📤 バックアップ」でJSONをコピー → 別端末で「📥 復元」してください。<br>
+        ブラウザのキャッシュクリアで消えるので、定期的にバックアップを推奨。
+      </div>
+    </div>
+    <script>
+      window.RSV_SEED = {seed_json};
+      window.RSV_SCHOOLS = {schools_json};
+      window.RSV_HOME = {{"lat": {home_lat_js}, "lng": {home_lng_js}}};
+      if (typeof rsvInit === 'function') rsvInit();
+    </script>
+    """
 
 
 def render_compare_tab(schools, all_events):
@@ -1605,19 +1993,36 @@ def render_map_tab(schools, config):
       }}).addTo(map);
 """
 
+    bounds_js = "".join(
+        f"        bounds.extend([{s['lat']}, {s['lng']}]);\n"
+        for s in schools if s.get("lat") and s.get("lng")
+    )
     return f"""
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <div style="margin-bottom:10px;">
-      <span style="margin-right:14px;"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#e74c3c;vertical-align:middle;"></span> 挑戦（65+）</span>
-      <span style="margin-right:14px;"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#e67e22;vertical-align:middle;"></span> 実力圏（58-64）</span>
-      <span style="margin-right:14px;"><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#3498db;vertical-align:middle;"></span> 安全寄り（50-57）</span>
-      <span><span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:#27ae60;vertical-align:middle;"></span> 安全（~49）</span>
+    <div class="map-legend">
+      <span><span class="map-dot" style="background:#e74c3c;"></span>挑戦(65+)</span>
+      <span><span class="map-dot" style="background:#e67e22;"></span>実力(58-64)</span>
+      <span><span class="map-dot" style="background:#3498db;"></span>安全寄り(50-57)</span>
+      <span><span class="map-dot" style="background:#27ae60;"></span>安全(~49)</span>
     </div>
-    <div id="schoolMap" style="height:500px; border-radius:10px; border:1px solid #e0e6ed;"></div>
+    <div id="schoolMap"></div>
     <script>
-    (function() {{
-      var map = L.map('schoolMap').setView([{home_lat}, {home_lng}], 12);
+    window.initSchoolMap = function() {{
+      if (window._schoolMap) return;
+      if (typeof L === 'undefined') {{
+        // Leafletロード待ち
+        setTimeout(window.initSchoolMap, 200);
+        return;
+      }}
+      var mapEl = document.getElementById('schoolMap');
+      if (!mapEl) return;
+      var map = L.map('schoolMap', {{
+        zoomControl: true,
+        tap: true,
+        touchZoom: true,
+        scrollWheelZoom: false  // モバイルでスクロールを邪魔しない
+      }}).setView([{home_lat}, {home_lng}], 11);
       window._schoolMap = map;
       L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{
         attribution: '&copy; OpenStreetMap contributors',
@@ -1633,13 +2038,11 @@ def render_map_tab(schools, config):
         }})
       }}).addTo(map);
       {markers_js}
-      // 全マーカーが見える範囲にフィット
       var bounds = L.latLngBounds([[{home_lat}, {home_lng}]]);
-""" + "".join(
-        f"      bounds.extend([{s['lat']}, {s['lng']}]);\n"
-        for s in schools if s.get("lat") and s.get("lng")
-    ) + """      map.fitBounds(bounds, {padding: [30, 30]});
-    })();
+{bounds_js}      map.fitBounds(bounds, {{padding: [30, 30]}});
+      // 描画後の最終調整
+      setTimeout(function(){{ map.invalidateSize(); }}, 100);
+    }};
     </script>
     """
 
@@ -1722,7 +2125,7 @@ def generate_dashboard_html(schools, all_events, new_events, scrape_results, con
   <div id="tab-calendar" class="tab-panel">
     <div class="section">
       <h2>📅 説明会・イベントカレンダー</h2>
-      {render_calendar_tab(all_events, new_ids, reserved=reserved or [], schools=schools)}
+      {render_calendar_tab(all_events, new_ids)}
     </div>
   </div>
 

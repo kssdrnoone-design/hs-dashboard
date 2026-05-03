@@ -1,16 +1,4 @@
 {
-  "_comment": "予約した説明会を手動で記録。dateは YYYY-MM-DD、status は 予約中/参加済/キャンセル のいずれか。school_id は 03_config.json の id と一致させる。",
-  "items": [
-    {
-      "school_id": "tamakagakugijutsu",
-      "title": "（サンプル）学校説明会",
-      "date": "2026-07-15",
-      "time": "14:00",
-      "place": "本校",
-      "reservation_no": "",
-      "memo": "上履き持参",
-      "with": "母",
-      "status": "予約中"
-    }
-  ]
+  "_comment": "初回起動時のみシードとしてlocalStorageに移行されます。実運用では予約タブの「+追加」ボタンから登録してください。手動編集も可（その場合はlocalStorageを一度クリアするか、スマホ側で「📥 復元」してください）。",
+  "items": []
 }
