@@ -6,8 +6,10 @@ credentials.json
 secrets.*
 
 # ===== 生データ・スナップショット =====
-data/
+data/*
 !data/.gitkeep
+!data/reserved.json
+
 
 # ===== APKバイナリ（個別配布するためリポジトリに入れない） =====
 *.apk

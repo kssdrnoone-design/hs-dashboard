@@ -29,6 +29,7 @@ TODAY = datetime.now().strftime("%Y%m%d")
 TODAY_HUMAN = datetime.now().strftime("%Y/%m/%d")
 THIS_YEAR = datetime.now().year
 LATEST_JSON = DATA_DIR / "latest.json"
+RESERVED_JSON = DATA_DIR / "reserved.json"
 
 # === 説明会系イベントキーワード（開催系のみ。結果発表・出願系は除外） ===
 EVENT_KEYWORDS = [
@@ -73,6 +74,26 @@ DATE_RE_NUMERIC = re.compile(r"(\d{4})[./-](\d{1,2})[./-](\d{1,2})")
 def load_config():
     with open(CONFIG_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def load_reserved():
+    """予約済み説明会リストをロード（無ければ空リスト）"""
+    if not RESERVED_JSON.exists():
+        return []
+    try:
+        with open(RESERVED_JSON, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        items = data.get("items", []) if isinstance(data, dict) else []
+        # 有効性チェック（dateとschool_id必須、サンプル除外用に "（サンプル）" prefixも除外可だが残す）
+        valid = []
+        for it in items:
+            if it.get("date") and it.get("school_id"):
+                valid.append(it)
+        valid.sort(key=lambda x: x["date"])
+        return valid
+    except Exception as e:
+        print(f"[WARN] reserved.json読み込み失敗: {e}")
+        return []
 
 
 def make_event_id(school_id, event_date, title):
@@ -616,6 +637,15 @@ h1 { text-align: center; color: #2c3e50; font-size: 1.4em; margin-bottom: 2px; }
 .cal-item.d-mid { background: #3498db; }
 .cal-item.d-low { background: #27ae60; }
 .cal-item.is-new { box-shadow: 0 0 0 2px #ff3b30 inset; font-weight: 700; }
+.cal-item.is-reserved {
+    box-shadow: 0 0 0 2px #f1c40f inset, 0 0 0 3px #fff inset;
+    font-weight: 700;
+}
+.cal-cell.has-reserved {
+    background: #fffbe6 !important;
+    border-color: #f1c40f !important;
+    box-shadow: inset 0 0 0 2px rgba(241, 196, 15, 0.4);
+}
 .cal-more {
     font-size: 0.7em;
     color: #7f8c8d;
@@ -716,6 +746,104 @@ h1 { text-align: center; color: #2c3e50; font-size: 1.4em; margin-bottom: 2px; }
     color: #3498db;
     text-decoration: none;
     font-size: 0.85em;
+}
+.school-card .commute {
+    background: #ecf6fd;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.82em;
+    margin-top: 8px;
+    color: #2980b9;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.school-card .commute a { color: #2980b9; font-weight: 600; }
+
+/* 予約済みタブ */
+.reserved-list { display: flex; flex-direction: column; gap: 10px; }
+.reserved-card {
+    background: #fffbe6;
+    border: 1px solid #f1c40f;
+    border-left: 6px solid #f1c40f;
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+.reserved-card.status-attended { background: #f0f9f0; border-color: #27ae60; border-left-color: #27ae60; }
+.reserved-card.status-cancelled { background: #f5f5f5; border-color: #95a5a6; border-left-color: #95a5a6; opacity: 0.7; }
+.reserved-card .res-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+.reserved-card .res-date {
+    font-weight: bold;
+    color: #c0392b;
+    font-size: 1.05em;
+}
+.reserved-card .res-school { font-weight: 600; color: #2c3e50; }
+.reserved-card .res-time {
+    background: #f1c40f;
+    color: #2c3e50;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+.reserved-badge {
+    background: #f1c40f;
+    color: #2c3e50;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7em;
+    font-weight: bold;
+}
+.status-badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.72em;
+    font-weight: bold;
+}
+.status-badge.s-reserved { background: #f1c40f; color: #2c3e50; }
+.status-badge.s-attended { background: #27ae60; color: #fff; }
+.status-badge.s-cancelled { background: #95a5a6; color: #fff; }
+.reserved-card .res-meta { font-size: 0.85em; color: #555; margin-top: 4px; }
+.reserved-card .res-memo {
+    background: #fff;
+    border-left: 3px solid #f1c40f;
+    padding: 4px 8px;
+    margin-top: 6px;
+    font-size: 0.85em;
+    color: #555;
+    border-radius: 0 4px 4px 0;
+}
+.reserved-card .res-actions {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.reserved-card .res-actions a {
+    color: #2980b9;
+    font-size: 0.85em;
+    text-decoration: none;
+}
+.reserved-help {
+    background: #f8fafc;
+    border: 1px dashed #d1d8e0;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 0.82em;
+    color: #555;
+    margin-top: 16px;
+}
+.reserved-help code {
+    background: #ecf0f1;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 0.95em;
 }
 
 /* 比較表 */
@@ -908,6 +1036,11 @@ function renderCalendar() {
 
     for (var d = 1; d <= daysInMonth; d++) {
         var evs = byDay[d] || [];
+        // 予約済みを先頭に並べる
+        evs.sort(function(a, b) {
+            return (b.is_reserved ? 1 : 0) - (a.is_reserved ? 1 : 0);
+        });
+        var hasReserved = evs.some(function(e){ return e.is_reserved; });
         var isToday = (y === today.getFullYear() && m === today.getMonth() && d === today.getDate());
         var dow = (firstDow + d - 1) % 7;
         var dateKey = y + '-' + calPad(m + 1) + '-' + calPad(d);
@@ -918,8 +1051,12 @@ function renderCalendar() {
         if (dow === 0) cls += ' sun';
         if (dow === 6) cls += ' sat';
         if (holiday) cls += ' holiday';
+        if (hasReserved) cls += ' has-reserved';
         if (calSelectedKey === dateKey) cls += ' selected';
         var dayLabel = '' + d;
+        if (hasReserved) {
+            dayLabel = '⭐' + dayLabel;
+        }
         if (holiday) {
             dayLabel += '<span class="cal-holiday-name" title="' +
                 holiday.replace(/"/g, '&quot;') + '">' + holiday + '</span>';
@@ -932,7 +1069,8 @@ function renderCalendar() {
                 var e = evs[k];
                 var devCls = calDevClass(e.deviation);
                 var newCls = e.is_new ? ' is-new' : '';
-                inner += '<div class="cal-item ' + devCls + newCls + '" title="' +
+                var resCls = e.is_reserved ? ' is-reserved' : '';
+                inner += '<div class="cal-item ' + devCls + newCls + resCls + '" title="' +
                     (e.school_name + ' ' + e.keyword).replace(/"/g, '&quot;') + '">' +
                     calShortName(e.school_name) + '</div>';
             }
@@ -977,11 +1115,12 @@ function renderCalDetail(dateKey) {
     evs.forEach(function (e) {
         var devCls = calDevClass(e.deviation);
         var newBadge = e.is_new ? '<span class="new-badge">NEW</span>' : '';
+        var resBadge = e.is_reserved ? '<span class="reserved-badge">⭐予約済み</span>' : '';
         html += '<div class="cal-detail-item ' + devCls + '">' +
             '<div class="cdi-top">' +
             '<span class="cal-dot ' + devCls + '"></span>' +
             '<strong>' + e.school_name + (e.deviation ? '(' + e.deviation + ')' : '') + '</strong>' +
-            '<span class="ev-kw">' + e.keyword + '</span>' + newBadge +
+            '<span class="ev-kw">' + e.keyword + '</span>' + newBadge + resBadge +
             '</div>' +
             '<div class="cdi-link"><a href="' + e.source_url + '" target="_blank" rel="noopener">詳細ページへ →</a></div>' +
             '</div>';
@@ -1002,12 +1141,45 @@ function renderCalDetail(dateKey) {
 """
 
 
-def render_calendar_tab(all_events, new_ids):
-    if not all_events:
-        return '<div class="empty">説明会データが見つかりませんでした。各校HPを直接ご確認ください。</div>'
+def render_calendar_tab(all_events, new_ids, reserved=None, schools=None):
     today = date.today()
     upcoming = [e for e in all_events if date.fromisoformat(e["date"]) >= today]
     upcoming.sort(key=lambda e: e["date"])
+
+    # 予約済みも表示するためカレンダーは空イベントでも描画
+    if not all_events and not reserved:
+        return '<div class="empty">説明会データが見つかりませんでした。各校HPを直接ご確認ください。</div>'
+
+    school_by_id = {s["id"]: s for s in (schools or [])}
+
+    # 予約済みイベントを擬似イベントとしてカレンダーに混ぜる
+    reserved_keys = set()  # (school_id, date) for highlighting collision in scraped events
+    reserved_events = []
+    for r in (reserved or []):
+        try:
+            d = date.fromisoformat(r["date"])
+        except (ValueError, KeyError):
+            continue
+        if d < today and r.get("status", "予約中") != "参加済":
+            continue
+        sch = school_by_id.get(r["school_id"], {})
+        sname = sch.get("name", r["school_id"])
+        sdev = sch.get("deviation", 0)
+        url = sch.get("url_event") or sch.get("url_top", "#")
+        title = r.get("title", "予約済み")
+        time_str = r.get("time", "")
+        kw_label = f"⭐{title}" + (f" {time_str}" if time_str else "")
+        reserved_events.append({
+            "id": "res-" + hashlib.md5((r["school_id"] + r["date"] + title).encode("utf-8")).hexdigest()[:10],
+            "date": r["date"],
+            "school_name": sname,
+            "deviation": sdev,
+            "keyword": kw_label,
+            "source_url": url,
+            "is_new": False,
+            "is_reserved": True,
+        })
+        reserved_keys.add((r["school_id"], r["date"]))
 
     # JS に渡すイベント配列（カレンダーグリッド用の最小データ）
     events_for_js = []
@@ -1020,7 +1192,10 @@ def render_calendar_tab(all_events, new_ids):
             "keyword": e["keyword"],
             "source_url": e["source_url"],
             "is_new": e["event_id"] in new_ids,
+            "is_reserved": (e["school_id"], e["date"]) in reserved_keys,
         })
+    # 予約済みは先頭に来るよう前置
+    events_for_js = reserved_events + events_for_js
     events_json = json.dumps(events_for_js, ensure_ascii=False)
 
     # 初期表示月: 最初のイベント月（= 今月以降で最も近い）。無ければ今月
@@ -1059,6 +1234,7 @@ def render_calendar_tab(all_events, new_ids):
       <span><span class="cal-dot d-low"></span>安全(~49)</span>
       <span style="color:#e74c3c;">■日祝</span>
       <span style="color:#3498db;">■土</span>
+      <span style="color:#b8860b;">⭐予約済み</span>
       <span>※日付タップで詳細</span>
     </div>
     <div id="cal-grid"></div>
@@ -1078,7 +1254,43 @@ def render_calendar_tab(all_events, new_ids):
     return html
 
 
-def render_schools_tab(schools, all_events):
+def build_commute_links(home_lat, home_lng, school):
+    """通学経路リンクを生成（公共交通機関＋徒歩）"""
+    s_lat = school.get("lat")
+    s_lng = school.get("lng")
+    if not (s_lat and s_lng and home_lat and home_lng):
+        return ""
+    s_name = school.get("name", "")
+    transit = (
+        f"https://www.google.com/maps/dir/?api=1"
+        f"&origin={home_lat},{home_lng}"
+        f"&destination={s_lat},{s_lng}"
+        f"&destination_place_id="  # nameを表示名にしたいが座標固定優先
+        f"&travelmode=transit"
+    )
+    walk = (
+        f"https://www.google.com/maps/dir/?api=1"
+        f"&origin={home_lat},{home_lng}"
+        f"&destination={s_lat},{s_lng}"
+        f"&travelmode=walking"
+    )
+    bike = (
+        f"https://www.google.com/maps/dir/?api=1"
+        f"&origin={home_lat},{home_lng}"
+        f"&destination={s_lat},{s_lng}"
+        f"&travelmode=bicycling"
+    )
+    return (
+        f'<div class="commute">'
+        f'🚃 通学経路: '
+        f'<a href="{escape_html(transit)}" target="_blank" rel="noopener">電車</a>'
+        f' / <a href="{escape_html(walk)}" target="_blank" rel="noopener">徒歩</a>'
+        f' / <a href="{escape_html(bike)}" target="_blank" rel="noopener">自転車</a>'
+        f'</div>'
+    )
+
+
+def render_schools_tab(schools, all_events, config=None):
     # 学校ごとに次回イベント日を計算
     today = date.today()
     next_event_by_school = {}
@@ -1089,6 +1301,10 @@ def render_schools_tab(schools, all_events):
         sid = e["school_id"]
         if sid not in next_event_by_school or ev_date < date.fromisoformat(next_event_by_school[sid]["date"]):
             next_event_by_school[sid] = e
+
+    home = (config or {}).get("home", {})
+    home_lat = home.get("lat")
+    home_lng = home.get("lng")
 
     # 偏差値降順
     sorted_schools = sorted(schools, key=lambda s: s.get("deviation") or 0, reverse=True)
@@ -1105,6 +1321,7 @@ def render_schools_tab(schools, all_events):
         at = s.get("annual_tuition", 0)
         of_ = s.get("other_fees", 0)
         fee_html = f'<div class="meta" style="margin-top:4px;">💰 入学金 {af:,}円 / 年間 {at + of_:,}円</div>'
+        commute_html = build_commute_links(home_lat, home_lng, s)
         html_parts.append(
             f'<div class="school-card">'
             f'<h3>{escape_html(s["name"])}</h3>'
@@ -1112,11 +1329,140 @@ def render_schools_tab(schools, all_events):
             f'<div class="meta">{escape_html(s.get("category", ""))} / {escape_html(s.get("ward", ""))}</div>'
             f'{fee_html}'
             f'{next_html}'
+            f'{commute_html}'
             f'<div style="margin-top:8px;"><a href="{escape_html(event_link)}" target="_blank">説明会ページへ →</a></div>'
             f'</div>'
         )
     html_parts.append('</div>')
     return "\n".join(html_parts)
+
+
+def render_reserved_tab(reserved, schools, config=None):
+    """予約済み説明会タブ"""
+    school_by_id = {s["id"]: s for s in (schools or [])}
+    home = (config or {}).get("home", {})
+    home_lat = home.get("lat")
+    home_lng = home.get("lng")
+
+    today = date.today()
+
+    if not reserved:
+        return f'''
+        <div class="empty">
+            予約済み説明会はありません。
+        </div>
+        <div class="reserved-help">
+            <strong>📝 予約を追加するには:</strong><br>
+            <code>data/reserved.json</code> をテキストエディタで編集して <code>items</code> に追記し、
+            <code>00_高校情報収集.bat</code> を再実行してください。<br><br>
+            <strong>記入例:</strong><br>
+            <code>{{"school_id": "tamakagakugijutsu", "title": "学校説明会", "date": "2026-07-15", "time": "14:00", "memo": "上履き持参", "with": "母", "status": "予約中"}}</code><br><br>
+            <strong>school_idの一覧</strong>は <code>03_config.json</code> で確認できます。
+            <strong>statusは</strong> 予約中 / 参加済 / キャンセル のいずれか。
+        </div>
+        '''
+
+    # 並べ替え: 未来＋予約中 → 過去＋参加済 → キャンセル
+    def sort_key(r):
+        try:
+            d = date.fromisoformat(r["date"])
+        except (ValueError, KeyError):
+            d = date.max
+        st = r.get("status", "予約中")
+        st_order = {"予約中": 0, "参加済": 1, "キャンセル": 2}.get(st, 0)
+        return (st_order, d)
+
+    sorted_reserved = sorted(reserved, key=sort_key)
+
+    parts = []
+    upcoming = sum(1 for r in reserved if date.fromisoformat(r["date"]) >= today and r.get("status", "予約中") == "予約中")
+    parts.append(
+        f'<p style="color:#7f8c8d; font-size:0.85em; margin-bottom:14px;">'
+        f'予約 {len(reserved)}件 / うち今後 {upcoming}件'
+        f'</p>'
+    )
+    parts.append('<div class="reserved-list">')
+
+    for r in sorted_reserved:
+        sid = r["school_id"]
+        sch = school_by_id.get(sid, {})
+        sname = sch.get("name", sid)
+        sdev = sch.get("deviation", "-")
+        url = sch.get("url_event") or sch.get("url_top", "#")
+        title = r.get("title", "(タイトル未設定)")
+        date_str = r.get("date", "")
+        try:
+            d = date.fromisoformat(date_str)
+            # weekday(): Mon=0..Sun=6
+            wd = "月火水木金土日"[d.weekday()]
+            date_human = f"{d.year}/{d.month}/{d.day}({wd})"
+            is_past = d < today
+        except (ValueError, KeyError):
+            date_human = date_str
+            is_past = False
+        status = r.get("status", "予約中")
+        status_cls = {"予約中": "s-reserved", "参加済": "s-attended", "キャンセル": "s-cancelled"}.get(status, "s-reserved")
+        card_cls = "reserved-card"
+        if status == "参加済":
+            card_cls += " status-attended"
+        elif status == "キャンセル":
+            card_cls += " status-cancelled"
+
+        time_str = r.get("time", "")
+        time_html = f'<span class="res-time">⏰ {escape_html(time_str)}</span>' if time_str else ""
+        place = r.get("place", "")
+        with_who = r.get("with", "")
+        memo = r.get("memo", "")
+        res_no = r.get("reservation_no", "")
+
+        meta_parts = []
+        if place:
+            meta_parts.append(f"📍 {escape_html(place)}")
+        if with_who:
+            meta_parts.append(f"👥 {escape_html(with_who)}")
+        if res_no:
+            meta_parts.append(f"🔖 予約番号 {escape_html(res_no)}")
+        meta_html = (
+            f'<div class="res-meta">{" / ".join(meta_parts)}</div>' if meta_parts else ""
+        )
+        memo_html = f'<div class="res-memo">📝 {escape_html(memo)}</div>' if memo else ""
+
+        # アクション: 学校HP / 通学経路
+        actions = [f'<a href="{escape_html(url)}" target="_blank">📄 学校HP →</a>']
+        if home_lat and home_lng and sch.get("lat") and sch.get("lng"):
+            transit_url = (
+                f"https://www.google.com/maps/dir/?api=1"
+                f"&origin={home_lat},{home_lng}"
+                f"&destination={sch['lat']},{sch['lng']}"
+                f"&travelmode=transit"
+            )
+            actions.append(f'<a href="{escape_html(transit_url)}" target="_blank">🚃 経路確認 →</a>')
+        actions_html = f'<div class="res-actions">{" ".join(actions)}</div>'
+
+        parts.append(
+            f'<div class="{card_cls}">'
+            f'<div class="res-top">'
+            f'<span class="res-date">{escape_html(date_human)}</span>'
+            f'{time_html}'
+            f'<span class="status-badge {status_cls}">{escape_html(status)}</span>'
+            f'</div>'
+            f'<div><span class="res-school">{escape_html(sname)}({sdev})</span> '
+            f'<span class="reserved-badge">{escape_html(title)}</span></div>'
+            f'{meta_html}'
+            f'{memo_html}'
+            f'{actions_html}'
+            f'</div>'
+        )
+
+    parts.append('</div>')
+    parts.append(
+        '<div class="reserved-help">'
+        '<strong>📝 予約を追加・編集するには:</strong> '
+        '<code>data/reserved.json</code> の <code>items</code> 配列を直接編集してください。'
+        ' 編集後 <code>00_高校情報収集.bat</code> を再実行すると反映されます。'
+        '</div>'
+    )
+    return "\n".join(parts)
 
 
 def render_compare_tab(schools, all_events):
@@ -1315,10 +1661,15 @@ def render_new_tab(new_events):
     return "\n".join(html_parts)
 
 
-def generate_dashboard_html(schools, all_events, new_events, scrape_results, config=None):
+def generate_dashboard_html(schools, all_events, new_events, scrape_results, config=None, reserved=None):
     new_ids = {e["event_id"] for e in new_events}
     ok_count = sum(1 for r in scrape_results if r["ok"])
     error_schools = [r for r in scrape_results if not r["ok"]]
+    today = date.today()
+    reserved_count = sum(
+        1 for r in (reserved or [])
+        if r.get("status", "予約中") == "予約中" and r.get("date", "") and date.fromisoformat(r["date"]) >= today
+    )
 
     errors_html = ""
     if error_schools:
@@ -1345,6 +1696,7 @@ def generate_dashboard_html(schools, all_events, new_events, scrape_results, con
     </div>
     <div class="tabs">
       <button class="tab-btn active" onclick="showTab('tab-new', this)">🆕 新着{' ('+str(len(new_events))+')' if new_events else ''}</button>
+      <button class="tab-btn" onclick="showTab('tab-reserved', this)">✅ 予約済{' ('+str(reserved_count)+')' if reserved_count else ''}</button>
       <button class="tab-btn" onclick="showTab('tab-calendar', this)">📅 カレンダー</button>
       <button class="tab-btn" onclick="showTab('tab-schools', this)">🏫 学校</button>
       <button class="tab-btn" onclick="showTab('tab-compare', this)">📊 比較</button>
@@ -1360,17 +1712,24 @@ def generate_dashboard_html(schools, all_events, new_events, scrape_results, con
     </div>
   </div>
 
+  <div id="tab-reserved" class="tab-panel">
+    <div class="section">
+      <h2>✅ 予約済み説明会</h2>
+      {render_reserved_tab(reserved or [], schools, config)}
+    </div>
+  </div>
+
   <div id="tab-calendar" class="tab-panel">
     <div class="section">
       <h2>📅 説明会・イベントカレンダー</h2>
-      {render_calendar_tab(all_events, new_ids)}
+      {render_calendar_tab(all_events, new_ids, reserved=reserved or [], schools=schools)}
     </div>
   </div>
 
   <div id="tab-schools" class="tab-panel">
     <div class="section">
       <h2>🏫 学校一覧（偏差値順）</h2>
-      {render_schools_tab(schools, all_events)}
+      {render_schools_tab(schools, all_events, config)}
     </div>
   </div>
 
@@ -1422,8 +1781,9 @@ def main():
     scrape_conf = config.get("scrape", {})
     timeout_ms = scrape_conf.get("timeout_ms", 20000)
     wait_ms = scrape_conf.get("wait_between_ms", 2000)
+    reserved = load_reserved()
 
-    print(f"\n対象校: {len(schools)}校\n")
+    print(f"\n対象校: {len(schools)}校 / 予約済み: {len(reserved)}件\n")
 
     from playwright.sync_api import sync_playwright
 
@@ -1484,7 +1844,7 @@ def main():
     save_snapshot(unique_events, {"schools_count": len(schools), "today": TODAY})
 
     # HTML生成
-    html = generate_dashboard_html(schools, unique_events, new_events, scrape_results, config)
+    html = generate_dashboard_html(schools, unique_events, new_events, scrape_results, config, reserved=reserved)
     index_path = REPORTS_DIR / "index.html"
     archive_path = REPORTS_DIR / f"dashboard_{TODAY}.html"
     root_index_path = BASE_DIR / "index.html"  # GitHub Pages配信用（リポジトリルート）

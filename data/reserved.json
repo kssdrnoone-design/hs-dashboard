@@ -1,0 +1,16 @@
+{
+  "_comment": "予約した説明会を手動で記録。dateは YYYY-MM-DD、status は 予約中/参加済/キャンセル のいずれか。school_id は 03_config.json の id と一致させる。",
+  "items": [
+    {
+      "school_id": "tamakagakugijutsu",
+      "title": "（サンプル）学校説明会",
+      "date": "2026-07-15",
+      "time": "14:00",
+      "place": "本校",
+      "reservation_no": "",
+      "memo": "上履き持参",
+      "with": "母",
+      "status": "予約中"
+    }
+  ]
+}
