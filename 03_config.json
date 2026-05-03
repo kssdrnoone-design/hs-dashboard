@@ -336,7 +336,8 @@
       "lat": 35.7167,
       "lng": 139.4108,
       "url_top": "https://www.sdg.ed.jp/",
-      "_note": "立川。3コース制(特進選抜60/選抜進学56/総合進学46)。学費は他私立平均で仮置き要確認",
+      "url_event": "https://www.sdg.ed.jp/FrontTopic/exam_candidate/",
+      "_note": "立川。3コース制(特進選抜60/選抜進学56/総合進学46)。学費は他私立平均で仮置き要確認。イベントはmirai-compass(https://mirai-compass.net/usr/showa1gh/event/evtIndex.jsf)管理",
       "admission_fee": 250000,
       "annual_tuition": 444000,
       "other_fees": 200000
