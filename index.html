@@ -1032,22 +1032,25 @@ table.compare tr:hover { background: #fbfcfd; }
       var map = L.map('schoolMap', {
         preferCanvas: true,           // Canvas で円マーカー描画（SVGより高速）
         zoomControl: true,
-        tap: true,
         touchZoom: true,
         scrollWheelZoom: false,       // モバイルでスクロールを邪魔しない
+        inertia: false,               // ドラッグ慣性無効（カクつきの主因）
         zoomAnimation: true,
         markerZoomAnimation: false,   // マーカーアニメ抑制でカクつき軽減
         fadeAnimation: false,         // タイルフェード抑制
-        wheelDebounceTime: 60
+        wheelDebounceTime: 60,
+        renderer: L.canvas({padding: 0.1})
       }).setView([35.717, 139.4698], 11);
       window._schoolMap = map;
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OSM',
-        maxZoom: 17,                  // タイル要求を減らす
-        keepBuffer: 1,                // 画面外タイル保持を最小化
-        updateWhenIdle: true,         // 移動中はタイル更新しない（モバイルでスムーズ）
+      // 軽量タイル(Carto Positron)：OSMより軽くモバイル向け
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OSM &copy; CARTO',
+        maxZoom: 17,
+        keepBuffer: 1,
+        updateWhenIdle: true,
         updateWhenZooming: false,
-        crossOrigin: true
+        crossOrigin: true,
+        subdomains: 'abcd'
       }).addTo(map);
       // 自宅マーカー
       L.marker([35.717, 139.4698], {
