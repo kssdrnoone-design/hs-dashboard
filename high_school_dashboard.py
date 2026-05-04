@@ -1005,9 +1005,9 @@ h1 { text-align: center; color: #2c3e50; font-size: 1.4em; margin-bottom: 2px; }
     margin-right: 4px;
 }
 #schoolMap {
-    height: 65vh;
-    max-height: 600px;
-    min-height: 360px;
+    height: 50vh;
+    max-height: 450px;
+    min-height: 320px;
     border-radius: 10px;
     border: 1px solid #e0e6ed;
     background: #f0f4f8;
@@ -1060,8 +1060,8 @@ table.compare tr:hover { background: #fbfcfd; }
     .cal-nav button { padding: 4px 10px; font-size: 0.85em; }
     /* 祝日名はスマホでは表示領域が狭いので小さくする（タップでツールチップ代わり） */
     .cal-holiday-name { font-size: 0.6em; padding: 0 2px; }
-    /* 地図はスマホでより大きく */
-    #schoolMap { height: 70vh; min-height: 400px; }
+    /* 地図はスマホでも 55vh 上限（地図外にスクロール領域を残す） */
+    #schoolMap { height: 55vh; min-height: 320px; max-height: 450px; }
     .map-legend { font-size: 0.72em; gap: 6px 10px; }
     /* 予約フォーム1カラム化 */
     .rsv-form-grid { grid-template-columns: 1fr; }
@@ -2231,7 +2231,7 @@ def render_map_tab(schools, config):
             f"</div>"
         )
 
-        # 円マーカーのみ（ラベルmarkerは廃止して軽量化）。tooltip は zoom>=12 のときのみ常時表示
+        # 円マーカー + 常時表示の学校名ラベル（tooltipで一体描画）
         short_name = name[:6]
         markers_js += (
             f"      L.circleMarker([{lat}, {lng}], {{"
@@ -2239,7 +2239,7 @@ def render_map_tab(schools, config):
             f".addTo(map)"
             f".bindPopup(\"{popup}\", {{maxWidth: 280, minWidth: 200}})"
             f".bindTooltip('<span style=\"background:{color};color:#fff;padding:1px 5px;border-radius:6px;font-size:10px;font-weight:bold;\">{dev} {short_name}</span>',"
-            f" {{permanent: false, direction: 'right', offset: [8, 0], opacity: 1, className: 'school-tooltip'}});\n"
+            f" {{permanent: true, direction: 'right', offset: [8, 0], opacity: 1, className: 'school-tooltip'}});\n"
         )
 
     bounds_js = "".join(
@@ -2279,15 +2279,14 @@ def render_map_tab(schools, config):
         renderer: L.canvas({{padding: 0.1}})
       }}).setView([{home_lat}, {home_lng}], 11);
       window._schoolMap = map;
-      // 軽量タイル(Carto Positron)：OSMより軽くモバイル向け
-      L.tileLayer('https://{{s}}.basemaps.cartocdn.com/light_all/{{z}}/{{x}}/{{y}}{{r}}.png', {{
-        attribution: '&copy; OSM &copy; CARTO',
-        maxZoom: 17,
+      // 国土地理院 淡色地図：日本語・軽量・日本国内向けに最適
+      L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{{z}}/{{x}}/{{y}}.png', {{
+        attribution: '&copy; <a href="https://www.gsi.go.jp/">国土地理院</a>',
+        maxZoom: 18,
         keepBuffer: 1,
         updateWhenIdle: true,
         updateWhenZooming: false,
-        crossOrigin: true,
-        subdomains: 'abcd'
+        crossOrigin: true
       }}).addTo(map);
       // 自宅マーカー
       L.marker([{home_lat}, {home_lng}], {{
