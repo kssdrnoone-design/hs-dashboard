@@ -1782,7 +1782,7 @@ function rsvCopyShareLink() {
     }
 }
 
-/* 取得 (GET) */
+/* 取得 (GET) - リモートが正。ローカルを完全上書き（削除も反映される） */
 function rsvSyncDown(silent) {
     var url = gasUrl();
     if (!url) {
@@ -1796,22 +1796,13 @@ function rsvSyncDown(silent) {
     }).then(function(data){
         if (!data.ok) throw new Error(data.error || 'GAS error');
         var remote = data.items || [];
-        var local = rsvLoad();
-        // local に新規あれば残す（リモートにない予約 = オフライン中追加分）
-        var merged = rsvMergeItems(remote, local);
-        var localOnly = local.filter(function(l){
-            return !remote.some(function(r){ return rsvItemId(r) === rsvItemId(l); });
-        });
-        try { localStorage.setItem(RSV_KEY, JSON.stringify(merged)); } catch (e) {}
+        // リモート優先：他端末での削除が反映されるよう、ローカルを上書きする
+        try { localStorage.setItem(RSV_KEY, JSON.stringify(remote)); } catch (e) {}
         localStorage.setItem(RSV_LAST_SYNC_KEY, new Date().toISOString());
         var stamp = new Date().toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'});
-        rsvSetSyncStatus('✓ 取得完了（' + stamp + '・' + merged.length + '件）', 'ok');
+        rsvSetSyncStatus('✓ 取得完了（' + stamp + '・' + remote.length + '件）', 'ok');
         rsvRender();
         if (typeof renderCalendar === 'function' && calCurrent) renderCalendar();
-        // ローカル新規があればpush
-        if (localOnly.length > 0) {
-            rsvSyncUp();
-        }
     }).catch(function(e){
         rsvSetSyncStatus('✗ 取得失敗: ' + e.message + (silent ? '（自動取得・GAS URL未設定 or オフライン）' : ''), 'err');
     });
