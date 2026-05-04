@@ -1076,6 +1076,14 @@ table.compare tr:hover { background: #fbfcfd; }
 @media (max-width: 600px) {
     .dev-label span { font-size: 9px !important; padding: 1px 3px !important; }
 }
+/* tooltip 用：Leaflet標準のフキダシ枠を消してラベルだけ見せる */
+.leaflet-tooltip.school-tooltip {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+.leaflet-tooltip.school-tooltip:before { display: none; }
 """
 
 TAB_JS = """
@@ -2232,19 +2240,16 @@ def render_map_tab(schools, config):
             f"</div>"
         )
 
-        markers_js += f"""
-      L.circleMarker([{lat}, {lng}], {{
-        radius: 10, fillColor: '{color}', color: '#fff', weight: 2, fillOpacity: 0.85
-      }}).addTo(map).bindPopup("{popup}", {{maxWidth: 280, minWidth: 200}});
-      L.marker([{lat}, {lng}], {{
-        icon: L.divIcon({{
-          className: 'dev-label',
-          html: '<span style="background:{color};color:#fff;padding:1px 5px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;">{dev} {name[:6]}</span>',
-          iconSize: [0, 0],
-          iconAnchor: [-12, 4]
-        }})
-      }}).addTo(map);
-"""
+        # 円マーカーのみ（ラベルmarkerは廃止して軽量化）。tooltip は zoom>=12 のときのみ常時表示
+        short_name = name[:6]
+        markers_js += (
+            f"      L.circleMarker([{lat}, {lng}], {{"
+            f"radius: 9, fillColor: '{color}', color: '#fff', weight: 2, fillOpacity: 0.9}})"
+            f".addTo(map)"
+            f".bindPopup(\"{popup}\", {{maxWidth: 280, minWidth: 200}})"
+            f".bindTooltip('<span style=\"background:{color};color:#fff;padding:1px 5px;border-radius:6px;font-size:10px;font-weight:bold;\">{dev} {short_name}</span>',"
+            f" {{permanent: false, direction: 'right', offset: [8, 0], opacity: 1, className: 'school-tooltip'}});\n"
+        )
 
     bounds_js = "".join(
         f"        bounds.extend([{s['lat']}, {s['lng']}]);\n"
@@ -2271,15 +2276,24 @@ def render_map_tab(schools, config):
       var mapEl = document.getElementById('schoolMap');
       if (!mapEl) return;
       var map = L.map('schoolMap', {{
+        preferCanvas: true,           // Canvas で円マーカー描画（SVGより高速）
         zoomControl: true,
         tap: true,
         touchZoom: true,
-        scrollWheelZoom: false  // モバイルでスクロールを邪魔しない
+        scrollWheelZoom: false,       // モバイルでスクロールを邪魔しない
+        zoomAnimation: true,
+        markerZoomAnimation: false,   // マーカーアニメ抑制でカクつき軽減
+        fadeAnimation: false,         // タイルフェード抑制
+        wheelDebounceTime: 60
       }}).setView([{home_lat}, {home_lng}], 11);
       window._schoolMap = map;
       L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{
-        attribution: '&copy; OpenStreetMap contributors',
-        maxZoom: 18
+        attribution: '&copy; OSM',
+        maxZoom: 17,                  // タイル要求を減らす
+        keepBuffer: 1,                // 画面外タイル保持を最小化
+        updateWhenIdle: true,         // 移動中はタイル更新しない（モバイルでスムーズ）
+        updateWhenZooming: false,
+        crossOrigin: true
       }}).addTo(map);
       // 自宅マーカー
       L.marker([{home_lat}, {home_lng}], {{
